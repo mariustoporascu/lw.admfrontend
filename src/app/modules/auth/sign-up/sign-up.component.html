@@ -12,14 +12,14 @@
 
 			<!-- Title -->
 			<div class="mt-8 text-4xl font-extrabold tracking-tight leading-tight">
-				Sign up
+				Creaza cont
 			</div>
 			<div class="flex items-baseline mt-0.5 font-medium">
-				<div>Already have an account?</div>
+				<div>Ai deja un cont?</div>
 				<a
 					class="ml-1 text-primary-500 hover:underline"
 					[routerLink]="['/auth/sign-in']"
-					>Sign in
+					>Autentificare
 				</a>
 			</div>
 
@@ -39,28 +39,67 @@
 			<form class="mt-8" [formGroup]="signUpForm" #signUpNgForm="ngForm">
 				<!-- Name field -->
 				<mat-form-field class="w-full">
-					<mat-label>Full name</mat-label>
+					<mat-label *ngIf="!signUpForm.get('isBusiness').value">Numele</mat-label>
+					<mat-label *ngIf="signUpForm.get('isBusiness').value"
+						>Numele firmei</mat-label
+					>
 					<input id="name" matInput [formControlName]="'name'" />
-					<mat-error *ngIf="signUpForm.get('name').hasError('required')">
-						Full name is required
+					<mat-error
+						*ngIf="
+							signUpForm.get('name').hasError('required') &&
+							!signUpForm.get('isBusiness').value
+						"
+					>
+						Numele este necesar
+					</mat-error>
+					<mat-error
+						*ngIf="
+							signUpForm.get('name').hasError('required') &&
+							signUpForm.get('isBusiness').value
+						"
+					>
+						Numele firmei este necesar
 					</mat-error>
 				</mat-form-field>
-
+				<!-- FirstName field -->
+				<mat-form-field class="w-full">
+					<mat-label *ngIf="!signUpForm.get('isBusiness').value"
+						>Prenumele</mat-label
+					>
+					<mat-label *ngIf="signUpForm.get('isBusiness').value">CUI</mat-label>
+					<input id="firstName" matInput [formControlName]="'firstName'" />
+					<mat-error
+						*ngIf="
+							signUpForm.get('firstName').hasError('required') &&
+							!signUpForm.get('isBusiness').value
+						"
+					>
+						Prenumele este necesar
+					</mat-error>
+					<mat-error
+						*ngIf="
+							signUpForm.get('firstName').hasError('required') &&
+							signUpForm.get('isBusiness').value
+						"
+					>
+						CUI-ul este necesar
+					</mat-error>
+				</mat-form-field>
 				<!-- Email field -->
 				<mat-form-field class="w-full">
-					<mat-label>Email address</mat-label>
+					<mat-label>Email</mat-label>
 					<input id="email" matInput [formControlName]="'email'" />
 					<mat-error *ngIf="signUpForm.get('email').hasError('required')">
-						Email address is required
+						Email-ul este necesar
 					</mat-error>
 					<mat-error *ngIf="signUpForm.get('email').hasError('email')">
-						Please enter a valid email address
+						Te rugam sa introduci un email valid
 					</mat-error>
 				</mat-form-field>
 
 				<!-- Password field -->
 				<mat-form-field class="w-full">
-					<mat-label>Password</mat-label>
+					<mat-label>Parola</mat-label>
 					<input
 						id="password"
 						matInput
@@ -89,30 +128,46 @@
 							[svgIcon]="'heroicons_solid:eye-off'"
 						></mat-icon>
 					</button>
-					<mat-error> Password is required </mat-error>
+					<mat-error *ngIf="signUpForm.get('password').hasError('required')">
+						Parola este obligatorie
+					</mat-error>
+					<mat-error *ngIf="signUpForm.get('password').hasError('pattern')">
+						Parola trebuie sa contina minim 8 caractere, cel putin o litera mare, un
+						numar si un caracter special(!@#$%^&*)</mat-error
+					>
 				</mat-form-field>
 
 				<!-- Company field -->
-				<mat-form-field class="w-full">
-					<mat-label>Company</mat-label>
-					<input id="company-confirm" matInput [formControlName]="'company'" />
-				</mat-form-field>
+				<div class="inline-flex items-end w-full mt-8">
+					<mat-checkbox
+						class="-ml-2"
+						id="isBusiness"
+						[color]="'primary'"
+						[formControlName]="'isBusiness'"
+					>
+						<span>Persoana Juridica?</span>
+					</mat-checkbox>
+				</div>
 
 				<!-- ToS and PP -->
 				<div class="inline-flex items-end w-full mt-1.5">
 					<mat-checkbox
 						class="-ml-2"
+						id="agreements"
 						[color]="'primary'"
 						[formControlName]="'agreements'"
 					>
-						<span>I agree with</span>
+						<span>Sunt de acord cu </span>
 						<a class="ml-1 text-primary-500 hover:underline" [routerLink]="['./']"
-							>Terms
+							>Termenii de utilizare
 						</a>
-						<span>and</span>
+						<span>si</span>
 						<a class="ml-1 text-primary-500 hover:underline" [routerLink]="['./']"
-							>Privacy Policy
+							>Politica de confidentialitate a datelor personale
 						</a>
+						<mat-error *ngIf="signUpForm.get('agreements').hasError('required')">
+							Trebuie sa citesti si sa accepti documentele legale
+						</mat-error>
 					</mat-checkbox>
 				</div>
 
@@ -124,7 +179,7 @@
 					[disabled]="signUpForm.disabled"
 					(click)="signUp()"
 				>
-					<span *ngIf="!signUpForm.disabled"> Create your free account </span>
+					<span *ngIf="!signUpForm.disabled"> Creaza contul acum </span>
 					<mat-progress-spinner
 						*ngIf="signUpForm.disabled"
 						[diameter]="24"

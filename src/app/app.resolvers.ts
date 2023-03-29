@@ -20,11 +20,11 @@ export class InitialDataResolver implements Resolve<any> {
 	 */
 	constructor(
 		// private _messagesService: MessagesService,
-		private _navigationService: NavigationService,
-		// private _notificationsService: NotificationsService,
-		// private _quickChatService: QuickChatService,
-		private _shortcutsService: ShortcutsService
-	) {}
+		private _navigationService: NavigationService
+	) // private _notificationsService: NotificationsService,
+	// private _quickChatService: QuickChatService,
+	// private _shortcutsService: ShortcutsService
+	{}
 
 	// -----------------------------------------------------------------------------------------------------
 	// @ Public methods
@@ -46,7 +46,7 @@ export class InitialDataResolver implements Resolve<any> {
 			// this._messagesService.getAll(),
 			// this._notificationsService.getAll(),
 			// this._quickChatService.getChats(),
-			this._shortcutsService.getAll(),
+			// this._shortcutsService.getAll(),
 		]);
 	}
 }

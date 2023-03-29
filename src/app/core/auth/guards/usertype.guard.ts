@@ -8,7 +8,7 @@ import { User } from 'app/core/user/user.types';
 @Injectable({
 	providedIn: 'root',
 })
-export class NoAuthGuard implements CanMatch {
+export class UserTypeGuard implements CanMatch {
 	user: User;
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -59,33 +59,38 @@ export class NoAuthGuard implements CanMatch {
 			.subscribe((user) => {
 				this.user = user;
 			});
-		return this._authService.check().pipe(
-			switchMap((authenticated) => {
-				// If the user is authenticated...
-				if (authenticated) {
-					// Redirect to the main page according to the user role
-					while (!this.user) {
-						// Wait for the user to be loaded
-					}
-					this._unsubscribeAll.next(null);
-					this._unsubscribeAll.complete();
-					if (this.user) {
-						if (this.user.type === 'pf-admin')
-							this._router.navigateByUrl('/user/pf-dashboard');
-						else if (this.user.type === 'pj-admin')
-							this._router.navigateByUrl('/user/pj-dashboard');
-						else if (this.user.type === 'firma-admin')
-							this._router.navigateByUrl('/admin/firma-dashboard');
-						else if (this.user.type === 'hybrid-admin')
-							this._router.navigateByUrl('/admin/hybrid-dashboard');
-						else if (this.user.type === 'master-admin')
-							this._router.navigateByUrl('/admin/master-dashboard');
-					}
-				}
-
-				// Allow the access
-				return of(!authenticated);
-			})
-		);
+		while (!this.user) {
+			// Wait for the user to be loaded
+		}
+		this._unsubscribeAll.next(null);
+		this._unsubscribeAll.complete();
+		if (this.user) {
+			if (this.user.type === 'pf-admin' && segments[0].path === 'pf-dashboard')
+				return of(true);
+			else if (
+				this.user.type === 'pj-admin' &&
+				segments[0].path === 'pj-dashboard'
+			)
+				return of(true);
+			else if (
+				this.user.type === 'firma-admin' &&
+				segments[0].path === 'firma-dashboard'
+			)
+				return of(true);
+			else if (
+				this.user.type === 'hybrid-admin' &&
+				segments[0].path === 'hybrid-dashboard'
+			)
+				return of(true);
+			else if (
+				this.user.type === 'master-admin' &&
+				segments[0].path === 'master-dashboard'
+			)
+				return of(true);
+			else {
+				return of(false);
+			}
+		}
+		return of(false);
 	}
 }

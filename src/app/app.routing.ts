@@ -2,7 +2,8 @@ import { Route } from '@angular/router';
 import { AuthGuard } from 'app/core/auth/guards/auth.guard';
 import { NoAuthGuard } from 'app/core/auth/guards/noAuth.guard';
 import { LayoutComponent } from 'app/layout/layout.component';
-import { InitialDataResolver } from 'app/app.resolvers';
+// import { InitialDataResolver } from 'app/app.resolvers';
+import { UserTypeGuard } from './core/auth/guards/usertype.guard';
 
 // @formatter:off
 /* eslint-disable max-len */
@@ -22,17 +23,18 @@ export const appRoutes: Route[] = [
 			),
 	},
 
-	// Admin routes
+	// User routes
 	{
-		path: 'admin',
+		path: 'user',
 		canMatch: [AuthGuard],
 		component: LayoutComponent,
-		resolve: {
-			initialData: InitialDataResolver,
-		},
+		// resolve: {
+		// 	initialData: InitialDataResolver,
+		// },
 		children: [
 			{
 				path: 'pf-dashboard',
+				canMatch: [UserTypeGuard],
 				loadChildren: () =>
 					import('app/modules/admin/example/example.module').then(
 						(m) => m.ExampleModule
@@ -40,6 +42,7 @@ export const appRoutes: Route[] = [
 			},
 			{
 				path: 'pj-dashboard',
+				canMatch: [UserTypeGuard],
 				loadChildren: () =>
 					import('app/modules/admin/example/example.module').then(
 						(m) => m.ExampleModule
@@ -47,8 +50,42 @@ export const appRoutes: Route[] = [
 			},
 		],
 	},
-
-	// Auth routes for guests
+	// Admin routes
+	{
+		path: 'admin',
+		canMatch: [AuthGuard],
+		component: LayoutComponent,
+		// resolve: {
+		// 	initialData: InitialDataResolver,
+		// },
+		children: [
+			{
+				path: 'firma-dashboard',
+				canMatch: [UserTypeGuard],
+				loadChildren: () =>
+					import('app/modules/admin/example/example.module').then(
+						(m) => m.ExampleModule
+					),
+			},
+			{
+				path: 'hybrid-dashboard',
+				canMatch: [UserTypeGuard],
+				loadChildren: () =>
+					import('app/modules/admin/example/example.module').then(
+						(m) => m.ExampleModule
+					),
+			},
+			{
+				path: 'master-dashboard',
+				canMatch: [UserTypeGuard],
+				loadChildren: () =>
+					import('app/modules/admin/example/example.module').then(
+						(m) => m.ExampleModule
+					),
+			},
+		],
+	},
+	// Auth routes
 	{
 		path: 'auth',
 		component: LayoutComponent,
@@ -82,6 +119,15 @@ export const appRoutes: Route[] = [
 					import(
 						'app/modules/auth/confirmation-required/confirmation-required.module'
 					).then((m) => m.AuthConfirmationRequiredModule),
+			},
+			{
+				path: 'confirmation-completion',
+				pathMatch: 'full',
+				canMatch: [NoAuthGuard],
+				loadChildren: () =>
+					import(
+						'app/modules/auth/confirmation-completion/confirmation-completion.module'
+					).then((m) => m.AuthConfirmationCompletionModule),
 			},
 			{
 				path: 'forgot-password',

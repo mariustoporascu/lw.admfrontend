@@ -1,7 +1,0 @@
-.gitignore
-.gitattributes
-LICENSE
-README.md
-node_modules
-.angular
-.vscode

@@ -12,26 +12,27 @@
 
 			<!-- Title -->
 			<div class="mt-8 text-4xl font-extrabold tracking-tight leading-tight">
-				Sign in
+				Autentificare
 			</div>
 			<div class="flex items-baseline mt-0.5 font-medium">
-				<div>Don't have an account?</div>
+				<div>Nu ai deja cont?</div>
 				<a
 					class="ml-1 text-primary-500 hover:underline"
 					[routerLink]="['/auth/sign-up']"
-					>Sign up
+					>Creaza unul acum
 				</a>
 			</div>
 
 			<!-- Alert -->
 			<fuse-alert
 				class="mt-8"
+				*ngIf="showResendEmailConfirmation"
 				[appearance]="'outline'"
 				[showIcon]="false"
 				[type]="'info'"
 			>
-				You are browsing <strong>Fuse Demo</strong>. Click on the "Sign in" button
-				to access the Demo and Documentation.
+				Retrimite email-ul de confirmare cont apasand
+				<span class="font-bold" (click)="resendConfirmationEmail()">aici</span>
 			</fuse-alert>
 
 			<!-- Alert -->
@@ -50,19 +51,19 @@
 			<form class="mt-8" [formGroup]="signInForm" #signInNgForm="ngForm">
 				<!-- Email field -->
 				<mat-form-field class="w-full">
-					<mat-label>Email address</mat-label>
+					<mat-label>Email</mat-label>
 					<input id="email" matInput [formControlName]="'email'" />
 					<mat-error *ngIf="signInForm.get('email').hasError('required')">
-						Email address is required
+						Adresa de email este obligatorie
 					</mat-error>
 					<mat-error *ngIf="signInForm.get('email').hasError('email')">
-						Please enter a valid email address
+						Te rog introdu o adresa de email valida
 					</mat-error>
 				</mat-form-field>
 
 				<!-- Password field -->
 				<mat-form-field class="w-full">
-					<mat-label>Password</mat-label>
+					<mat-label>Parola</mat-label>
 					<input
 						id="password"
 						matInput
@@ -96,17 +97,10 @@
 
 				<!-- Actions -->
 				<div class="inline-flex items-center justify-between w-full mt-1.5">
-					<mat-checkbox
-						class="-ml-2"
-						[color]="'primary'"
-						[formControlName]="'rememberMe'"
-					>
-						Remember me
-					</mat-checkbox>
 					<a
 						class="text-md font-medium text-primary-500 hover:underline"
 						[routerLink]="['/auth/forgot-password']"
-						>Forgot password?
+						>Ai uitat parola?
 					</a>
 				</div>
 
@@ -118,33 +112,13 @@
 					[disabled]="signInForm.disabled"
 					(click)="signIn()"
 				>
-					<span *ngIf="!signInForm.disabled"> Sign in </span>
+					<span *ngIf="!signInForm.disabled"> Autentifica-te </span>
 					<mat-progress-spinner
 						*ngIf="signInForm.disabled"
 						[diameter]="24"
 						[mode]="'indeterminate'"
 					></mat-progress-spinner>
 				</button>
-
-				<!-- Separator -->
-				<div class="flex items-center mt-8">
-					<div class="flex-auto mt-px border-t"></div>
-					<div class="mx-2 text-secondary">Or continue with</div>
-					<div class="flex-auto mt-px border-t"></div>
-				</div>
-
-				<!-- Single sign-on buttons -->
-				<div class="flex items-center mt-8 space-x-4">
-					<button class="flex-auto" type="button" mat-stroked-button>
-						<mat-icon class="icon-size-5" [svgIcon]="'feather:facebook'"></mat-icon>
-					</button>
-					<button class="flex-auto" type="button" mat-stroked-button>
-						<mat-icon class="icon-size-5" [svgIcon]="'feather:twitter'"></mat-icon>
-					</button>
-					<button class="flex-auto" type="button" mat-stroked-button>
-						<mat-icon class="icon-size-5" [svgIcon]="'feather:github'"></mat-icon>
-					</button>
-				</div>
 			</form>
 		</div>
 	</div>

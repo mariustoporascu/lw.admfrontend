@@ -21,13 +21,13 @@ import { TranslocoHttpLoader } from 'app/core/transloco/transloco.http-loader';
 						id: 'ro',
 						label: 'Română',
 					},
-					{
-						id: 'en',
-						label: 'English',
-					},
+					// {
+					// 	id: 'en',
+					// 	label: 'English',
+					// },
 				],
 				defaultLang: 'ro',
-				fallbackLang: 'en',
+				fallbackLang: 'ro',
 				reRenderOnLangChange: true,
 				prodMode: true,
 			}),
