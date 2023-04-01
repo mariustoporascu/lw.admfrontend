@@ -1,111 +1,135 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, NgForm, Validators } from '@angular/forms';
-import { finalize } from 'rxjs';
+import {
+	UntypedFormBuilder,
+	UntypedFormGroup,
+	NgForm,
+	Validators,
+} from '@angular/forms';
+import { catchError, finalize, of, switchMap } from 'rxjs';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseValidators } from '@fuse/validators';
 import { FuseAlertType } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
-    selector     : 'auth-reset-password',
-    templateUrl  : './reset-password.component.html',
-    encapsulation: ViewEncapsulation.None,
-    animations   : fuseAnimations
+	selector: 'auth-reset-password',
+	templateUrl: './reset-password.component.html',
+	encapsulation: ViewEncapsulation.None,
+	animations: fuseAnimations,
 })
-export class AuthResetPasswordComponent implements OnInit
-{
-    @ViewChild('resetPasswordNgForm') resetPasswordNgForm: NgForm;
+export class AuthResetPasswordComponent implements OnInit {
+	private _token: string;
+	private _email: string;
+	@ViewChild('resetPasswordNgForm') resetPasswordNgForm: NgForm;
 
-    alert: { type: FuseAlertType; message: string } = {
-        type   : 'success',
-        message: ''
-    };
-    resetPasswordForm: UntypedFormGroup;
-    showAlert: boolean = false;
+	alert: { type: FuseAlertType; message: string } = {
+		type: 'success',
+		message: '',
+	};
+	resetPasswordForm: UntypedFormGroup;
+	showAlert: boolean = false;
 
-    /**
-     * Constructor
-     */
-    constructor(
-        private _authService: AuthService,
-        private _formBuilder: UntypedFormBuilder
-    )
-    {
-    }
+	/**
+	 * Constructor
+	 */
+	constructor(
+		private route: ActivatedRoute,
+		private _authService: AuthService,
+		private _formBuilder: UntypedFormBuilder
+	) {}
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Lifecycle hooks
-    // -----------------------------------------------------------------------------------------------------
+	// -----------------------------------------------------------------------------------------------------
+	// @ Lifecycle hooks
+	// -----------------------------------------------------------------------------------------------------
 
-    /**
-     * On init
-     */
-    ngOnInit(): void
-    {
-        // Create the form
-        this.resetPasswordForm = this._formBuilder.group({
-                password       : ['', Validators.required],
-                passwordConfirm: ['', Validators.required]
-            },
-            {
-                validators: FuseValidators.mustMatch('password', 'passwordConfirm')
-            }
-        );
-    }
+	/**
+	 * On init
+	 */
+	ngOnInit(): void {
+		this.route.queryParams.subscribe((params) => {
+			this._token = params['token'];
+			this._email = params['email'];
+			// Create the form
+			this.resetPasswordForm = this._formBuilder.group(
+				{
+					email: [this._email, [Validators.required, Validators.email]],
+					password: [
+						'',
+						[
+							Validators.required,
+							Validators.pattern(
+								'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$'
+							),
+						],
+					],
+					passwordConfirm: [
+						'',
+						[
+							Validators.required,
+							Validators.pattern(
+								'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$'
+							),
+						],
+					],
+				},
+				{
+					validators: FuseValidators.mustMatch('password', 'passwordConfirm'),
+				}
+			);
+		});
+	}
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
+	// -----------------------------------------------------------------------------------------------------
+	// @ Public methods
+	// -----------------------------------------------------------------------------------------------------
 
-    /**
-     * Reset password
-     */
-    resetPassword(): void
-    {
-        // Return if the form is invalid
-        if ( this.resetPasswordForm.invalid )
-        {
-            return;
-        }
+	/**
+	 * Reset password
+	 */
+	resetPassword(): void {
+		// Return if the form is invalid
+		if (this.resetPasswordForm.invalid) {
+			return;
+		}
 
-        // Disable the form
-        this.resetPasswordForm.disable();
+		// Disable the form
+		this.resetPasswordForm.disable();
 
-        // Hide the alert
-        this.showAlert = false;
+		// Hide the alert
+		this.showAlert = false;
 
-        // Send the request to the server
-        this._authService.resetPassword(this.resetPasswordForm.get('password').value)
-            .pipe(
-                finalize(() => {
+		// Send the request to the server
+		this._authService
+			.resetPassword(this._token, this.resetPasswordForm.value)
+			.pipe(
+				catchError((error: any) => of(error.error)),
+				switchMap((response: any) => {
+					// If there is an error...
+					this.resetPasswordForm.enable();
 
-                    // Re-enable the form
-                    this.resetPasswordForm.enable();
+					// Show the alert
+					this.showAlert = true;
 
-                    // Reset the form
-                    this.resetPasswordNgForm.resetForm();
-
-                    // Show the alert
-                    this.showAlert = true;
-                })
-            )
-            .subscribe(
-                (response) => {
-
-                    // Set the alert
-                    this.alert = {
-                        type   : 'success',
-                        message: 'Your password has been reset.'
-                    };
-                },
-                (response) => {
-
-                    // Set the alert
-                    this.alert = {
-                        type   : 'error',
-                        message: 'Something went wrong, please try again.'
-                    };
-                }
-            );
-    }
+					if (response.error) {
+						this.resetPasswordForm.get('email').setValue(this._email);
+						// Set the alert
+						this.alert = {
+							type: 'error',
+							message: 'Parola nu a putut fi resetata.',
+						};
+						return of(false);
+					} else {
+						// Set the alert
+						this.resetPasswordNgForm.resetForm();
+						this.alert = {
+							type: 'success',
+							message: 'Parola a fost resetata.',
+						};
+						return of(true);
+					}
+				})
+			)
+			.subscribe();
+	}
 }

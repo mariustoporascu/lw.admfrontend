@@ -41,7 +41,7 @@
 				<div
 					class="w-full whitespace-nowrap text-ellipsis overflow-hidden text-center leading-normal font-medium"
 				>
-					{{ user.name }}
+					{{ user.name }} {{ user.firstName }}
 				</div>
 				<div
 					class="w-full mt-0.5 whitespace-nowrap text-ellipsis overflow-hidden text-center text-md leading-normal font-medium text-secondary"
@@ -77,11 +77,11 @@
 				<languages></languages>
 				<fuse-fullscreen class="hidden md:block"></fuse-fullscreen>
 				<search [appearance]="'bar'"></search>
-				<shortcuts></shortcuts>
-				<messages></messages>
-				<button class="lg:hidden" mat-icon-button (click)="quickChat.toggle()">
+				<!-- <shortcuts></shortcuts> -->
+				<!-- <messages></messages> -->
+				<!-- <button class="lg:hidden" mat-icon-button (click)="quickChat.toggle()">
 					<mat-icon [svgIcon]="'heroicons_outline:chat-alt-2'"></mat-icon>
-				</button>
+				</button> -->
 			</div>
 		</div>
 	</div>
@@ -99,4 +99,4 @@
 </div>
 
 <!-- Quick chat -->
-<quick-chat #quickChat="quickChat"></quick-chat>
+<!-- <quick-chat #quickChat="quickChat"></quick-chat> -->

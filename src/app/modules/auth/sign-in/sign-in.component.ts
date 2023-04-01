@@ -9,6 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseAlertType } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
+import { catchError, of, switchMap } from 'rxjs';
 
 @Component({
 	selector: 'auth-sign-in',
@@ -25,7 +26,7 @@ export class AuthSignInComponent implements OnInit {
 	};
 	signInForm: UntypedFormGroup;
 	showAlert: boolean = false;
-
+	showResendEmailConfirmation: boolean = false;
 	/**
 	 * Constructor
 	 */
@@ -46,8 +47,8 @@ export class AuthSignInComponent implements OnInit {
 	ngOnInit(): void {
 		// Create the form
 		this.signInForm = this._formBuilder.group({
-			email: ['hughes.brian@company.com', [Validators.required, Validators.email]],
-			password: ['admin', Validators.required],
+			email: ['office@topodvlp.website', [Validators.required, Validators.email]],
+			password: ['Vib3r0n3@', Validators.required],
 			rememberMe: [''],
 		});
 	}
@@ -72,34 +73,78 @@ export class AuthSignInComponent implements OnInit {
 		this.showAlert = false;
 
 		// Sign in
-		this._authService.signIn(this.signInForm.value).subscribe(
-			() => {
-				// Set the redirect url.
-				// The '/signed-in-redirect' is a dummy url to catch the request and redirect the user
-				// to the correct page after a successful sign in. This way, that url can be set via
-				// routing file and we don't have to touch here.
+		this._authService.signIn(this.signInForm.value).subscribe({
+			next: (response) => {
 				const redirectURL =
 					this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || null;
 
 				// Navigate to the redirect url
 				redirectURL ? this._router.navigateByUrl(redirectURL) : location.reload();
 			},
-			(response) => {
+			error: (error) => {
 				// Re-enable the form
 				this.signInForm.enable();
 
 				// Reset the form
-				this.signInNgForm.resetForm();
-
-				// Set the alert
-				this.alert = {
-					type: 'error',
-					message: 'Wrong email or password',
-				};
+				this.signInNgForm.form.markAsPristine();
+				this.signInNgForm.form.markAsUntouched();
+				if (error === 'Email not confirmed') {
+					// Set the alert
+					this.alert = {
+						type: 'error',
+						message: 'Email-ul nu a fost confirmat.',
+					};
+					this.showResendEmailConfirmation = true;
+				} else {
+					// Set the alert
+					this.alert = {
+						type: 'error',
+						message: 'Email sau parola gresite',
+					};
+				}
 
 				// Show the alert
 				this.showAlert = true;
-			}
-		);
+			},
+		});
+	}
+	resendConfirmationEmail(): void {
+		// Return if the form is invalid
+		if (this.signInForm.invalid) {
+			return;
+		}
+
+		// Disable the form
+		this.signInForm.disable();
+
+		// Hide the alert
+		this.showAlert = false;
+
+		this._authService
+			.resendConfirmationEmail(this.signInForm.get('email').value)
+			.subscribe((res) => {
+				// Re-enable the form
+				this.signInForm.enable();
+
+				// Reset the form
+				this.signInNgForm.form.markAsPristine();
+				this.signInNgForm.form.markAsUntouched();
+				if (res.error) {
+					// Set the alert
+					this.alert = {
+						type: 'error',
+						message: 'Email-ul de confirmare nu a putut fi transmis.',
+					};
+				} else {
+					// Set the alert
+					this.alert = {
+						type: 'success',
+						message: 'Email-ul de confirmare a fost transmis.',
+					};
+					this.showResendEmailConfirmation = false;
+				}
+				// Show the alert
+				this.showAlert = true;
+			});
 	}
 }
