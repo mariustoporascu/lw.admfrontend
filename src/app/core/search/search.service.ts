@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import { cloneDeep } from 'lodash-es';
 import {
 	FuseNavigationItem,
 	FuseNavigationService,
 } from '@fuse/components/navigation';
-import { defaultNavigation } from 'app/mock-api/common/navigation/data';
 import { Observable, of } from 'rxjs';
+import { defaultNavigation } from '../navigation/navigation.data';
 
 @Injectable({
 	providedIn: 'root',
@@ -41,7 +40,7 @@ export class SearchService {
 		}
 
 		// Filter the navigation
-		const pagesResults = cloneDeep(flatNavigation).filter(
+		const pagesResults = [...flatNavigation].filter(
 			(page) =>
 				page.title?.toLowerCase().includes(query) ||
 				(page.subtitle && page.subtitle.includes(query))

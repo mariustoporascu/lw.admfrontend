@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable, ReplaySubject, tap } from 'rxjs';
+import { BehaviorSubject, map, Observable, ReplaySubject, tap } from 'rxjs';
 import { User } from 'app/core/user/user.types';
 import { AuthUtils } from '../auth/auth.utils';
 
@@ -8,7 +8,7 @@ import { AuthUtils } from '../auth/auth.utils';
 	providedIn: 'root',
 })
 export class UserService {
-	private _user: ReplaySubject<User> = new ReplaySubject<User>(1);
+	private _user: BehaviorSubject<User> = new BehaviorSubject<User>({} as User);
 
 	/**
 	 * Constructor
@@ -31,7 +31,7 @@ export class UserService {
 		this._user.next(value);
 	}
 
-	get user$(): Observable<User> {
+	get user$(): BehaviorSubject<User> {
 		if (!AuthUtils.isTokenExpired(this.accessToken)) {
 			const user = AuthUtils._decodeToken(this.accessToken);
 			this.user = {
@@ -42,9 +42,11 @@ export class UserService {
 				phoneNumber: user.phone,
 				type: user.type,
 			} as User;
+		} else {
+			this.user = {} as User;
 		}
 
-		return this._user.asObservable();
+		return this._user;
 	}
 
 	// -----------------------------------------------------------------------------------------------------
