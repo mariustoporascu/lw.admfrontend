@@ -62,6 +62,7 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
 
 		// Subscribe to the user service
 		this._userService.user$
+			.asObservable()
 			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe((user: User) => {
 				this.user = user;

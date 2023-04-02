@@ -10,7 +10,6 @@ import { User } from 'app/core/user/user.types';
 })
 export class NoAuthGuard implements CanMatch {
 	user: User;
-	private _unsubscribeAll: Subject<any> = new Subject<any>();
 
 	/**
 	 * Constructor
@@ -54,33 +53,26 @@ export class NoAuthGuard implements CanMatch {
 	private _check(segments: UrlSegment[]): Observable<boolean | UrlTree> {
 		// Check the authentication status and return an observable of
 		// "true" or "false" to allow or prevent the access
-		this._userService.user$
-			.pipe(takeUntil(this._unsubscribeAll))
-			.subscribe((user) => {
-				this.user = user;
-			});
 		return this._authService.check().pipe(
 			switchMap((authenticated) => {
 				// If the user is authenticated...
 				if (authenticated) {
-					// Redirect to the main page according to the user role
-					while (!this.user) {
-						// Wait for the user to be loaded
+					if (!this._userService.user$.value.id) {
+						return of(false);
+					} else {
+						this.user = this._userService.user$.value;
 					}
-					this._unsubscribeAll.next(null);
-					this._unsubscribeAll.complete();
-					if (this.user) {
-						if (this.user.type === 'pf-admin')
-							this._router.navigateByUrl('/user/pf-dashboard');
-						else if (this.user.type === 'pj-admin')
-							this._router.navigateByUrl('/user/pj-dashboard');
-						else if (this.user.type === 'firma-admin')
-							this._router.navigateByUrl('/admin/firma-dashboard');
-						else if (this.user.type === 'hybrid-admin')
-							this._router.navigateByUrl('/admin/hybrid-dashboard');
-						else if (this.user.type === 'master-admin')
-							this._router.navigateByUrl('/admin/master-dashboard');
-					}
+
+					if (this.user.type === 'pf-admin')
+						this._router.navigateByUrl('/user/pf-dashboard');
+					else if (this.user.type === 'pj-admin')
+						this._router.navigateByUrl('/user/pj-dashboard');
+					else if (this.user.type === 'firma-admin')
+						this._router.navigateByUrl('/admin/firma-dashboard');
+					else if (this.user.type === 'hybrid-admin')
+						this._router.navigateByUrl('/admin/hybrid-dashboard');
+					else if (this.user.type === 'master-admin')
+						this._router.navigateByUrl('/admin/master-dashboard');
 				}
 
 				// Allow the access

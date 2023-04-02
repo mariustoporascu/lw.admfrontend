@@ -2,7 +2,6 @@ import { Route } from '@angular/router';
 import { AuthGuard } from 'app/core/auth/guards/auth.guard';
 import { NoAuthGuard } from 'app/core/auth/guards/noAuth.guard';
 import { LayoutComponent } from 'app/layout/layout.component';
-// import { InitialDataResolver } from 'app/app.resolvers';
 import { UserTypeGuard } from './core/auth/guards/usertype.guard';
 
 // @formatter:off
@@ -28,9 +27,6 @@ export const appRoutes: Route[] = [
 		path: 'user',
 		canMatch: [AuthGuard],
 		component: LayoutComponent,
-		// resolve: {
-		// 	initialData: InitialDataResolver,
-		// },
 		children: [
 			{
 				path: 'pf-dashboard',
@@ -55,9 +51,6 @@ export const appRoutes: Route[] = [
 		path: 'admin',
 		canMatch: [AuthGuard],
 		component: LayoutComponent,
-		// resolve: {
-		// 	initialData: InitialDataResolver,
-		// },
 		children: [
 			{
 				path: 'firma-dashboard',
