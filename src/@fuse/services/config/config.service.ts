@@ -26,13 +26,16 @@ export class FuseConfigService {
 	set config(value: any) {
 		// Merge the new config over to the current config
 		const config = Object.assign({}, this._config.getValue(), value);
-
+		localStorage.setItem('fuseConfig', JSON.stringify(config));
 		// Execute the observable
 		this._config.next(config);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/member-ordering
 	get config$(): Observable<any> {
+		if (localStorage.getItem('fuseConfig')) {
+			this._config.next(JSON.parse(localStorage.getItem('fuseConfig')));
+		}
 		return this._config.asObservable();
 	}
 

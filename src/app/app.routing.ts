@@ -32,16 +32,51 @@ export const appRoutes: Route[] = [
 				path: 'pf-dashboard',
 				canMatch: [UserTypeGuard],
 				loadChildren: () =>
-					import('app/modules/admin/example/example.module').then(
-						(m) => m.ExampleModule
+					import('app/modules/user/user-dash/user-dash.module').then(
+						(m) => m.UserDashModule
 					),
 			},
 			{
 				path: 'pj-dashboard',
 				canMatch: [UserTypeGuard],
 				loadChildren: () =>
+					import('app/modules/user/user-dash/user-dash.module').then(
+						(m) => m.UserDashModule
+					),
+			},
+			{
+				path: 'pf-analytics',
+				canMatch: [UserTypeGuard],
+				loadChildren: () =>
 					import('app/modules/admin/example/example.module').then(
 						(m) => m.ExampleModule
+					),
+			},
+			{
+				path: 'pj-analytics',
+				canMatch: [UserTypeGuard],
+				loadChildren: () =>
+					import('app/modules/admin/example/example.module').then(
+						(m) => m.ExampleModule
+					),
+			},
+			{
+				path: 'pf-filemanager',
+				data: { baseRoute: '/user/pf-filemanager' },
+
+				canMatch: [UserTypeGuard],
+				loadChildren: () =>
+					import('app/modules/utilities/file-manager/file-manager.module').then(
+						(m) => m.FileManagerModule
+					),
+			},
+			{
+				path: 'pj-filemanager',
+				data: { baseRoute: '/user/pj-filemanager' },
+				canMatch: [UserTypeGuard],
+				loadChildren: () =>
+					import('app/modules/utilities/file-manager/file-manager.module').then(
+						(m) => m.FileManagerModule
 					),
 			},
 		],

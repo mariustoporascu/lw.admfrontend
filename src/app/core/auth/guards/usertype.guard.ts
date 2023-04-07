@@ -54,23 +54,29 @@ export class UserTypeGuard implements CanMatch {
 			this.user = this._userService.user$.value;
 		}
 
-		if (this.user.type === 'pf-admin' && segments[0].path === 'pf-dashboard')
+		if (
+			this.user.type === 'pf-admin' &&
+			segments[0].path.toLocaleLowerCase().startsWith('pf-')
+		)
 			return of(true);
-		else if (this.user.type === 'pj-admin' && segments[0].path === 'pj-dashboard')
+		else if (
+			this.user.type === 'pj-admin' &&
+			segments[0].path.toLocaleLowerCase().startsWith('pj-')
+		)
 			return of(true);
 		else if (
 			this.user.type === 'firma-admin' &&
-			segments[0].path === 'firma-dashboard'
+			segments[0].path.toLocaleLowerCase().startsWith('firma-')
 		)
 			return of(true);
 		else if (
 			this.user.type === 'hybrid-admin' &&
-			segments[0].path === 'hybrid-dashboard'
+			segments[0].path.toLocaleLowerCase().startsWith('hybrid-')
 		)
 			return of(true);
 		else if (
 			this.user.type === 'master-admin' &&
-			segments[0].path === 'master-dashboard'
+			segments[0].path.toLocaleLowerCase().startsWith('master-')
 		)
 			return of(true);
 		else {
