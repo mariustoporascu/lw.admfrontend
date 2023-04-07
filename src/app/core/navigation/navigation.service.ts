@@ -25,9 +25,14 @@ export class NavigationService {
 	/**
 	 * Getter for navigation
 	 */
-	get navigation$(): Observable<Navigation> {
+	getNavigation(userType: string): Observable<Navigation> {
 		this._navigation.next({
-			default: [...this._defaultNavigation],
+			default: [
+				...this._defaultNavigation.filter((item) => {
+					if (item.userType === userType) return true;
+					return false;
+				}),
+			],
 		} as Navigation);
 		return this._navigation.asObservable();
 	}

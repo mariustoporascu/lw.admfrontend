@@ -54,7 +54,8 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
 	 */
 	ngOnInit(): void {
 		// Subscribe to navigation data
-		this._navigationService.navigation$
+		this._navigationService
+			.getNavigation(this._userService.user$.value.type)
 			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe((navigation: Navigation) => {
 				this.navigation = navigation;
