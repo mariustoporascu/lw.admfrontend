@@ -14,12 +14,12 @@ import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.s
 import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
-	selector: 'user-transf-history',
-	templateUrl: './user-transf-history.component.html',
+	selector: 'user-operations',
+	templateUrl: './user-operations.component.html',
 	encapsulation: ViewEncapsulation.None,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UserTransfHistoryComponent
+export class UserOperationsComponent
 	implements OnInit, AfterViewInit, OnDestroy
 {
 	@ViewChild('recentTransactionsTable', { read: MatSort })
