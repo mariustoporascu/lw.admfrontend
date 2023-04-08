@@ -8,15 +8,15 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { SharedModule } from 'app/shared/shared.module';
-import { UserTransfHistoryComponent } from './user-transf-history.component';
-import { userTransfRoutes } from './user-transf-history.routing';
+import { UserOperationsComponent } from './user-operations.component';
+import { userOperationsRoutes } from './user-operations.routing';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
-	declarations: [UserTransfHistoryComponent],
+	declarations: [UserOperationsComponent],
 	imports: [
-		RouterModule.forChild(userTransfRoutes),
+		RouterModule.forChild(userOperationsRoutes),
 		MatButtonModule,
 		MatDividerModule,
 		MatIconModule,
@@ -29,4 +29,4 @@ import { MatInputModule } from '@angular/material/input';
 		SharedModule,
 	],
 })
-export class UserTransfHistoryModule {}
+export class UserOperationsModule {}

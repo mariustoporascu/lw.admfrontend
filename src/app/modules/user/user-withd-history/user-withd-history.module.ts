@@ -11,12 +11,12 @@ import { SharedModule } from 'app/shared/shared.module';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
 import { UserWithdHistoryComponent } from './user-withd-history.component';
-import { userDashRoutes } from './user-withd-history.routing';
+import { userWithdRoutes } from './user-withd-history.routing';
 
 @NgModule({
 	declarations: [UserWithdHistoryComponent],
 	imports: [
-		RouterModule.forChild(userDashRoutes),
+		RouterModule.forChild(userWithdRoutes),
 		MatButtonModule,
 		MatDividerModule,
 		MatIconModule,

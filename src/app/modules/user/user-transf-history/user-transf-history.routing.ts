@@ -1,7 +1,7 @@
 import { Route } from '@angular/router';
 import { UserTransfHistoryComponent } from './user-transf-history.component';
 
-export const userDashRoutes: Route[] = [
+export const userTransfRoutes: Route[] = [
 	{
 		path: '',
 		component: UserTransfHistoryComponent,

@@ -3,6 +3,7 @@ import { AuthGuard } from 'app/core/auth/guards/auth.guard';
 import { NoAuthGuard } from 'app/core/auth/guards/noAuth.guard';
 import { LayoutComponent } from 'app/layout/layout.component';
 import { UserTypeGuard } from './core/auth/guards/usertype.guard';
+import { NotFoundGuard } from './core/auth/guards/notFound.guard';
 
 // @formatter:off
 /* eslint-disable max-len */
@@ -63,13 +64,20 @@ export const appRoutes: Route[] = [
 						(m) => m.FileManagerModule
 					),
 			},
-
 			{
 				path: 'settings',
 				canMatch: [UserTypeGuard],
 				loadChildren: () =>
 					import('app/modules/user/settings/settings.module').then(
 						(m) => m.SettingsModule
+					),
+			},
+			{
+				path: 'operations',
+				canMatch: [UserTypeGuard],
+				loadChildren: () =>
+					import('app/modules/user/user-operations/user-operations.module').then(
+						(m) => m.UserOperationsModule
 					),
 			},
 		],
@@ -205,7 +213,15 @@ export const appRoutes: Route[] = [
 			},
 		],
 	},
-
+	{
+		path: 'redirectToDashboard',
+		pathMatch: 'full',
+		canMatch: [NotFoundGuard],
+		loadChildren: () =>
+			import('app/modules/error/error-500/error-500.module').then(
+				(m) => m.Error500Module
+			),
+	},
 	// 404 & Catch all
 	{
 		path: '404-not-found',
