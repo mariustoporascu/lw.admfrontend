@@ -1,0 +1,57 @@
+<div class="w-full max-w-3xl">
+	<!-- Form -->
+	<form [formGroup]="securityForm">
+		<!-- Section -->
+		<div class="w-full">
+			<div class="text-xl">Schimba-ti parola</div>
+		</div>
+		<div class="grid sm:grid-cols-4 gap-6 w-full mt-8">
+			<!-- Current password -->
+			<div class="sm:col-span-4">
+				<mat-form-field class="w-full" [subscriptSizing]="'dynamic'">
+					<mat-label>Parola curenta</mat-label>
+					<mat-icon
+						class="icon-size-5"
+						[svgIcon]="'heroicons_solid:key'"
+						matPrefix
+					></mat-icon>
+					<input [formControlName]="'currentPassword'" type="password" matInput />
+				</mat-form-field>
+			</div>
+			<!-- New password -->
+			<div class="sm:col-span-4">
+				<mat-form-field class="w-full" [subscriptSizing]="'dynamic'">
+					<mat-label>Parola noua</mat-label>
+					<mat-icon
+						class="icon-size-5"
+						[svgIcon]="'heroicons_solid:key'"
+						matPrefix
+					></mat-icon>
+					<input [formControlName]="'newPassword'" type="password" matInput />
+				</mat-form-field>
+			</div>
+			<!-- Confirm new password -->
+			<div class="sm:col-span-4">
+				<mat-form-field class="w-full" [subscriptSizing]="'dynamic'">
+					<mat-label>Confirma parola noua</mat-label>
+					<mat-icon
+						class="icon-size-5"
+						[svgIcon]="'heroicons_solid:key'"
+						matPrefix
+					></mat-icon>
+					<input [formControlName]="'newPassword'" type="password" matInput />
+				</mat-form-field>
+			</div>
+		</div>
+
+		<!-- Divider -->
+		<div class="my-10 border-t"></div>
+
+		<!-- Actions -->
+		<div class="flex items-center justify-end">
+			<button class="ml-4" mat-flat-button type="button" [color]="'primary'">
+				Save
+			</button>
+		</div>
+	</form>
+</div>

@@ -54,7 +54,6 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 			takeUntil(this._unsubscribeAll)
 		).subscribe((items: Items) => {
 			this.items = items;
-			console.log(items);
 			// Mark for check
 			this._changeDetectorRef.markForCheck();
 		});
@@ -99,7 +98,6 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 	 */
 	onBackdropClicked(): void {
 		// Go back to the list
-		console.log('onBackdropClicked()');
 		this._router.navigate(['./'], { relativeTo: this._activatedRoute });
 
 		// Mark for check
@@ -114,5 +112,9 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 	 */
 	trackByFn(index: number, item: any): any {
 		return item.id || index;
+	}
+	checkIfFolder(): boolean {
+		console.log(this._activatedRoute.snapshot.url);
+		return this._activatedRoute.snapshot.url.length > 0;
 	}
 }

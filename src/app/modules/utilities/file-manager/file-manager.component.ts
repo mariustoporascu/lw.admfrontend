@@ -20,6 +20,5 @@ export class FileManagerComponent implements OnInit {
 	constructor(private _activatedRoute: ActivatedRoute) {}
 	ngOnInit(): void {
 		this.baseRoute = this._activatedRoute.snapshot.data.baseRoute;
-		console.log(this._activatedRoute.snapshot.data);
 	}
 }

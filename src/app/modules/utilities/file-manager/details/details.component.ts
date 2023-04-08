@@ -47,7 +47,6 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 
 		// Open the drawer
 		this._fileManagerListComponent.matDrawer.open();
-		console.log(this._activatedRoute.snapshot.params.id);
 		// Get the item
 		this._fileManagerService.Item$.pipe(
 			takeUntil(this._unsubscribeAll)

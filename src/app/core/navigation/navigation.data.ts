@@ -2,27 +2,35 @@
 import { FuseNavigationItem } from '@fuse/components/navigation';
 
 export const defaultNavigation: FuseNavigationItem[] = [
+	// user
 	{
 		id: 'dashboard',
 		title: 'Dashboard',
 		subtitle: '',
 		type: 'group',
-		userType: 'pf-admin',
+		userType: 'user',
 		icon: 'heroicons_outline:home',
 		children: [
 			{
 				id: 'dashboard.statistics',
 				title: 'Statistici',
 				type: 'basic',
-				icon: 'heroicons_outline:cash',
-				link: '/user/pf-dashboard',
+				icon: 'heroicons_outline:chart-pie',
+				link: '/user/dashboard',
 			},
 			{
-				id: 'dashboard.analytics',
-				title: 'Analitice',
+				id: 'dashboard.transferhistory',
+				title: 'Istoric transferuri',
 				type: 'basic',
-				icon: 'heroicons_outline:chart-pie',
-				link: '/user/pf-analytics',
+				icon: 'heroicons_outline:switch-horizontal',
+				link: '/user/transfers',
+			},
+			{
+				id: 'dashboard.withdrawhistory',
+				title: 'Istoric retrageri',
+				type: 'basic',
+				icon: 'heroicons_outline:cash',
+				link: '/user/withdraws',
 			},
 		],
 	},
@@ -31,7 +39,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
 		title: 'Utilitati',
 		subtitle: '',
 		type: 'group',
-		userType: 'pf-admin',
+		userType: 'user',
 		icon: 'heroicons_outline:home',
 		children: [
 			{
@@ -39,16 +47,17 @@ export const defaultNavigation: FuseNavigationItem[] = [
 				title: 'Incarcare fisiere',
 				type: 'basic',
 				icon: 'heroicons_outline:cloud',
-				link: '/user/pf-filemanager',
+				link: '/user/filemanager',
 			},
 		],
 	},
+	// firma-admin
 	{
 		id: 'dashboard',
 		title: 'Dashboard',
 		subtitle: '',
 		type: 'group',
-		userType: 'pj-admin',
+		userType: 'firma-admin',
 		icon: 'heroicons_outline:home',
 		children: [
 			{
@@ -56,14 +65,31 @@ export const defaultNavigation: FuseNavigationItem[] = [
 				title: 'Statistici',
 				type: 'basic',
 				icon: 'heroicons_outline:cash',
-				link: '/user/pj-dashboard',
+				link: '/admin/firma-dashboard',
 			},
 			{
 				id: 'dashboard.analytics',
 				title: 'Analitice',
 				type: 'basic',
 				icon: 'heroicons_outline:chart-pie',
-				link: '/user/pj-analytics',
+				link: '/admin/firma-analytics',
+			},
+		],
+	},
+	{
+		id: 'utilities',
+		title: 'Utilitati',
+		subtitle: '',
+		type: 'group',
+		userType: 'firma-admin',
+		icon: 'heroicons_outline:home',
+		children: [
+			{
+				id: 'utilities.filemanager',
+				title: 'Incarcare fisiere',
+				type: 'basic',
+				icon: 'heroicons_outline:cloud',
+				link: '/admin/firma-filemanager',
 			},
 		],
 	},
