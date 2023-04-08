@@ -55,13 +55,8 @@ export class UserTypeGuard implements CanMatch {
 		}
 
 		if (
-			this.user.type === 'pf-admin' &&
-			segments[0].path.toLocaleLowerCase().startsWith('pf-')
-		)
-			return of(true);
-		else if (
-			this.user.type === 'pj-admin' &&
-			segments[0].path.toLocaleLowerCase().startsWith('pj-')
+			this.user.type === 'user' &&
+			segments[0].path.toLocaleLowerCase().split('-').length == 1
 		)
 			return of(true);
 		else if (

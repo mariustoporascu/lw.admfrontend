@@ -25,17 +25,14 @@
 					<!-- Title -->
 					<div>
 						<div class="text-4xl font-extrabold tracking-tight leading-none">
-							File Manager
+							Manager fisiere
 						</div>
 						<div class="flex items-center mt-0.5 font-medium text-secondary">
-							<ng-container *ngIf="!items.path.length">
-								{{ items.folders.length }} folders, {{ items.files.length }} files
-							</ng-container>
 							<!-- Breadcrumbs -->
 							<ng-container *ngIf="items.path.length">
 								<div class="flex items-center space-x-2">
 									<a class="text-primary cursor-pointer" [routerLink]="[baseRoute]"
-										>Home
+										>Main
 									</a>
 									<div class="">/</div>
 									<ng-container
@@ -60,11 +57,16 @@
 						</div>
 					</div>
 					<!-- Actions -->
-					<div class="mt-4 sm:mt-0">
+					<div class="mt-4 sm:mt-0" *ngIf="checkIfFolder()">
 						<!-- Upload button -->
 						<button mat-flat-button [color]="'primary'">
 							<mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-							<span class="ml-2 mr-1">Upload file</span>
+							<span class="ml-2 mr-1">Incarca fisiere</span>
+						</button>
+						<!-- Upload button -->
+						<button mat-flat-button [color]="'primary'">
+							<mat-icon [svgIcon]="'heroicons_outline:camera'"></mat-icon>
+							<span class="ml-2 mr-1">Foloseste camera</span>
 						</button>
 					</div>
 				</div>
@@ -80,7 +82,7 @@
 						<!-- Folders -->
 						<ng-container *ngIf="items.folders.length > 0">
 							<div>
-								<div class="font-medium">Folders</div>
+								<div class="font-medium">Firme</div>
 								<div class="flex flex-wrap -m-2 mt-2">
 									<ng-container *ngFor="let folder of items.folders; trackBy: trackByFn">
 										<div class="relative w-40 h-40 m-2 p-4 shadow rounded-2xl bg-card">
@@ -182,7 +184,7 @@
 							[svgIcon]="'heroicons_outline:folder-open'"
 						></mat-icon>
 						<div class="mt-4 text-2xl font-semibold tracking-tight text-secondary">
-							There are no items!
+							Nu sunt firme din filtrare!
 						</div>
 					</div>
 				</ng-template>

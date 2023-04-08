@@ -29,7 +29,7 @@ export const appRoutes: Route[] = [
 		component: LayoutComponent,
 		children: [
 			{
-				path: 'pf-dashboard',
+				path: 'dashboard',
 				canMatch: [UserTypeGuard],
 				loadChildren: () =>
 					import('app/modules/user/user-dash/user-dash.module').then(
@@ -37,32 +37,25 @@ export const appRoutes: Route[] = [
 					),
 			},
 			{
-				path: 'pj-dashboard',
+				path: 'transfers',
 				canMatch: [UserTypeGuard],
 				loadChildren: () =>
-					import('app/modules/user/user-dash/user-dash.module').then(
-						(m) => m.UserDashModule
-					),
+					import(
+						'app/modules/user/user-transf-history/user-transf-history.module'
+					).then((m) => m.UserTransfHistoryModule),
 			},
 			{
-				path: 'pf-analytics',
+				path: 'withdraws',
 				canMatch: [UserTypeGuard],
 				loadChildren: () =>
-					import('app/modules/admin/example/example.module').then(
-						(m) => m.ExampleModule
-					),
+					import(
+						'app/modules/user/user-withd-history/user-withd-history.module'
+					).then((m) => m.UserWithdHistoryModule),
 			},
+
 			{
-				path: 'pj-analytics',
-				canMatch: [UserTypeGuard],
-				loadChildren: () =>
-					import('app/modules/admin/example/example.module').then(
-						(m) => m.ExampleModule
-					),
-			},
-			{
-				path: 'pf-filemanager',
-				data: { baseRoute: '/user/pf-filemanager' },
+				path: 'filemanager',
+				data: { baseRoute: '/user/filemanager' },
 
 				canMatch: [UserTypeGuard],
 				loadChildren: () =>
@@ -70,13 +63,13 @@ export const appRoutes: Route[] = [
 						(m) => m.FileManagerModule
 					),
 			},
+
 			{
-				path: 'pj-filemanager',
-				data: { baseRoute: '/user/pj-filemanager' },
+				path: 'settings',
 				canMatch: [UserTypeGuard],
 				loadChildren: () =>
-					import('app/modules/utilities/file-manager/file-manager.module').then(
-						(m) => m.FileManagerModule
+					import('app/modules/user/settings/settings.module').then(
+						(m) => m.SettingsModule
 					),
 			},
 		],
@@ -91,15 +84,32 @@ export const appRoutes: Route[] = [
 				path: 'firma-dashboard',
 				canMatch: [UserTypeGuard],
 				loadChildren: () =>
-					import('app/modules/admin/example/example.module').then(
+					import('app/modules/admin/firma-dash/firma-dash.module').then(
+						(m) => m.FirmaDashModule
+					),
+			},
+			{
+				path: 'firma-analytics',
+				canMatch: [UserTypeGuard],
+				loadChildren: () =>
+					import('app/modules/landing/example/example.module').then(
 						(m) => m.ExampleModule
+					),
+			},
+			{
+				path: 'firma-filemanager',
+				data: { baseRoute: '/admin/firma-filemanager' },
+				canMatch: [UserTypeGuard],
+				loadChildren: () =>
+					import('app/modules/utilities/file-manager/file-manager.module').then(
+						(m) => m.FileManagerModule
 					),
 			},
 			{
 				path: 'hybrid-dashboard',
 				canMatch: [UserTypeGuard],
 				loadChildren: () =>
-					import('app/modules/admin/example/example.module').then(
+					import('app/modules/landing/example/example.module').then(
 						(m) => m.ExampleModule
 					),
 			},
@@ -107,7 +117,7 @@ export const appRoutes: Route[] = [
 				path: 'master-dashboard',
 				canMatch: [UserTypeGuard],
 				loadChildren: () =>
-					import('app/modules/admin/example/example.module').then(
+					import('app/modules/landing/example/example.module').then(
 						(m) => m.ExampleModule
 					),
 			},

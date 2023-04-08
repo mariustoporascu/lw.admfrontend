@@ -5,6 +5,7 @@ import {
 } from '@fuse/components/navigation';
 import { Observable, of } from 'rxjs';
 import { defaultNavigation } from '../navigation/navigation.data';
+import { UserService } from '../user/user.service';
 
 @Injectable({
 	providedIn: 'root',
@@ -15,7 +16,10 @@ export class SearchService {
 	/**
 	 * Constructor
 	 */
-	constructor(private _fuseNavigationService: FuseNavigationService) {}
+	constructor(
+		private _fuseNavigationService: FuseNavigationService,
+		private _userService: UserService
+	) {}
 
 	// -----------------------------------------------------------------------------------------------------
 	// @ Public methods
@@ -27,7 +31,9 @@ export class SearchService {
 	getSearchResult(query: string): Observable<any> {
 		// Get the flat navigation and store it
 		const flatNavigation = this._fuseNavigationService.getFlatNavigation(
-			this._defaultNavigation
+			this._defaultNavigation,
+			[],
+			this._userService.user$.value.type
 		);
 
 		// -----------------------------------------------------------------------------------------------------
@@ -60,7 +66,7 @@ export class SearchService {
 			// Add to the results
 			results.push({
 				id: 'pages',
-				label: 'Pages',
+				label: 'Pagini',
 				results: pagesResults,
 			});
 		}

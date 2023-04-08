@@ -63,10 +63,8 @@ export class NoAuthGuard implements CanMatch {
 						this.user = this._userService.user$.value;
 					}
 
-					if (this.user.type === 'pf-admin')
-						this._router.navigateByUrl('/user/pf-dashboard');
-					else if (this.user.type === 'pj-admin')
-						this._router.navigateByUrl('/user/pj-dashboard');
+					if (this.user.type === 'user')
+						this._router.navigateByUrl('/user/dashboard');
 					else if (this.user.type === 'firma-admin')
 						this._router.navigateByUrl('/admin/firma-dashboard');
 					else if (this.user.type === 'hybrid-admin')
