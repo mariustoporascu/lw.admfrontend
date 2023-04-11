@@ -7,12 +7,16 @@ import {
 	FileManagerFolderResolver,
 	FileManagerItemResolver,
 	FileManagerItemsResolver,
+	FileManagerServerDataResolver,
 } from './file-manager.resolvers';
 
 export const fileManagerRoutes: Route[] = [
 	{
 		path: '',
 		component: FileManagerComponent,
+		resolve: {
+			serverData: FileManagerServerDataResolver,
+		},
 		children: [
 			{
 				path: 'folders/:folderId',

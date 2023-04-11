@@ -5,10 +5,10 @@ export interface ConexiuniConturi {
 	userId?: string;
 	hybridId?: string;
 	firmaDiscountId?: string;
-	ProfilCont?: ProfilCont;
-	Tranzactii?: Tranzactii[];
-	Documente?: Documente[];
-	User?: User;
+	profilCont?: ProfilCont;
+	tranzactii?: Tranzactii[];
+	documente?: Documente[];
+	user?: User;
 }
 export interface Documente {
 	id: string;
@@ -24,7 +24,23 @@ export interface Documente {
 	firmaDiscountId?: string;
 	conexId?: string;
 	nextConexId?: string;
-	FisiereDocumente?: FisiereDocumente;
+	fisiereDocumente?: FisiereDocumente;
+}
+export interface DataProcDocs {
+	id: string;
+	docNumber?: string;
+	total: number;
+	isInvoice: boolean;
+	isApproved: boolean;
+	receiptId?: string;
+	discountValue: number;
+	extractedBusinessData?: string;
+	extractedBusinessAddress?: string;
+	uploaded: Date;
+	firmaDiscountId?: string;
+	conexId?: string;
+	nextConexId?: string;
+	fisiereDocumente?: FisiereDocumente;
 }
 export interface FirmaDiscount {
 	id: string;
@@ -40,8 +56,9 @@ export interface FirmaDiscount {
 	discountPercent: number;
 	totalGivenDiscount: number;
 	isActive: boolean;
-	ConexiuniConturi?: ConexiuniConturi[];
-	Documente?: Documente[];
+	conexiuniConturi?: ConexiuniConturi[];
+	documente?: Documente[];
+	dataprocdocs?: DataProcDocs[];
 }
 export interface FisiereDocumente {
 	id: string;
@@ -50,20 +67,21 @@ export interface FisiereDocumente {
 	identifier: string;
 	created: Date;
 	documenteId?: string;
+	dataProcDocsId?: string;
 }
 export interface Hybrid {
 	id: string;
 	name?: string;
 	noSubAccounts: number;
 	noDocsUploaded: number;
-	ConexiuniConturi?: ConexiuniConturi[];
-	PreferinteHybrid?: PreferinteHybrid[];
+	conexiuniConturi?: ConexiuniConturi[];
+	preferinteHybrid?: PreferinteHybrid[];
 }
 export interface PreferinteHybrid {
 	id: string;
 	hybridId?: string;
 	conexId?: string;
-	ConexiuniConturi?: ConexiuniConturi;
+	conexiuniConturi?: ConexiuniConturi;
 }
 export interface ProfilCont {
 	id: string;

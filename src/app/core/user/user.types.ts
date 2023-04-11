@@ -7,4 +7,5 @@ export interface User {
 	avatar?: string;
 	type: string;
 	status?: string;
+	conexId?: string;
 }

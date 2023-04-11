@@ -1,13 +1,21 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
+import {
+	BehaviorSubject,
+	catchError,
+	Observable,
+	of,
+	switchMap,
+	throwError,
+} from 'rxjs';
 import { AuthUtils } from 'app/core/auth/auth.utils';
 import { User } from '../user/user.types';
 import { backendUrl } from '../config/app.config';
 
 @Injectable()
 export class AuthService {
-	private _authenticated: boolean = false;
+	private _authenticated: BehaviorSubject<boolean> =
+		new BehaviorSubject<boolean>(false);
 	private _backEndUrl: string = backendUrl;
 	/**
 	 * Constructor
@@ -79,7 +87,7 @@ export class AuthService {
 	 */
 	signIn(credentials: { email: string; password: string }): Observable<any> {
 		// Throw error, if the user is already logged in
-		if (this._authenticated) {
+		if (this._authenticated.value) {
 			return throwError('User is already logged in.');
 		}
 
@@ -103,7 +111,7 @@ export class AuthService {
 					this.refreshTokenId = response.refreshTokenId;
 
 					// Set the authenticated flag to true
-					this._authenticated = true;
+					this._authenticated.next(true);
 
 					// Return a new observable with the response
 					return of(true);
@@ -157,7 +165,7 @@ export class AuthService {
 					this.accessToken = response.token;
 
 					// Set the authenticated flag to true
-					this._authenticated = true;
+					this._authenticated.next(true);
 
 					// Return true
 					return of(true);
@@ -183,7 +191,7 @@ export class AuthService {
 		localStorage.removeItem('refreshTokenId');
 
 		// Set the authenticated flag to false
-		this._authenticated = false;
+		this._authenticated.next(false);
 
 		// Return the observable
 		return of(true);
@@ -230,7 +238,7 @@ export class AuthService {
 		}
 
 		// Check if the user is logged in
-		if (this._authenticated) {
+		if (this._authenticated.value) {
 			return of(true);
 		}
 		if (this.refreshToken && this.refreshTokenId) {

@@ -42,11 +42,11 @@
 											<a
 												class="text-primary cursor-pointer"
 												[routerLink]="[baseRoute + '/folders/', path.id]"
-												>{{ path.name }}</a
+												>{{ path.folderInfo.name }}</a
 											>
 										</ng-container>
 										<ng-container *ngIf="last">
-											<div>{{ path.name }}</div>
+											<div>{{ path.folderInfo.name }}</div>
 										</ng-container>
 										<ng-container *ngIf="!last">
 											<div class="">/</div>
@@ -57,7 +57,7 @@
 						</div>
 					</div>
 					<!-- Actions -->
-					<div class="mt-4 sm:mt-0" *ngIf="checkIfFolder()">
+					<div class="grid grid-cols-2 mt-4 sm:mt-0 gap-5" *ngIf="isFolderPath">
 						<!-- Upload button -->
 						<button mat-flat-button [color]="'primary'">
 							<mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
@@ -113,11 +113,13 @@
 												<div
 													class="flex flex-col flex-auto justify-center text-center text-sm font-medium"
 												>
-													<div class="truncate" [matTooltip]="folder.name">
-														{{ folder.name }}
+													<div class="truncate" [matTooltip]="folder.folderInfo.name">
+														{{ folder.folderInfo.name }}
 													</div>
-													<ng-container *ngIf="folder.contents">
-														<div class="text-secondary truncate">{{ folder.contents }}</div>
+													<ng-container *ngIf="folder.folderInfo">
+														<div class="text-secondary truncate">
+															Discount {{ folder.folderInfo.discountPercent }} %
+														</div>
 													</ng-container>
 												</div>
 											</a>
@@ -137,6 +139,26 @@
 											class="flex flex-col w-40 h-40 m-2 p-4 shadow rounded-2xl cursor-pointer bg-card"
 											[routerLink]="['./details/', file.id]"
 										>
+											<div
+												*ngIf="file.fileInfo.isApproved"
+												class="relative z-20 top-1.5 right-1.5 w-8 h-8 min-h-8"
+											>
+												<mat-icon
+													[class.text-green-600]="true"
+													class="icon-size-5"
+													[svgIcon]="'heroicons_solid:check-circle'"
+												></mat-icon>
+											</div>
+											<div
+												*ngIf="!file.fileInfo.isApproved"
+												class="relative z-20 top-1.5 right-1.5 w-8 h-8 min-h-8"
+											>
+												<mat-icon
+													[class.text-orange-600]="true"
+													class="icon-size-5"
+													[svgIcon]="'heroicons_solid:exclamation-circle'"
+												></mat-icon>
+											</div>
 											<div class="aspect-[9/6]">
 												<div class="flex items-center justify-center h-full">
 													<!-- Icons -->
@@ -161,9 +183,16 @@
 											<div
 												class="flex flex-col flex-auto justify-center text-center text-sm font-medium"
 											>
-												<div class="truncate" [matTooltip]="file.name">{{ file.name }}</div>
-												<ng-container *ngIf="file.contents">
-													<div class="text-secondary truncate">{{ file.contents }}</div>
+												<div
+													class="truncate"
+													[matTooltip]="file.fileInfo.fisiereDocumente.fileName"
+												>
+													{{ file.fileInfo.fisiereDocumente.fileName }}
+												</div>
+												<ng-container *ngIf="file.fileInfo">
+													<div class="text-secondary truncate">
+														{{ file.fileInfo.uploaded.toLocaleDateString() }}
+													</div>
 												</ng-container>
 											</div>
 										</a>
@@ -184,7 +213,7 @@
 							[svgIcon]="'heroicons_outline:folder-open'"
 						></mat-icon>
 						<div class="mt-4 text-2xl font-semibold tracking-tight text-secondary">
-							Nu sunt firme din filtrare!
+							Nu sunt date din filtrare!
 						</div>
 					</div>
 				</ng-template>

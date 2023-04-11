@@ -7,7 +7,37 @@ import {
 } from '@angular/router';
 import { FileManagerService } from 'app/core/filemanager/file-manager.service';
 import { Item, Items } from 'app/core/filemanager/file-manager.types';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, forkJoin, Observable, throwError } from 'rxjs';
+
+@Injectable({
+	providedIn: 'root',
+})
+export class FileManagerServerDataResolver implements Resolve<any> {
+	/**
+	 * Constructor
+	 */
+	constructor(private _fileManagerService: FileManagerService) {}
+
+	// -----------------------------------------------------------------------------------------------------
+	// @ Public methods
+	// -----------------------------------------------------------------------------------------------------
+
+	/**
+	 * Resolver
+	 *
+	 * @param route
+	 * @param state
+	 */
+	resolve(
+		route: ActivatedRouteSnapshot,
+		state: RouterStateSnapshot
+	): Observable<any> {
+		return forkJoin([
+			this._fileManagerService.getFolders(),
+			this._fileManagerService.getFiles(),
+		]);
+	}
+}
 
 @Injectable({
 	providedIn: 'root',
