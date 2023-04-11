@@ -26,6 +26,7 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 	drawerMode: 'side' | 'over';
 	selectedItem: Item;
 	items: Items;
+	isFolderPath: boolean = false;
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
 	baseRoute: string = 'filemanager';
 	/**
@@ -78,6 +79,7 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 				// Mark for check
 				this._changeDetectorRef.markForCheck();
 			});
+		this.checkIfFolder();
 	}
 
 	/**
@@ -113,8 +115,7 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 	trackByFn(index: number, item: any): any {
 		return item.id || index;
 	}
-	checkIfFolder(): boolean {
-		console.log(this._activatedRoute.snapshot.url);
-		return this._activatedRoute.snapshot.url.length > 0;
+	checkIfFolder(): void {
+		this.isFolderPath = this._activatedRoute.snapshot.url.length > 0;
 	}
 }
