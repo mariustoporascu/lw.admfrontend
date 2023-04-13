@@ -70,12 +70,19 @@
 			<div>{{ item.fileInfo.extractedBusinessAddress }}</div>
 		</div>
 		<div class="flex items-center justify-between py-3">
-			<div class="text-secondary">Status aprobare</div>
+			<div class="text-secondary">Status</div>
 			<div
-				[class.text-red-600]="!item.fileInfo.isApproved"
-				[class.text-green-600]="item.fileInfo.isApproved"
+				[class.text-gray-600]="item.fileInfo.status === 0"
+				[class.text-red-600]="
+					item.fileInfo.status === 2 || item.fileInfo.status === 6
+				"
+				[class.text-blue-600]="item.fileInfo.status === 5"
+				[class.text-green-600]="item.fileInfo.status === 1"
+				[class.text-orange-600]="
+					item.fileInfo.status === 3 || item.fileInfo.status === 4
+				"
 			>
-				{{ item.fileInfo.isApproved ? "Approved" : "Pending" }}
+				{{ splitByCapitalLetters(item.fileInfo.statusName) }}
 			</div>
 		</div>
 		<div class="flex items-center justify-between py-3">

@@ -132,31 +132,51 @@
 						<!-- Files -->
 						<ng-container *ngIf="items.files.length > 0">
 							<div>
-								<div class="font-medium">Files</div>
+								<div class="font-medium">Documente Incarcate</div>
 								<div class="flex flex-wrap -m-2 mt-2">
 									<ng-container *ngFor="let file of items.files; trackBy: trackByFn">
 										<a
 											class="flex flex-col w-40 h-40 m-2 p-4 shadow rounded-2xl cursor-pointer bg-card"
 											[routerLink]="['./details/', file.id]"
 										>
-											<div
-												*ngIf="file.fileInfo.isApproved"
-												class="relative z-20 top-1.5 right-1.5 w-8 h-8 min-h-8"
-											>
+											<div class="relative z-20 top-1.5 right-1.5 w-8 h-8 min-h-8">
 												<mat-icon
-													[class.text-green-600]="true"
+													[class.text-green-600]="file.fileInfo.status === 1"
+													*ngIf="file.fileInfo.status === 1"
 													class="icon-size-5"
 													[svgIcon]="'heroicons_solid:check-circle'"
 												></mat-icon>
-											</div>
-											<div
-												*ngIf="!file.fileInfo.isApproved"
-												class="relative z-20 top-1.5 right-1.5 w-8 h-8 min-h-8"
-											>
 												<mat-icon
-													[class.text-orange-600]="true"
+													[class.text-red-600]="
+														file.fileInfo.status === 2 || file.fileInfo.status === 6
+													"
+													*ngIf="file.fileInfo.status === 2 || file.fileInfo.status === 6"
+													class="icon-size-5"
+													[svgIcon]="'heroicons_solid:x-circle'"
+												></mat-icon>
+												<mat-icon
+													[class.text-orange-600]="file.fileInfo.status === 4"
+													*ngIf="file.fileInfo.status === 4"
 													class="icon-size-5"
 													[svgIcon]="'heroicons_solid:exclamation-circle'"
+												></mat-icon>
+												<mat-icon
+													[class.text-orange-600]="file.fileInfo.status === 3"
+													*ngIf="file.fileInfo.status === 3"
+													class="icon-size-5"
+													[svgIcon]="'heroicons_solid:user-circle'"
+												></mat-icon>
+												<mat-icon
+													[class.text-gray-600]="file.fileInfo.status === 0"
+													*ngIf="file.fileInfo.status === 0"
+													class="icon-size-5"
+													[svgIcon]="'heroicons_solid:minus-circle'"
+												></mat-icon>
+												<mat-icon
+													*ngIf="file.fileInfo.status === 5"
+													[class.text-blue-600]="file.fileInfo.status === 5"
+													class="icon-size-5"
+													[svgIcon]="'heroicons_solid:information-circle'"
 												></mat-icon>
 											</div>
 											<div class="aspect-[9/6]">

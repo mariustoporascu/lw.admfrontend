@@ -1,19 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {
-	BehaviorSubject,
-	map,
-	Observable,
-	of,
-	switchMap,
-	take,
-	tap,
-	throwError,
-} from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Item, Items } from './file-manager.types';
 import { backendUrl } from '../config/app.config';
-import { DataProcDocs, FirmaDiscount } from '../bkendmodels/models.types';
-import { UserService } from '../user/user.service';
+import { Documente, FirmaDiscount } from '../bkendmodels/models.types';
 
 @Injectable({
 	providedIn: 'root',
@@ -139,9 +129,9 @@ export class FileManagerService {
 				})
 			);
 	}
-	public getFiles(): Observable<DataProcDocs[]> {
+	public getFiles(): Observable<Documente[]> {
 		return this._httpClient
-			.get<DataProcDocs[]>(`${this._backEndUrl}/regularuser/getAllDataProc`)
+			.get<Documente[]>(`${this._backEndUrl}/regularuser/getAllDocumente`)
 			.pipe(
 				tap((data) => {
 					let files = data.map((item) => {

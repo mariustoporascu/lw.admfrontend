@@ -91,4 +91,12 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 	trackByFn(index: number, item: any): any {
 		return item.id || index;
 	}
+
+	splitByCapitalLetters = (str: string) =>
+		str
+			.replace(/([a-z0-9])([A-Z])/g, '$1 $2') // Add space before capital letters
+			.replace(/([A-Z])([A-Z][a-z])/g, '$1 $2') // Add space for words starting with capital letters
+			.split(' ') // Split the string by space
+			.map((word) => word[0].toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
+			.join(' '); // Join the words with spaces
 }

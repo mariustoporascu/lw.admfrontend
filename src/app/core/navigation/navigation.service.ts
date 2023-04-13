@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject, tap } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 import { Navigation } from 'app/core/navigation/navigation.types';
 import { FuseNavigationItem } from '@fuse/components/navigation';
 import { defaultNavigation } from './navigation.data';

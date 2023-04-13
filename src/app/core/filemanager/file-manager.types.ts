@@ -1,4 +1,4 @@
-import { DataProcDocs, FirmaDiscount } from '../bkendmodels/models.types';
+import { Documente, FirmaDiscount } from '../bkendmodels/models.types';
 
 export interface Items {
 	folders: Item[];
@@ -11,5 +11,5 @@ export interface Item {
 	folderId?: string;
 	folderInfo?: FirmaDiscount | null;
 	type?: string;
-	fileInfo?: DataProcDocs | null;
+	fileInfo?: Documente | null;
 }
