@@ -8,14 +8,14 @@ export interface ConexiuniConturi {
 	profilCont?: ProfilCont;
 	tranzactii?: Tranzactii[];
 	documente?: Documente[];
-	user?: User;
 }
 export interface Documente {
 	id: string;
 	docNumber?: string;
 	total: number;
 	isInvoice: boolean;
-	isApproved: boolean;
+	status: number;
+	statusName?: string;
 	receiptId?: string;
 	discountValue: number;
 	extractedBusinessData?: string;
@@ -26,22 +26,7 @@ export interface Documente {
 	nextConexId?: string;
 	fisiereDocumente?: FisiereDocumente;
 }
-export interface DataProcDocs {
-	id: string;
-	docNumber?: string;
-	total: number;
-	isInvoice: boolean;
-	isApproved: boolean;
-	receiptId?: string;
-	discountValue: number;
-	extractedBusinessData?: string;
-	extractedBusinessAddress?: string;
-	uploaded: Date;
-	firmaDiscountId?: string;
-	conexId?: string;
-	nextConexId?: string;
-	fisiereDocumente?: FisiereDocumente;
-}
+
 export interface FirmaDiscount {
 	id: string;
 	name?: string;
@@ -58,7 +43,6 @@ export interface FirmaDiscount {
 	isActive: boolean;
 	conexiuniConturi?: ConexiuniConturi[];
 	documente?: Documente[];
-	dataprocdocs?: DataProcDocs[];
 }
 export interface FisiereDocumente {
 	id: string;
@@ -67,7 +51,6 @@ export interface FisiereDocumente {
 	identifier: string;
 	created: Date;
 	documenteId?: string;
-	dataProcDocsId?: string;
 }
 export interface Hybrid {
 	id: string;
