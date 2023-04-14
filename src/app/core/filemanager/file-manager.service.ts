@@ -116,15 +116,17 @@ export class FileManagerService {
 			.get<FirmaDiscount[]>(`${this._backEndUrl}/regularuser/getallfolders`)
 			.pipe(
 				tap((data) => {
-					let folders = data.map((item) => {
-						let folder = {
-							id: item.id,
-							folderId: null,
-							folderInfo: item,
-							type: 'folder',
-						} as Item;
-						return folder;
-					});
+					let folders = data
+						? data.map((item) => {
+								let folder = {
+									id: item.id,
+									folderId: null,
+									folderInfo: item,
+									type: 'folder',
+								} as Item;
+								return folder;
+						  })
+						: [];
 					this._folders.next(folders);
 				})
 			);
@@ -134,16 +136,18 @@ export class FileManagerService {
 			.get<Documente[]>(`${this._backEndUrl}/regularuser/getAllDocumente`)
 			.pipe(
 				tap((data) => {
-					let files = data.map((item) => {
-						item.uploaded = new Date(item.uploaded);
-						let file = {
-							id: item.id,
-							folderId: item.firmaDiscountId,
-							fileInfo: item,
-							type: 'PDF', // item.fisiereDocumente.fileExtension
-						} as Item;
-						return file;
-					});
+					let files = data
+						? data.map((item) => {
+								item.uploaded = new Date(item.uploaded);
+								let file = {
+									id: item.id,
+									folderId: item.firmaDiscountId,
+									fileInfo: item,
+									type: 'PDF', // item.fisiereDocumente.fileExtension
+								} as Item;
+								return file;
+						  })
+						: [];
 					this._files.next(files);
 				})
 			);

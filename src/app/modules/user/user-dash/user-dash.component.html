@@ -152,19 +152,10 @@
 			>
 				<div class="p-6">
 					<div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">
-						Documente incarcate
+						Ultimele 5 documente incarcate
 					</div>
 					<div class="text-secondary font-medium">1 pending, 4 completed</div>
 				</div>
-				<mat-form-field class="ml-10 mr-10">
-					<mat-label>Filtrare</mat-label>
-					<input
-						matInput
-						(keyup)="applyFilter($event)"
-						placeholder="Filtrare dupa toate coloanele..."
-						#input
-					/>
-				</mat-form-field>
 				<div class="overflow-x-auto mx-6">
 					<table
 						class="w-full bg-transparent"
@@ -246,11 +237,6 @@
 							</td>
 						</tr>
 					</table>
-					<mat-paginator
-						#recentTransactionsTablePagination
-						[pageSizeOptions]="[5, 10, 25, 100]"
-						aria-label="Select page of users"
-					></mat-paginator>
 				</div>
 			</div>
 		</div>
