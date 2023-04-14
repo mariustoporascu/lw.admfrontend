@@ -12,7 +12,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Subject, takeUntil } from 'rxjs';
 import { ApexOptions } from 'ng-apexcharts';
 import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.service';
-import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
 	selector: 'user-dashboard',
@@ -23,8 +22,6 @@ import { MatPaginator } from '@angular/material/paginator';
 export class UserDashComponent implements OnInit, AfterViewInit, OnDestroy {
 	@ViewChild('recentTransactionsTable', { read: MatSort })
 	recentTransactionsTableMatSort: MatSort;
-	@ViewChild('recentTransactionsTablePagination')
-	recentTransactionsTablePagination: MatPaginator;
 
 	data: any;
 	accountBalanceOptions: ApexOptions;
@@ -60,7 +57,9 @@ export class UserDashComponent implements OnInit, AfterViewInit, OnDestroy {
 				this.data = data;
 
 				// Store the table data
-				this.recentTransactionsDataSource.data = data.recentTransactions;
+				this.recentTransactionsDataSource.data = (
+					data.recentTransactions as []
+				).slice(0, 5);
 
 				// Prepare the chart data
 				this._prepareChartData();
@@ -73,8 +72,6 @@ export class UserDashComponent implements OnInit, AfterViewInit, OnDestroy {
 	ngAfterViewInit(): void {
 		// Make the data source sortable
 		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
-		this.recentTransactionsDataSource.paginator =
-			this.recentTransactionsTablePagination;
 	}
 
 	/**
@@ -167,13 +164,5 @@ export class UserDashComponent implements OnInit, AfterViewInit, OnDestroy {
 		return new Date(
 			new Date().setMonth(new Date().getMonth() - 1)
 		).toLocaleString('default', { month: 'long' });
-	}
-	applyFilter(event: Event) {
-		const filterValue = (event.target as HTMLInputElement).value;
-		this.recentTransactionsDataSource.filter = filterValue.trim().toLowerCase();
-
-		if (this.recentTransactionsDataSource.paginator) {
-			this.recentTransactionsDataSource.paginator.firstPage();
-		}
 	}
 }

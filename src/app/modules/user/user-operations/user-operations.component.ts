@@ -12,6 +12,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Subject, takeUntil } from 'rxjs';
 import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.service';
 import { MatPaginator } from '@angular/material/paginator';
+import { FuseUtilsService } from '@fuse/services/utils';
 
 @Component({
 	selector: 'user-operations',
@@ -27,22 +28,25 @@ export class UserOperationsComponent
 	@ViewChild('recentTransactionsTablePagination')
 	recentTransactionsTablePagination: MatPaginator;
 
-	data: any;
 	recentTransactionsDataSource: MatTableDataSource<any> =
 		new MatTableDataSource();
 	recentTransactionsTableColumns: string[] = [
-		'transactionId',
-		'date',
-		'name',
-		'amount',
-		'status',
+		'docNumber',
+		'extractedBusinessData',
+		'uploaded',
+		'total',
+		'discountValue',
+		'statusName',
 	];
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
 
 	/**
 	 * Constructor
 	 */
-	constructor(private _userFunctDataService: UserFunctDataService) {}
+	constructor(
+		private _userFunctDataService: UserFunctDataService,
+		private _utilsService: FuseUtilsService
+	) {}
 
 	// -----------------------------------------------------------------------------------------------------
 	// @ Lifecycle hooks
@@ -53,14 +57,11 @@ export class UserOperationsComponent
 	 */
 	ngOnInit(): void {
 		// Get the data
-		this._userFunctDataService.data$
+		this._userFunctDataService.approvedDocuments$
 			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe((data) => {
-				// Store the data
-				this.data = data;
-
 				// Store the table data
-				this.recentTransactionsDataSource.data = data.recentTransactions;
+				this.recentTransactionsDataSource.data = data;
 			});
 	}
 
@@ -121,5 +122,8 @@ export class UserOperationsComponent
 		if (this.recentTransactionsDataSource.paginator) {
 			this.recentTransactionsDataSource.paginator.firstPage();
 		}
+	}
+	splitByCapitalLetters(str: string): string {
+		return this._utilsService.splitByCapitalLetters(str);
 	}
 }

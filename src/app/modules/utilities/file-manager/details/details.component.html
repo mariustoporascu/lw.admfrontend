@@ -73,14 +73,9 @@
 			<div class="text-secondary">Status</div>
 			<div
 				[class.text-gray-600]="item.fileInfo.status === 0"
-				[class.text-red-600]="
-					item.fileInfo.status === 2 || item.fileInfo.status === 6
-				"
-				[class.text-blue-600]="item.fileInfo.status === 5"
-				[class.text-green-600]="item.fileInfo.status === 1"
-				[class.text-orange-600]="
-					item.fileInfo.status === 3 || item.fileInfo.status === 4
-				"
+				[class.text-red-600]="item.fileInfo.status === 6"
+				[class.text-blue-600]="item.fileInfo.status === 4"
+				[class.text-green-600]="item.fileInfo.status === 5"
 			>
 				{{ splitByCapitalLetters(item.fileInfo.statusName) }}
 			</div>

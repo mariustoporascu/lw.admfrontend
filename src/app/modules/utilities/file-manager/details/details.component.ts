@@ -13,6 +13,7 @@ import { Item } from '../../../../core/filemanager/file-manager.types';
 import { FileManagerListComponent } from '../list/list.component';
 import { ActivatedRoute } from '@angular/router';
 import { FileManagerComponent } from '../file-manager.component';
+import { FuseUtilsService } from '@fuse/services/utils';
 
 @Component({
 	selector: 'file-manager-details',
@@ -32,7 +33,8 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 		private _changeDetectorRef: ChangeDetectorRef,
 		private _fileManagerListComponent: FileManagerListComponent,
 		private _fileManagerComponent: FileManagerComponent,
-		private _fileManagerService: FileManagerService
+		private _fileManagerService: FileManagerService,
+		private _utilsService: FuseUtilsService
 	) {}
 
 	// -----------------------------------------------------------------------------------------------------
@@ -91,12 +93,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 	trackByFn(index: number, item: any): any {
 		return item.id || index;
 	}
-
-	splitByCapitalLetters = (str: string) =>
-		str
-			.replace(/([a-z0-9])([A-Z])/g, '$1 $2') // Add space before capital letters
-			.replace(/([A-Z])([A-Z][a-z])/g, '$1 $2') // Add space for words starting with capital letters
-			.split(' ') // Split the string by space
-			.map((word) => word[0].toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
-			.join(' '); // Join the words with spaces
+	splitByCapitalLetters(str: string): string {
+		return this._utilsService.splitByCapitalLetters(str);
+	}
 }
