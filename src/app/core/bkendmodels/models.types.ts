@@ -78,7 +78,8 @@ export interface ProfilCont {
 }
 export interface Tranzactii {
 	id: string;
-	isWithdraw: boolean;
+	type: number;
+	typeName?: string;
 	amount: number;
 	created: Date;
 	documenteId?: string;

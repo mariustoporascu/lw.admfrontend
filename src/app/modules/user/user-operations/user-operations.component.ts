@@ -57,7 +57,7 @@ export class UserOperationsComponent
 	 */
 	ngOnInit(): void {
 		// Get the data
-		this._userFunctDataService.approvedDocuments$
+		this._userFunctDataService.operatiuniData$
 			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe((data) => {
 				// Store the table data

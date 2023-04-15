@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { finance } from './user-funct-test';
 import { Documente } from '../bkendmodels/models.types';
 import { backendUrl } from '../config/app.config';
 
@@ -9,10 +8,9 @@ import { backendUrl } from '../config/app.config';
 	providedIn: 'root',
 })
 export class UserFunctDataService {
-	private _data: BehaviorSubject<any> = new BehaviorSubject(null);
-	private _approvedDocuments: BehaviorSubject<Documente[] | null> =
+	private _dashboardData: BehaviorSubject<any> = new BehaviorSubject(null);
+	private _operatiuniData: BehaviorSubject<Documente[] | null> =
 		new BehaviorSubject(null);
-	private _finance: any = finance;
 	private _backEndUrl: string = backendUrl;
 	/**
 	 * Constructor
@@ -26,17 +24,15 @@ export class UserFunctDataService {
 	/**
 	 * Getter for data
 	 */
-	get data$(): Observable<any> {
-		this._data.next({ ...this._finance });
-		return this._data.asObservable();
+	get dashboardData$(): Observable<any> {
+		return this._dashboardData.asObservable();
 	}
 
 	/**
 	 * Getter for approvedData
 	 */
-	get approvedDocuments$(): Observable<any> {
-		this._data.next({ ...this._finance });
-		return this._approvedDocuments.asObservable();
+	get operatiuniData$(): Observable<any> {
+		return this._operatiuniData.asObservable();
 	}
 
 	// -----------------------------------------------------------------------------------------------------
@@ -46,23 +42,25 @@ export class UserFunctDataService {
 	/**
 	 * Get data
 	 */
-	getData(): Observable<any> {
-		return this._httpClient.get('api/dashboards/finance').pipe(
-			tap((response: any) => {
-				this._data.next(response);
-			})
-		);
+	getDashboardData(): Observable<any> {
+		return this._httpClient
+			.get(`${this._backEndUrl}/regularuser/getDashboardData`)
+			.pipe(
+				tap((response: any) => {
+					this._dashboardData.next(response);
+				})
+			);
 	}
 
 	/**
 	 * Get approved
 	 */
-	getApprovedDocuments(): Observable<any> {
+	getApprovedDocuments(): Observable<Documente[]> {
 		return this._httpClient
-			.get<Documente[]>(`${this._backEndUrl}/regularuser/getAllDocumenteApproved`)
+			.get<Documente[]>(`${this._backEndUrl}/regularuser/getAllDocumenteOperatii`)
 			.pipe(
 				tap((response: any) => {
-					this._approvedDocuments.next(response ?? []);
+					this._operatiuniData.next(response ?? []);
 				})
 			);
 	}

@@ -53,7 +53,7 @@ export class UserWithdHistoryComponent
 	 */
 	ngOnInit(): void {
 		// Get the data
-		this._userFunctDataService.data$
+		this._userFunctDataService.dashboardData$
 			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe((data) => {
 				// Store the data
