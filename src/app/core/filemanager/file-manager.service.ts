@@ -133,7 +133,9 @@ export class FileManagerService {
 	}
 	public getFiles(): Observable<Documente[]> {
 		return this._httpClient
-			.get<Documente[]>(`${this._backEndUrl}/regularuser/getAllDocumente`)
+			.get<Documente[]>(
+				`${this._backEndUrl}/regularuser/getAllDocumenteFileManager`
+			)
 			.pipe(
 				tap((data) => {
 					let files = data

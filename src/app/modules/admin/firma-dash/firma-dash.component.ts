@@ -10,9 +10,9 @@ import {
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subject, takeUntil } from 'rxjs';
-import { ApexOptions } from 'ng-apexcharts';
 import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.service';
-import { MatPaginator } from '@angular/material/paginator';
+import { ChartData } from 'chart.js';
+import { FuseUtilsService } from '@fuse/services/utils';
 
 @Component({
 	selector: 'firma-dashboard',
@@ -23,26 +23,60 @@ import { MatPaginator } from '@angular/material/paginator';
 export class FirmaDashComponent implements OnInit, AfterViewInit, OnDestroy {
 	@ViewChild('recentTransactionsTable', { read: MatSort })
 	recentTransactionsTableMatSort: MatSort;
-	@ViewChild('recentTransactionsTablePagination')
-	recentTransactionsTablePagination: MatPaginator;
 
-	data: any;
-	accountBalanceOptions: ApexOptions;
+	// Chart data
+	barChartData: ChartData<'bar'> = {
+		labels: [],
+		datasets: [
+			{
+				data: [],
+				label: 'Statistica puncte cumulate',
+				backgroundColor: '#94ff97',
+				borderColor: '#519154',
+			},
+			// {
+			// 	data: [
+			// 		6500, 59000, 8000, 8100, 5600, 5500, 40000, 30000, 12000, 10000, 5000,
+			// 		20000,
+			// 	],
+			// 	label: 'Statistica puncte cumulate',
+			// 	backgroundColor: '#42A5F5',
+			// },
+			// {
+			// 	data: [
+			// 		3500, 39000, 4000, 4100, 2600, 2500, 20000, 10000, 82000, 10000, 8000,
+			// 		20000,
+			// 	],
+			// 	label: 'Statistica puncte consumate',
+			// 	backgroundColor: '#66BB6A',
+			// },
+		],
+	};
+
+	// History data
+	currMonthHistory: any;
+	lastMonthHistory: any;
+
+	// Table data
 	recentTransactionsDataSource: MatTableDataSource<any> =
 		new MatTableDataSource();
 	recentTransactionsTableColumns: string[] = [
-		'transactionId',
-		'date',
-		'name',
-		'amount',
-		'status',
+		'docNumber',
+		'extractedBusinessData',
+		'uploaded',
+		'total',
+		'discountValue',
+		'statusName',
 	];
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
 
 	/**
 	 * Constructor
 	 */
-	constructor(private _userFunctDataService: UserFunctDataService) {}
+	constructor(
+		private _userFunctDataService: UserFunctDataService,
+		private _utilsService: FuseUtilsService
+	) {}
 
 	// -----------------------------------------------------------------------------------------------------
 	// @ Lifecycle hooks
@@ -53,17 +87,25 @@ export class FirmaDashComponent implements OnInit, AfterViewInit, OnDestroy {
 	 */
 	ngOnInit(): void {
 		// Get the data
-		this._userFunctDataService.data$
+		this._userFunctDataService.dashboardData$
 			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe((data) => {
-				// Store the data
-				this.data = data;
-
+				this.currMonthHistory = {
+					docs: data.lastTwoMths.countDocUpThisMth,
+					received: data.lastTwoMths.countPtsRcvdThisMth,
+					spent: data.lastTwoMths.countPtsSpentThisMonth,
+				};
+				this.lastMonthHistory = {
+					docs: data.lastTwoMths.countDocUpLastMth,
+					received: data.lastTwoMths.countPtsRcvdLastMth,
+					spent: data.lastTwoMths.countPtsSpentLastMonth,
+				};
+				(data.monthlyAnalitics as any[]).forEach((item) => {
+					this.barChartData.labels.push(item.label);
+					this.barChartData.datasets[0].data.push(item.value);
+				});
 				// Store the table data
-				this.recentTransactionsDataSource.data = data.recentTransactions;
-
-				// Prepare the chart data
-				this._prepareChartData();
+				this.recentTransactionsDataSource.data = data.latestDocs;
 			});
 	}
 
@@ -73,8 +115,6 @@ export class FirmaDashComponent implements OnInit, AfterViewInit, OnDestroy {
 	ngAfterViewInit(): void {
 		// Make the data source sortable
 		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
-		this.recentTransactionsDataSource.paginator =
-			this.recentTransactionsTablePagination;
 	}
 
 	/**
@@ -104,57 +144,6 @@ export class FirmaDashComponent implements OnInit, AfterViewInit, OnDestroy {
 	// @ Private methods
 	// -----------------------------------------------------------------------------------------------------
 
-	/**
-	 * Prepare the chart data from the data
-	 *
-	 * @private
-	 */
-	private _prepareChartData(): void {
-		// Account balance
-		this.accountBalanceOptions = {
-			chart: {
-				animations: {
-					speed: 400,
-					animateGradually: {
-						enabled: false,
-					},
-				},
-				fontFamily: 'inherit',
-				foreColor: 'inherit',
-				width: '100%',
-				height: '100%',
-				type: 'area',
-				sparkline: {
-					enabled: true,
-				},
-			},
-			colors: ['#A3BFFA', '#667EEA'],
-			fill: {
-				colors: ['#CED9FB', '#AECDFD'],
-				opacity: 0.5,
-				type: 'solid',
-			},
-			series: this.data.accountBalance.series,
-			stroke: {
-				curve: 'straight',
-				width: 2,
-			},
-			tooltip: {
-				followCursor: true,
-				theme: 'dark',
-				x: {
-					format: 'MMM dd, yyyy',
-				},
-				y: {
-					formatter: (value): string => value + '%',
-				},
-			},
-			xaxis: {
-				type: 'datetime',
-			},
-		};
-	}
-
 	getCurrentDate() {
 		return new Date().toLocaleDateString();
 	}
@@ -168,12 +157,7 @@ export class FirmaDashComponent implements OnInit, AfterViewInit, OnDestroy {
 			new Date().setMonth(new Date().getMonth() - 1)
 		).toLocaleString('default', { month: 'long' });
 	}
-	applyFilter(event: Event) {
-		const filterValue = (event.target as HTMLInputElement).value;
-		this.recentTransactionsDataSource.filter = filterValue.trim().toLowerCase();
-
-		if (this.recentTransactionsDataSource.paginator) {
-			this.recentTransactionsDataSource.paginator.firstPage();
-		}
+	splitByCapitalLetters(str: string): string {
+		return this._utilsService.splitByCapitalLetters(str);
 	}
 }

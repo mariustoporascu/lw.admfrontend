@@ -116,9 +116,19 @@
 
 	<!-- Actions -->
 	<div class="grid grid-cols-2 gap-4 w-full mt-8" *ngIf="item.type !== 'folder'">
-		<button class="flex-auto" mat-flat-button [color]="'primary'">
-			Download
+		<button class="flex-auto" mat-flat-button [class.bg-blue-600]="true">
+			Descarca
 		</button>
-		<button class="flex-auto" mat-stroked-button>Delete</button>
+		<button class="flex-auto" mat-flat-button [class.bg-red-600]="true">
+			Sterge
+		</button>
+	</div>
+	<div
+		class="grid grid-cols-2 gap-4 w-full mt-8"
+		*ngIf="item.type !== 'folder' && item.fileInfo.status === 5"
+	>
+		<button class="flex-auto" mat-flat-button [class.bg-green-600]="true">
+			Trimite la aprobare
+		</button>
 	</div>
 </div>
