@@ -34,18 +34,10 @@
 					<div class="flex flex-row flex-wrap mt-4 -mx-6">
 						<div class="flex flex-col mx-6 my-3">
 							<div class="text-sm font-medium leading-none text-secondary">
-								Documente in cont
+								Documente incarcate
 							</div>
 							<div class="mt-2 font-medium text-3xl leading-none">
 								{{ currMonthHistory.docs }}
-							</div>
-						</div>
-						<div class="flex flex-col mx-6 my-3">
-							<div class="text-sm font-medium leading-none text-secondary">
-								Puncte retrase
-							</div>
-							<div class="mt-2 font-medium text-3xl leading-none">
-								{{ currMonthHistory.spent | currency : "LWP " }}
 							</div>
 						</div>
 						<div class="flex flex-col mx-6 my-3">
@@ -54,6 +46,14 @@
 							</div>
 							<div class="mt-2 font-medium text-3xl leading-none">
 								{{ currMonthHistory.received | currency : "LWP " }}
+							</div>
+						</div>
+						<div class="flex flex-col mx-6 my-3">
+							<div class="text-sm font-medium leading-none text-secondary">
+								Puncte retrase
+							</div>
+							<div class="mt-2 font-medium text-3xl leading-none">
+								{{ currMonthHistory.spent | currency : "LWP " }}
 							</div>
 						</div>
 					</div>
@@ -78,18 +78,10 @@
 					<div class="flex flex-row flex-wrap mt-4 -mx-6">
 						<div class="flex flex-col mx-6 my-3">
 							<div class="text-sm font-medium leading-none text-secondary">
-								Documente in cont
+								Documente incarcate
 							</div>
 							<div class="mt-2 font-medium text-3xl leading-none">
 								{{ lastMonthHistory.docs }}
-							</div>
-						</div>
-						<div class="flex flex-col mx-6 my-3">
-							<div class="text-sm font-medium leading-none text-secondary">
-								Puncte retrase
-							</div>
-							<div class="mt-2 font-medium text-3xl leading-none">
-								{{ lastMonthHistory.spent | currency : "LWP " }}
 							</div>
 						</div>
 						<div class="flex flex-col mx-6 my-3">
@@ -98,6 +90,14 @@
 							</div>
 							<div class="mt-2 font-medium text-3xl leading-none">
 								{{ lastMonthHistory.received | currency : "LWP " }}
+							</div>
+						</div>
+						<div class="flex flex-col mx-6 my-3">
+							<div class="text-sm font-medium leading-none text-secondary">
+								Puncte retrase
+							</div>
+							<div class="mt-2 font-medium text-3xl leading-none">
+								{{ lastMonthHistory.spent | currency : "LWP " }}
 							</div>
 						</div>
 					</div>
@@ -173,7 +173,7 @@
 							<th mat-header-cell mat-sort-header *matHeaderCellDef>Data</th>
 							<td mat-cell *matCellDef="let transaction">
 								<span class="pr-6 whitespace-nowrap">
-									{{ transaction.uploaded | date : "MMM dd, y" }}
+									{{ transaction.uploaded | date : "dd MMM y" : "" : "ro" }}
 								</span>
 							</td>
 						</ng-container>
@@ -228,6 +228,9 @@
 							mat-row
 							*matRowDef="let row; columns: recentTransactionsTableColumns"
 						></tr>
+						<tr class="mat-row" *matNoDataRow>
+							<td class="mat-cell" colspan="4">Nu ai date in cont</td>
+						</tr>
 					</table>
 				</div>
 			</div>

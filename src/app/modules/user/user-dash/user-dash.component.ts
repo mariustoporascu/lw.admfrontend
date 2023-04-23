@@ -34,22 +34,6 @@ export class UserDashComponent implements OnInit, AfterViewInit, OnDestroy {
 				backgroundColor: '#94ff97',
 				borderColor: '#519154',
 			},
-			// {
-			// 	data: [
-			// 		6500, 59000, 8000, 8100, 5600, 5500, 40000, 30000, 12000, 10000, 5000,
-			// 		20000,
-			// 	],
-			// 	label: 'Statistica puncte cumulate',
-			// 	backgroundColor: '#42A5F5',
-			// },
-			// {
-			// 	data: [
-			// 		3500, 39000, 4000, 4100, 2600, 2500, 20000, 10000, 82000, 10000, 8000,
-			// 		20000,
-			// 	],
-			// 	label: 'Statistica puncte consumate',
-			// 	backgroundColor: '#66BB6A',
-			// },
 		],
 	};
 
@@ -145,17 +129,15 @@ export class UserDashComponent implements OnInit, AfterViewInit, OnDestroy {
 	// -----------------------------------------------------------------------------------------------------
 
 	getCurrentDate() {
-		return new Date().toLocaleDateString();
+		return this._utilsService.getCurrentDate();
 	}
 
 	getCurrentMonth() {
-		return new Date().toLocaleString('default', { month: 'long' });
+		return this._utilsService.getCurrentMonth();
 	}
 
 	getLastMonth() {
-		return new Date(
-			new Date().setMonth(new Date().getMonth() - 1)
-		).toLocaleString('default', { month: 'long' });
+		return this._utilsService.getLastMonth();
 	}
 	splitByCapitalLetters(str: string): string {
 		return this._utilsService.splitByCapitalLetters(str);

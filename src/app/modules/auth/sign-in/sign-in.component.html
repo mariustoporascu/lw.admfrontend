@@ -30,6 +30,7 @@
 				[appearance]="'outline'"
 				[showIcon]="false"
 				[type]="'info'"
+				[dismissible]="true"
 			>
 				Retrimite email-ul de confirmare cont apasand
 				<span class="font-bold" (click)="resendConfirmationEmail()">aici</span>
@@ -43,6 +44,7 @@
 				[showIcon]="false"
 				[type]="alert.type"
 				[@shake]="alert.type === 'error'"
+				[dismissible]="true"
 			>
 				{{ alert.message }}
 			</fuse-alert>

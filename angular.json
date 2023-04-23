@@ -26,7 +26,6 @@
                         "tsConfig": "tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
                         "allowedCommonJsDependencies": [
-                            "chart.js",
                             "highlight.js",
                             "crypto-js/enc-utf8",
                             "crypto-js/hmac-sha256",

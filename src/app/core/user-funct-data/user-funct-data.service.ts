@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { Documente } from '../bkendmodels/models.types';
+import { Documente, Tranzactii } from '../bkendmodels/models.types';
 import { backendUrl } from '../config/app.config';
 
 @Injectable({
@@ -10,6 +10,10 @@ import { backendUrl } from '../config/app.config';
 export class UserFunctDataService {
 	private _dashboardData: BehaviorSubject<any> = new BehaviorSubject(null);
 	private _operatiuniData: BehaviorSubject<Documente[] | null> =
+		new BehaviorSubject(null);
+	private _transferData: BehaviorSubject<Tranzactii[] | null> =
+		new BehaviorSubject(null);
+	private _withdrawData: BehaviorSubject<Tranzactii[] | null> =
 		new BehaviorSubject(null);
 	private _backEndUrl: string = backendUrl;
 	/**
@@ -33,6 +37,20 @@ export class UserFunctDataService {
 	 */
 	get operatiuniData$(): Observable<any> {
 		return this._operatiuniData.asObservable();
+	}
+
+	/**
+	 * Getter for transfer
+	 */
+	get transferData$(): Observable<any> {
+		return this._transferData.asObservable();
+	}
+
+	/**
+	 * Getter for withdraw
+	 */
+	get withdrawData$(): Observable<any> {
+		return this._withdrawData.asObservable();
 	}
 
 	// -----------------------------------------------------------------------------------------------------
@@ -63,5 +81,49 @@ export class UserFunctDataService {
 					this._operatiuniData.next(response ?? []);
 				})
 			);
+	}
+
+	/**
+	 * Get transfer
+	 */
+	getTransferData(): Observable<Tranzactii[]> {
+		return this._httpClient
+			.get<Documente[]>(`${this._backEndUrl}/regularuser/getAllTransfers`)
+			.pipe(
+				tap((response: any) => {
+					this._transferData.next(response ?? []);
+				})
+			);
+	}
+
+	/**
+	 * Get withdraw
+	 */
+	getWithdrawData(): Observable<Tranzactii[]> {
+		return this._httpClient
+			.get<Documente[]>(`${this._backEndUrl}/regularuser/getAllWithdrawals`)
+			.pipe(
+				tap((response: any) => {
+					this._withdrawData.next(response ?? []);
+				})
+			);
+	}
+
+	/**
+	 * Make Tranzaction
+	 */
+	addTranzaction(body: {}): Observable<any> {
+		return this._httpClient.post(
+			`${this._backEndUrl}/regularuser/addTranzaction`,
+			body
+		);
+	}
+	/**
+	 * Query user
+	 */
+	queryUsers(query: string): Observable<any> {
+		return this._httpClient.get(
+			`${this._backEndUrl}/regularuser/query-users?query=${query}`
+		);
 	}
 }
