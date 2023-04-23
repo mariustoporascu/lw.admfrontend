@@ -66,4 +66,17 @@ export class FuseUtilsService {
 			.map((word) => word[0].toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
 			.join(' '); // Join the words with spaces
 	}
+	getCurrentDate() {
+		return new Date().toLocaleDateString('ro');
+	}
+
+	getCurrentMonth() {
+		return new Date().toLocaleString('default', { month: 'long' });
+	}
+
+	getLastMonth() {
+		return new Date(
+			new Date().setMonth(new Date().getMonth() - 1)
+		).toLocaleString('default', { month: 'long' });
+	}
 }

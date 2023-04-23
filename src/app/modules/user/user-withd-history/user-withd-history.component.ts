@@ -12,6 +12,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Subject, takeUntil } from 'rxjs';
 import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.service';
 import { MatPaginator } from '@angular/material/paginator';
+import { FuseUtilsService } from '@fuse/services/utils';
 
 @Component({
 	selector: 'user-withd-history',
@@ -27,13 +28,11 @@ export class UserWithdHistoryComponent
 	@ViewChild('recentTransactionsTablePagination')
 	recentTransactionsTablePagination: MatPaginator;
 
-	data: any;
 	recentTransactionsDataSource: MatTableDataSource<any> =
 		new MatTableDataSource();
 	recentTransactionsTableColumns: string[] = [
 		'transactionId',
-		'date',
-		'name',
+		'created',
 		'amount',
 		'status',
 	];
@@ -42,7 +41,10 @@ export class UserWithdHistoryComponent
 	/**
 	 * Constructor
 	 */
-	constructor(private _userFunctDataService: UserFunctDataService) {}
+	constructor(
+		private _userFunctDataService: UserFunctDataService,
+		private _utilsService: FuseUtilsService
+	) {}
 
 	// -----------------------------------------------------------------------------------------------------
 	// @ Lifecycle hooks
@@ -53,14 +55,11 @@ export class UserWithdHistoryComponent
 	 */
 	ngOnInit(): void {
 		// Get the data
-		this._userFunctDataService.dashboardData$
+		this._userFunctDataService.withdrawData$
 			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe((data) => {
-				// Store the data
-				this.data = data;
-
 				// Store the table data
-				this.recentTransactionsDataSource.data = data.recentTransactions;
+				this.recentTransactionsDataSource.data = data;
 			});
 	}
 
@@ -102,17 +101,15 @@ export class UserWithdHistoryComponent
 	// -----------------------------------------------------------------------------------------------------
 
 	getCurrentDate() {
-		return new Date().toLocaleDateString();
+		return this._utilsService.getCurrentDate();
 	}
 
 	getCurrentMonth() {
-		return new Date().toLocaleString('default', { month: 'long' });
+		return this._utilsService.getCurrentMonth();
 	}
 
 	getLastMonth() {
-		return new Date(
-			new Date().setMonth(new Date().getMonth() - 1)
-		).toLocaleString('default', { month: 'long' });
+		return this._utilsService.getLastMonth();
 	}
 	applyFilter(event: Event) {
 		const filterValue = (event.target as HTMLInputElement).value;

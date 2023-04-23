@@ -145,17 +145,15 @@ export class FirmaDashComponent implements OnInit, AfterViewInit, OnDestroy {
 	// -----------------------------------------------------------------------------------------------------
 
 	getCurrentDate() {
-		return new Date().toLocaleDateString();
+		return this._utilsService.getCurrentDate();
 	}
 
 	getCurrentMonth() {
-		return new Date().toLocaleString('default', { month: 'long' });
+		return this._utilsService.getCurrentMonth();
 	}
 
 	getLastMonth() {
-		return new Date(
-			new Date().setMonth(new Date().getMonth() - 1)
-		).toLocaleString('default', { month: 'long' });
+		return this._utilsService.getLastMonth();
 	}
 	splitByCapitalLetters(str: string): string {
 		return this._utilsService.splitByCapitalLetters(str);
