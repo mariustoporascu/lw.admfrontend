@@ -54,6 +54,7 @@ export class UserOperationsComponent
 		message: '',
 	};
 	showAlert: boolean = false;
+	transferIds: string[] = [];
 
 	@ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
 	drawerMode: 'side' | 'over';
@@ -190,12 +191,7 @@ export class UserOperationsComponent
 	}
 	// transfer guid 3a242ee5-111b-48e9-8b7d-d7592ddb23ba
 	makeTransferSelected() {
-		// this.sendRequestToServer(
-		// 	[...this.selection.selected.map((item) => item.id)],
-		// 	1,
-		// 	'3a242ee5-111b-48e9-8b7d-d7592ddb23ba'
-		// );
-		// this.matDrawer.open();
+		this.transferIds = [...this.selection.selected.map((item) => item.id)];
 		this._router.navigate(['./search-user'], {
 			relativeTo: this._activatedRoute,
 		});
@@ -208,8 +204,7 @@ export class UserOperationsComponent
 	}
 	// transfer guid
 	makeTransferRow(row: Documente) {
-		// this.sendRequestToServer([row.id], 1, '3a242ee5-111b-48e9-8b7d-d7592ddb23ba');
-		// this.matDrawer.open();
+		this.transferIds = [row.id];
 		this._router.navigate(['./search-user'], {
 			relativeTo: this._activatedRoute,
 		});
@@ -238,6 +233,7 @@ export class UserOperationsComponent
 					// Show the alert
 					this.showAlert = true;
 					this._cdr.markForCheck();
+					this._userFunctDataService.getApprovedDocuments().subscribe();
 
 					if (response.error) {
 						const error = JSON.parse(response.message);
@@ -252,7 +248,6 @@ export class UserOperationsComponent
 							type: 'success',
 							message: 'Operatiunea a fost efectuata cu succes.',
 						};
-						this._userFunctDataService.getApprovedDocuments().subscribe();
 						return of(true);
 					}
 				})

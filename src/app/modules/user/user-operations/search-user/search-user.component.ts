@@ -1,9 +1,11 @@
 import {
 	ChangeDetectionStrategy,
 	Component,
+	ElementRef,
 	Input,
 	OnDestroy,
 	OnInit,
+	ViewChild,
 	ViewEncapsulation,
 } from '@angular/core';
 import { MatDrawerToggleResult } from '@angular/material/sidenav';
@@ -12,6 +14,7 @@ import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.s
 import { UntypedFormControl } from '@angular/forms';
 import { MatAutocomplete } from '@angular/material/autocomplete';
 import { Subject, debounceTime, filter, map, takeUntil } from 'rxjs';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
 	selector: 'search-user',
@@ -21,9 +24,9 @@ import { Subject, debounceTime, filter, map, takeUntil } from 'rxjs';
 })
 export class SearchForUserComponent implements OnInit, OnDestroy {
 	searchControl: UntypedFormControl = new UntypedFormControl();
-	@Input() debounce: number = 500;
+	@Input() debounce: number = 200;
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
-	@Input() minLength: number = 2;
+	@Input() minLength: number = 5;
 	resultSets: any[];
 
 	/**
@@ -31,7 +34,9 @@ export class SearchForUserComponent implements OnInit, OnDestroy {
 	 */
 	constructor(
 		private _userOperationsComponent: UserOperationsComponent,
-		private _userFunctDataService: UserFunctDataService
+		private _userFunctDataService: UserFunctDataService,
+		private _router: Router,
+		private _activatedRoute: ActivatedRoute
 	) {}
 
 	// -----------------------------------------------------------------------------------------------------
@@ -67,9 +72,27 @@ export class SearchForUserComponent implements OnInit, OnDestroy {
 				this._userFunctDataService.queryUsers(value).subscribe((resultSets) => {
 					this.resultSets = resultSets;
 				});
-				console.log(this.resultSets);
 			});
 	}
+
+	/**
+	 * Setter for bar search input
+	 *
+	 * @param value
+	 */
+	@ViewChild('EmailOrPhone')
+	set EmailOrPhone(value: ElementRef) {
+		// If the value exists, it means that the search input
+		// is now in the DOM, and we can focus on the input..
+		if (value) {
+			// Give Angular time to complete the change detection cycle
+			setTimeout(() => {
+				// Focus to the input element
+				value.nativeElement.focus();
+			});
+		}
+	}
+
 	/**
 	 * On destroy
 	 */
@@ -83,5 +106,16 @@ export class SearchForUserComponent implements OnInit, OnDestroy {
 	 */
 	closeDrawer(): Promise<MatDrawerToggleResult> {
 		return this._userOperationsComponent.matDrawer.close();
+	}
+	selectAndTransfer(conexId: string) {
+		this._userOperationsComponent.sendRequestToServer(
+			this._userOperationsComponent.transferIds,
+			1,
+			conexId
+		);
+		this.closeDrawer();
+		this._router.navigate(['../'], {
+			relativeTo: this._activatedRoute,
+		});
 	}
 }
