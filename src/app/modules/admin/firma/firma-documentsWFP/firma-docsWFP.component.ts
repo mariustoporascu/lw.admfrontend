@@ -11,7 +11,6 @@ import {
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subject, catchError, of, switchMap, takeUntil } from 'rxjs';
-import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { FuseUtilsService } from '@fuse/services/utils';
 import { Documente } from 'app/core/bkendmodels/models.types';
@@ -20,16 +19,15 @@ import { FuseAlertType } from '@fuse/components/alert';
 import { MatDrawer } from '@angular/material/sidenav';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FirmaFunctDataService } from 'app/core/firma-funct-data/firma-funct-data.service';
 
 @Component({
-	selector: 'user-operations',
-	templateUrl: './user-operations.component.html',
+	selector: 'firma-docsWFP',
+	templateUrl: './firma-docsWFP.component.html',
 	encapsulation: ViewEncapsulation.None,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UserOperationsComponent
-	implements OnInit, AfterViewInit, OnDestroy
-{
+export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 	@ViewChild('recentTransactionsTable', { read: MatSort })
 	recentTransactionsTableMatSort: MatSort;
 	@ViewChild('recentTransactionsTablePagination')
@@ -44,7 +42,7 @@ export class UserOperationsComponent
 		'uploaded',
 		'total',
 		'discountValue',
-		'statusName',
+		'userEmail',
 		'actions',
 	];
 	selection = new SelectionModel<Documente>(true, []);
@@ -66,8 +64,8 @@ export class UserOperationsComponent
 	 */
 	constructor(
 		private _activatedRoute: ActivatedRoute,
-		private _userFunctDataService: UserFunctDataService,
 		private _utilsService: FuseUtilsService,
+		private _firmaFunctDataService: FirmaFunctDataService,
 		private _cdr: ChangeDetectorRef,
 		private _router: Router,
 		private _fuseMediaWatcherService: FuseMediaWatcherService
@@ -82,7 +80,7 @@ export class UserOperationsComponent
 	 */
 	ngOnInit(): void {
 		// Get the data
-		this._userFunctDataService.operatiuniData$
+		this._firmaFunctDataService.docsData$
 			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe((data) => {
 				// Store the table data
@@ -189,43 +187,37 @@ export class UserOperationsComponent
 	countSelected() {
 		return this.selection.selected.length;
 	}
-	// transfer guid 3a242ee5-111b-48e9-8b7d-d7592ddb23ba
+
 	makeTransferSelected() {
-		this.transferIds = [...this.selection.selected.map((item) => item.id)];
-		this._router.navigate(['./search-user'], {
-			relativeTo: this._activatedRoute,
-		});
-	}
-	makeWithdrawalSelected() {
 		this.sendRequestToServer(
 			[...this.selection.selected.map((item) => item.id)],
 			2
 		);
+		this.selection.clear();
+	}
+	makeWithdrawalSelected() {
+		this.sendRequestToServer(
+			[...this.selection.selected.map((item) => item.id)],
+			1
+		);
+		this.selection.clear();
 	}
 	// transfer guid
 	makeTransferRow(row: Documente) {
-		this.transferIds = [row.id];
-		this._router.navigate(['./search-user'], {
-			relativeTo: this._activatedRoute,
-		});
-	}
-	makeWithdrawalRow(row: Documente) {
 		this.sendRequestToServer([row.id], 2);
 	}
+	makeWithdrawalRow(row: Documente) {
+		this.sendRequestToServer([row.id], 1);
+	}
 
-	sendRequestToServer(
-		documenteIds: string[],
-		tranzactionType: number,
-		nextConexId?: string
-	) {
+	sendRequestToServer(documenteIds: string[], status: number) {
 		// Hide the alert
 		this.showAlert = false;
 
-		this._userFunctDataService
-			.addTranzaction({
+		this._firmaFunctDataService
+			.updateDocStatus({
 				documenteIds,
-				tranzactionType,
-				nextConexId,
+				status,
 			})
 			.pipe(
 				catchError((error: any) => of(error.error)),
@@ -233,8 +225,8 @@ export class UserOperationsComponent
 					// Show the alert
 					this.showAlert = true;
 					this._cdr.markForCheck();
-					this._userFunctDataService.getApprovedDocuments().subscribe();
-					this.selection.clear();
+					this._firmaFunctDataService.getDocumentsWFP().subscribe();
+
 					if (response.error) {
 						const error = JSON.parse(response.message);
 						// Set the alert

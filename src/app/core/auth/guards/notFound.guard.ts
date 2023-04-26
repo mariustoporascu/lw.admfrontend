@@ -63,14 +63,7 @@ export class NotFoundGuard implements CanMatch {
 						this.user = this._userService.user$.value;
 					}
 
-					if (this.user.type === 'user')
-						this._router.navigateByUrl('/user/dashboard');
-					else if (this.user.type === 'firma-admin')
-						this._router.navigateByUrl('/admin/firma-dashboard');
-					else if (this.user.type === 'hybrid-admin')
-						this._router.navigateByUrl('/admin/hybrid-dashboard');
-					else if (this.user.type === 'master-admin')
-						this._router.navigateByUrl('/admin/master-dashboard');
+					this._router.navigateByUrl(`/${this.user.type}/dashboard`);
 				} else {
 					this._router.navigateByUrl('/auth/sign-in');
 				}

@@ -1,5 +1,7 @@
 import {
+	AfterViewInit,
 	ChangeDetectionStrategy,
+	ChangeDetectorRef,
 	Component,
 	ElementRef,
 	Input,
@@ -22,7 +24,9 @@ import { Router, ActivatedRoute } from '@angular/router';
 	encapsulation: ViewEncapsulation.None,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SearchForUserComponent implements OnInit, OnDestroy {
+export class SearchForUserComponent
+	implements OnInit, AfterViewInit, OnDestroy
+{
 	searchControl: UntypedFormControl = new UntypedFormControl();
 	@Input() debounce: number = 200;
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
@@ -36,6 +40,7 @@ export class SearchForUserComponent implements OnInit, OnDestroy {
 		private _userOperationsComponent: UserOperationsComponent,
 		private _userFunctDataService: UserFunctDataService,
 		private _router: Router,
+		private _cdr: ChangeDetectorRef,
 		private _activatedRoute: ActivatedRoute
 	) {}
 
@@ -48,31 +53,17 @@ export class SearchForUserComponent implements OnInit, OnDestroy {
 	 */
 	ngOnInit(): void {
 		this._userOperationsComponent.matDrawer.open();
-		// Subscribe to the search field value changes
-		this.searchControl.valueChanges
-			.pipe(
-				debounceTime(this.debounce),
-				takeUntil(this._unsubscribeAll),
-				map((value) => {
-					// Set the resultSets to null if there is no value or
-					// the length of the value is smaller than the minLength
-					// so the autocomplete panel can be closed
-					if (!value || value.length < this.minLength) {
-						this.resultSets = null;
-					}
+	}
 
-					// Continue
-					return value;
-				}),
-				// Filter out undefined/null/false statements and also
-				// filter out the values that are smaller than minLength
-				filter((value) => value && value.length >= this.minLength)
-			)
-			.subscribe((value) => {
-				this._userFunctDataService.queryUsers(value).subscribe((resultSets) => {
-					this.resultSets = resultSets;
-				});
+	ngAfterViewInit(): void {
+		if (
+			!this._userOperationsComponent.transferIds ||
+			this._userOperationsComponent.transferIds.length == 0
+		) {
+			this._router.navigate(['../'], {
+				relativeTo: this._activatedRoute,
 			});
+		}
 	}
 
 	/**
@@ -89,6 +80,28 @@ export class SearchForUserComponent implements OnInit, OnDestroy {
 			setTimeout(() => {
 				// Focus to the input element
 				value.nativeElement.focus();
+			});
+		}
+	}
+
+	/**
+	 * On keydown of the search input
+	 *
+	 * @param event
+	 */
+	onKeydown(event: KeyboardEvent): void {
+		console.log(event);
+		// Escape
+		if (event.code === 'Enter') {
+			// Subscribe to the search field value changes
+			const formValue = this.searchControl.value;
+			if (!formValue || formValue.length < this.minLength) {
+				this.resultSets = null;
+				return;
+			}
+			this._userFunctDataService.queryUsers(formValue).subscribe((resultSets) => {
+				this.resultSets = resultSets;
+				this._cdr.markForCheck();
 			});
 		}
 	}

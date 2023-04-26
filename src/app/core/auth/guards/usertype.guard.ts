@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanMatch, Route, UrlSegment, UrlTree } from '@angular/router';
-import { delay, Observable, of, Subject, switchMap, takeUntil } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { UserService } from 'app/core/user/user.service';
 import { User } from 'app/core/user/user.types';
 
@@ -33,7 +33,7 @@ export class UserTypeGuard implements CanMatch {
 		| Promise<boolean | UrlTree>
 		| boolean
 		| UrlTree {
-		return this._check(segments);
+		return this._check(route, segments);
 	}
 
 	// -----------------------------------------------------------------------------------------------------
@@ -45,7 +45,10 @@ export class UserTypeGuard implements CanMatch {
 	 *
 	 * @private
 	 */
-	private _check(segments: UrlSegment[]): Observable<boolean | UrlTree> {
+	private _check(
+		route: Route,
+		segments: UrlSegment[]
+	): Observable<boolean | UrlTree> {
 		// Check the authentication status and return an observable of
 		// "true" or "false" to allow or prevent the access
 		if (!this._userService.user$.value.id) {
@@ -54,27 +57,9 @@ export class UserTypeGuard implements CanMatch {
 			this.user = this._userService.user$.value;
 		}
 
-		if (
-			this.user.type === 'user' &&
-			segments[0].path.toLocaleLowerCase().split('-').length == 1
-		)
+		if (this.user.type === route.data.userType) {
 			return of(true);
-		else if (
-			this.user.type === 'firma-admin' &&
-			segments[0].path.toLocaleLowerCase().startsWith('firma-')
-		)
-			return of(true);
-		else if (
-			this.user.type === 'hybrid-admin' &&
-			segments[0].path.toLocaleLowerCase().startsWith('hybrid-')
-		)
-			return of(true);
-		else if (
-			this.user.type === 'master-admin' &&
-			segments[0].path.toLocaleLowerCase().startsWith('master-')
-		)
-			return of(true);
-		else {
+		} else {
 			return of(false);
 		}
 	}

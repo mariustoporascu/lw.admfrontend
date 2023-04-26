@@ -10,9 +10,9 @@ import {
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subject, takeUntil } from 'rxjs';
-import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.service';
 import { ChartData } from 'chart.js';
 import { FuseUtilsService } from '@fuse/services/utils';
+import { FirmaFunctDataService } from 'app/core/firma-funct-data/firma-funct-data.service';
 
 @Component({
 	selector: 'firma-dashboard',
@@ -30,26 +30,10 @@ export class FirmaDashComponent implements OnInit, AfterViewInit, OnDestroy {
 		datasets: [
 			{
 				data: [],
-				label: 'Statistica puncte cumulate',
+				label: 'Statistica puncte acordate',
 				backgroundColor: '#94ff97',
 				borderColor: '#519154',
 			},
-			// {
-			// 	data: [
-			// 		6500, 59000, 8000, 8100, 5600, 5500, 40000, 30000, 12000, 10000, 5000,
-			// 		20000,
-			// 	],
-			// 	label: 'Statistica puncte cumulate',
-			// 	backgroundColor: '#42A5F5',
-			// },
-			// {
-			// 	data: [
-			// 		3500, 39000, 4000, 4100, 2600, 2500, 20000, 10000, 82000, 10000, 8000,
-			// 		20000,
-			// 	],
-			// 	label: 'Statistica puncte consumate',
-			// 	backgroundColor: '#66BB6A',
-			// },
 		],
 	};
 
@@ -74,7 +58,7 @@ export class FirmaDashComponent implements OnInit, AfterViewInit, OnDestroy {
 	 * Constructor
 	 */
 	constructor(
-		private _userFunctDataService: UserFunctDataService,
+		private _firmaFunctDataService: FirmaFunctDataService,
 		private _utilsService: FuseUtilsService
 	) {}
 
@@ -87,18 +71,18 @@ export class FirmaDashComponent implements OnInit, AfterViewInit, OnDestroy {
 	 */
 	ngOnInit(): void {
 		// Get the data
-		this._userFunctDataService.dashboardData$
+		this._firmaFunctDataService.dashboardData$
 			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe((data) => {
 				this.currMonthHistory = {
 					docs: data.lastTwoMths.countDocUpThisMth,
-					received: data.lastTwoMths.countPtsRcvdThisMth,
-					spent: data.lastTwoMths.countPtsSpentThisMonth,
+					rejected: data.lastTwoMths.countPtsRejThisMth,
+					approved: data.lastTwoMths.countPtsAprThisMonth,
 				};
 				this.lastMonthHistory = {
 					docs: data.lastTwoMths.countDocUpLastMth,
-					received: data.lastTwoMths.countPtsRcvdLastMth,
-					spent: data.lastTwoMths.countPtsSpentLastMonth,
+					rejected: data.lastTwoMths.countPtsRejLastMth,
+					approved: data.lastTwoMths.countPtsAprLastMonth,
 				};
 				(data.monthlyAnalitics as any[]).forEach((item) => {
 					this.barChartData.labels.push(item.label);

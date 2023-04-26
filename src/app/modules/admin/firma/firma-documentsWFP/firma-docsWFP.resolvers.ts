@@ -4,17 +4,17 @@ import {
 	Resolve,
 	RouterStateSnapshot,
 } from '@angular/router';
-import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.service';
+import { FirmaFunctDataService } from 'app/core/firma-funct-data/firma-funct-data.service';
 import { forkJoin, Observable } from 'rxjs';
 
 @Injectable({
 	providedIn: 'root',
 })
-export class FirmaDashDataResolver implements Resolve<any> {
+export class FirmaDocsWFPResolver implements Resolve<any> {
 	/**
 	 * Constructor
 	 */
-	constructor(private _userFunctDataService: UserFunctDataService) {}
+	constructor(private _firmaFunctDataService: FirmaFunctDataService) {}
 
 	// -----------------------------------------------------------------------------------------------------
 	// @ Public methods
@@ -30,6 +30,6 @@ export class FirmaDashDataResolver implements Resolve<any> {
 		route: ActivatedRouteSnapshot,
 		state: RouterStateSnapshot
 	): Observable<any> {
-		return this._userFunctDataService.getDashboardData();
+		return this._firmaFunctDataService.getDocumentsWFP();
 	}
 }

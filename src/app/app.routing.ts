@@ -26,12 +26,12 @@ export const appRoutes: Route[] = [
 	// User routes
 	{
 		path: 'user',
-		canMatch: [AuthGuard],
+		data: { userType: 'user' },
+		canMatch: [AuthGuard, UserTypeGuard],
 		component: LayoutComponent,
 		children: [
 			{
 				path: 'dashboard',
-				canMatch: [UserTypeGuard],
 				loadChildren: () =>
 					import('app/modules/user/user-dash/user-dash.module').then(
 						(m) => m.UserDashModule
@@ -39,7 +39,6 @@ export const appRoutes: Route[] = [
 			},
 			{
 				path: 'transfers',
-				canMatch: [UserTypeGuard],
 				loadChildren: () =>
 					import(
 						'app/modules/user/user-transf-history/user-transf-history.module'
@@ -47,7 +46,6 @@ export const appRoutes: Route[] = [
 			},
 			{
 				path: 'withdraws',
-				canMatch: [UserTypeGuard],
 				loadChildren: () =>
 					import(
 						'app/modules/user/user-withd-history/user-withd-history.module'
@@ -57,8 +55,6 @@ export const appRoutes: Route[] = [
 			{
 				path: 'filemanager',
 				data: { baseRoute: '/user/filemanager' },
-
-				canMatch: [UserTypeGuard],
 				loadChildren: () =>
 					import('app/modules/utilities/file-manager/file-manager.module').then(
 						(m) => m.FileManagerModule
@@ -66,7 +62,6 @@ export const appRoutes: Route[] = [
 			},
 			{
 				path: 'settings',
-				canMatch: [UserTypeGuard],
 				loadChildren: () =>
 					import('app/modules/user/settings/settings.module').then(
 						(m) => m.SettingsModule
@@ -74,7 +69,6 @@ export const appRoutes: Route[] = [
 			},
 			{
 				path: 'operations',
-				canMatch: [UserTypeGuard],
 				loadChildren: () =>
 					import('app/modules/user/user-operations/user-operations.module').then(
 						(m) => m.UserOperationsModule
@@ -82,48 +76,62 @@ export const appRoutes: Route[] = [
 			},
 		],
 	},
-	// Admin routes
+	// Firma routes
 	{
-		path: 'admin',
-		canMatch: [AuthGuard],
+		path: 'firma-admin',
+		canMatch: [AuthGuard, UserTypeGuard],
+		data: { userType: 'firma-admin' },
 		component: LayoutComponent,
 		children: [
 			{
-				path: 'firma-dashboard',
-				canMatch: [UserTypeGuard],
+				path: 'dashboard',
+				canMatch: [],
 				loadChildren: () =>
-					import('app/modules/admin/firma-dash/firma-dash.module').then(
+					import('app/modules/admin/firma/firma-dash/firma-dash.module').then(
 						(m) => m.FirmaDashModule
 					),
 			},
 			{
-				path: 'firma-analytics',
-				canMatch: [UserTypeGuard],
+				path: 'analytics',
 				loadChildren: () =>
 					import('app/modules/landing/example/example.module').then(
 						(m) => m.ExampleModule
 					),
 			},
 			{
-				path: 'firma-filemanager',
-				data: { baseRoute: '/admin/firma-filemanager' },
-				canMatch: [UserTypeGuard],
+				path: 'docsapproval',
 				loadChildren: () =>
-					import('app/modules/utilities/file-manager/file-manager.module').then(
-						(m) => m.FileManagerModule
-					),
+					import(
+						'app/modules/admin/firma/firma-documentsWFP/firma-docsWFP.module'
+					).then((m) => m.FirmaDocsWFPModule),
 			},
+		],
+	},
+	// Hybrid routes
+	{
+		path: 'hybrid-admin',
+		data: { userType: 'hybrid-admin' },
+		canMatch: [AuthGuard, UserTypeGuard],
+		component: LayoutComponent,
+		children: [
 			{
-				path: 'hybrid-dashboard',
-				canMatch: [UserTypeGuard],
+				path: 'dashboard',
 				loadChildren: () =>
 					import('app/modules/landing/example/example.module').then(
 						(m) => m.ExampleModule
 					),
 			},
+		],
+	},
+	// Master routes
+	{
+		path: 'master-admin',
+		data: { userType: 'master-admin' },
+		canMatch: [AuthGuard, UserTypeGuard],
+		component: LayoutComponent,
+		children: [
 			{
-				path: 'master-dashboard',
-				canMatch: [UserTypeGuard],
+				path: 'dashboard',
 				loadChildren: () =>
 					import('app/modules/landing/example/example.module').then(
 						(m) => m.ExampleModule
@@ -141,7 +149,6 @@ export const appRoutes: Route[] = [
 		children: [
 			{
 				path: 'sign-out',
-				pathMatch: 'full',
 				canMatch: [AuthGuard],
 				loadChildren: () =>
 					import('app/modules/auth/sign-out/sign-out.module').then(
@@ -150,7 +157,6 @@ export const appRoutes: Route[] = [
 			},
 			{
 				path: 'unlock-session',
-				pathMatch: 'full',
 				canMatch: [AuthGuard],
 				loadChildren: () =>
 					import('app/modules/auth/unlock-session/unlock-session.module').then(
@@ -159,7 +165,6 @@ export const appRoutes: Route[] = [
 			},
 			{
 				path: 'confirmation-required',
-				pathMatch: 'full',
 				canMatch: [NoAuthGuard],
 				loadChildren: () =>
 					import(
@@ -168,7 +173,6 @@ export const appRoutes: Route[] = [
 			},
 			{
 				path: 'confirmation-completion',
-				pathMatch: 'full',
 				canMatch: [NoAuthGuard],
 				loadChildren: () =>
 					import(
@@ -177,7 +181,6 @@ export const appRoutes: Route[] = [
 			},
 			{
 				path: 'forgot-password',
-				pathMatch: 'full',
 				canMatch: [NoAuthGuard],
 				loadChildren: () =>
 					import('app/modules/auth/forgot-password/forgot-password.module').then(
@@ -186,7 +189,6 @@ export const appRoutes: Route[] = [
 			},
 			{
 				path: 'reset-password',
-				pathMatch: 'full',
 				canMatch: [NoAuthGuard],
 				loadChildren: () =>
 					import('app/modules/auth/reset-password/reset-password.module').then(
@@ -195,7 +197,6 @@ export const appRoutes: Route[] = [
 			},
 			{
 				path: 'sign-in',
-				pathMatch: 'full',
 				canMatch: [NoAuthGuard],
 				loadChildren: () =>
 					import('app/modules/auth/sign-in/sign-in.module').then(
@@ -204,7 +205,6 @@ export const appRoutes: Route[] = [
 			},
 			{
 				path: 'sign-up',
-				pathMatch: 'full',
 				canMatch: [NoAuthGuard],
 				loadChildren: () =>
 					import('app/modules/auth/sign-up/sign-up.module').then(
@@ -215,7 +215,6 @@ export const appRoutes: Route[] = [
 	},
 	{
 		path: 'redirectToDashboard',
-		pathMatch: 'full',
 		canMatch: [NotFoundGuard],
 		loadChildren: () =>
 			import('app/modules/error/error-500/error-500.module').then(
@@ -225,7 +224,6 @@ export const appRoutes: Route[] = [
 	// 404 & Catch all
 	{
 		path: '404-not-found',
-		pathMatch: 'full',
 		loadChildren: () =>
 			import('app/modules/error/error-404/error-404.module').then(
 				(m) => m.Error404Module
