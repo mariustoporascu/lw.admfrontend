@@ -25,6 +25,8 @@ export interface Documente {
 	conexId?: string;
 	nextConexId?: string;
 	fisiereDocumente?: FisiereDocumente;
+	conexiuniConturi?: ConexiuniConturi;
+	nextConexiuniConturi?: ConexiuniConturi;
 }
 
 export interface FirmaDiscount {
@@ -84,4 +86,5 @@ export interface Tranzactii {
 	created: Date;
 	documenteId?: string;
 	conexId?: string;
+	documente?: Documente;
 }

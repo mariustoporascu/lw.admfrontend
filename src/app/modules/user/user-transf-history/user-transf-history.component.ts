@@ -32,6 +32,7 @@ export class UserTransfHistoryComponent
 		new MatTableDataSource();
 	recentTransactionsTableColumns: string[] = [
 		'transactionId',
+		'latestOwner',
 		'created',
 		'amount',
 		'status',
