@@ -32,13 +32,13 @@
 		<div
 			class="mt-1 px-1.5 rounded text-sm font-semibold leading-5 text-white"
 			[class.bg-indigo-600]="item.type === 'folder'"
-			[class.bg-red-600]="item.type === 'PDF'"
-			[class.bg-blue-600]="item.type === 'DOC'"
-			[class.bg-green-600]="item.type === 'XLS'"
-			[class.bg-gray-600]="item.type === 'TXT'"
-			[class.bg-amber-600]="item.type === 'JPG'"
+			[class.bg-red-600]="item.type.toLowerCase().includes('pdf')"
+			[class.bg-blue-600]="item.type.toLocaleLowerCase().includes('doc')"
+			[class.bg-green-600]="item.type.toLocaleLowerCase().includes('xls')"
+			[class.bg-gray-600]="item.type.toLocaleLowerCase() === 'txt'"
+			[class.bg-amber-600]="item.type.toLocaleLowerCase().includes('image')"
 		>
-			{{ item.type.toUpperCase() }}
+			{{ item.type.toUpperCase().split("/")[1] }}
 		</div>
 	</div>
 

@@ -90,7 +90,6 @@ export class SearchForUserComponent
 	 * @param event
 	 */
 	onKeydown(event: KeyboardEvent): void {
-		console.log(event);
 		// Escape
 		if (event.code === 'Enter') {
 			// Subscribe to the search field value changes

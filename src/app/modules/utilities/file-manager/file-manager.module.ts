@@ -9,6 +9,7 @@ import { FileManagerDetailsComponent } from './details/details.component';
 import { FileManagerComponent } from './file-manager.component';
 import { fileManagerRoutes } from './file-manager.routing';
 import { FileManagerListComponent } from './list/list.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
 	declarations: [
@@ -20,6 +21,7 @@ import { FileManagerListComponent } from './list/list.component';
 		RouterModule.forChild(fileManagerRoutes),
 		MatButtonModule,
 		MatIconModule,
+		MatDialogModule,
 		MatSidenavModule,
 		MatTooltipModule,
 		SharedModule,
