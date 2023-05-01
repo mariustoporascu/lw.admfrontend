@@ -59,12 +59,20 @@
 					<!-- Actions -->
 					<div class="grid grid-cols-2 mt-4 sm:mt-0 gap-5" *ngIf="isFolderPath">
 						<!-- Upload button -->
-						<button mat-flat-button [color]="'primary'">
+						<button mat-flat-button [color]="'primary'" (click)="fileInput.click()">
 							<mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
 							<span class="ml-2 mr-1">Incarca fisiere</span>
 						</button>
+						<input
+							#fileInput
+							multiple
+							[attr.accept]="acceptedFileTypes"
+							type="file"
+							(change)="onFileSelected($event)"
+							style="display: none"
+						/>
 						<!-- Upload button -->
-						<button mat-flat-button [color]="'primary'">
+						<button mat-flat-button [color]="'primary'" (click)="openCamera()">
 							<mat-icon [svgIcon]="'heroicons_outline:camera'"></mat-icon>
 							<span class="ml-2 mr-1">Foloseste camera</span>
 						</button>
@@ -175,13 +183,19 @@
 														></mat-icon>
 														<div
 															class="absolute left-0 bottom-0 px-1.5 rounded text-sm font-semibold leading-5 text-white"
-															[class.bg-red-600]="file.type === 'PDF'"
-															[class.bg-blue-600]="file.type === 'DOC'"
-															[class.bg-green-600]="file.type === 'XLS'"
-															[class.bg-gray-600]="file.type === 'TXT'"
-															[class.bg-amber-600]="file.type === 'JPG'"
+															[class.bg-red-600]="file.type.toLowerCase().includes('pdf')"
+															[class.bg-blue-600]="
+																file.type.toLocaleLowerCase().includes('doc')
+															"
+															[class.bg-green-600]="
+																file.type.toLocaleLowerCase().includes('xls')
+															"
+															[class.bg-gray-600]="file.type.toLocaleLowerCase() === 'txt'"
+															[class.bg-amber-600]="
+																file.type.toLocaleLowerCase().includes('image')
+															"
 														>
-															{{ file.type.toUpperCase() }}
+															{{ file.type.toUpperCase().split("/")[1] }}
 														</div>
 													</div>
 												</div>
@@ -226,4 +240,14 @@
 			</div>
 		</mat-drawer-content>
 	</mat-drawer-container>
+	<ng-template #cameraDialog>
+		<h2 mat-dialog-title>Take a photo</h2>
+		<mat-dialog-content>
+			<video #videoElement width="540" height="960"></video>
+		</mat-dialog-content>
+		<mat-dialog-actions>
+			<button mat-button (click)="captureImage()">Salveaza</button>
+			<button mat-button (click)="closeCamera()">Inchide</button>
+		</mat-dialog-actions>
+	</ng-template>
 </div>
