@@ -49,6 +49,12 @@ export class FileManagerService {
 			formData
 		);
 	}
+	public rescanCode(formData: FormData): Observable<any> {
+		return this._httpClient.post<any>(
+			`${this._dataProcUrl}/filemanager/rescanCode`,
+			formData
+		);
+	}
 	/**
 	 * Set items
 	 */
