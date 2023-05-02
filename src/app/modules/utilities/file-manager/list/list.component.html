@@ -56,13 +56,21 @@
 							</ng-container>
 						</div>
 					</div>
+					<div class="grid mt-4 sm:mt-0 gap-5" *ngIf="isFolderPath">
+						<!-- Alert -->
+						<fuse-alert
+							class="ml-8 mt-8 mr-8"
+							*ngIf="showAlert"
+							[appearance]="'outline'"
+							[showIcon]="false"
+							[type]="alert.type"
+							[dismissible]="true"
+						>
+							{{ alert.message }}
+						</fuse-alert>
+					</div>
 					<!-- Actions -->
-					<div class="grid grid-cols-2 mt-4 sm:mt-0 gap-5" *ngIf="isFolderPath">
-						<!-- Upload button -->
-						<button mat-flat-button [color]="'primary'" (click)="fileInput.click()">
-							<mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-							<span class="ml-2 mr-1">Incarca fisiere</span>
-						</button>
+					<div class="grid mt-4 sm:mt-0 gap-5" *ngIf="isFolderPath">
 						<input
 							#fileInput
 							multiple
@@ -72,9 +80,9 @@
 							style="display: none"
 						/>
 						<!-- Upload button -->
-						<button mat-flat-button [color]="'primary'" (click)="openCamera()">
-							<mat-icon [svgIcon]="'heroicons_outline:camera'"></mat-icon>
-							<span class="ml-2 mr-1">Foloseste camera</span>
+						<button mat-flat-button [color]="'primary'" (click)="fileInput.click()">
+							<mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+							<span class="ml-2 mr-1">Incarca fisiere</span>
 						</button>
 					</div>
 				</div>
@@ -240,14 +248,4 @@
 			</div>
 		</mat-drawer-content>
 	</mat-drawer-container>
-	<ng-template #cameraDialog>
-		<h2 mat-dialog-title>Take a photo</h2>
-		<mat-dialog-content>
-			<video #videoElement width="540" height="960"></video>
-		</mat-dialog-content>
-		<mat-dialog-actions>
-			<button mat-button (click)="captureImage()">Salveaza</button>
-			<button mat-button (click)="closeCamera()">Inchide</button>
-		</mat-dialog-actions>
-	</ng-template>
 </div>

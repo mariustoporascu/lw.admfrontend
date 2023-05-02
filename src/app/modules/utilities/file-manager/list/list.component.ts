@@ -10,12 +10,13 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDrawer } from '@angular/material/sidenav';
-import { Subject, catchError, of, takeUntil } from 'rxjs';
+import { Subject, catchError, of, switchMap, takeUntil } from 'rxjs';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { FileManagerService } from '../../../../core/filemanager/file-manager.service';
 import { Item, Items } from '../../../../core/filemanager/file-manager.types';
 import { FileManagerComponent } from '../file-manager.component';
 import { MatDialog } from '@angular/material/dialog';
+import { FuseAlertType } from '@fuse/components/alert';
 
 @Component({
 	selector: 'file-manager-list',
@@ -25,8 +26,12 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class FileManagerListComponent implements OnInit, OnDestroy {
 	@ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
-	@ViewChild('videoElement', { static: false }) videoElement: ElementRef;
-	@ViewChild('cameraDialog', { static: true }) cameraDialog: any;
+
+	alert: { type: FuseAlertType; message: string } = {
+		type: 'success',
+		message: '',
+	};
+	showAlert: boolean = false;
 
 	acceptedFileTypes: string[] = ['.jpg', '.jpeg', '.png', '.pdf'];
 	drawerMode: 'side' | 'over';
@@ -45,8 +50,7 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 		private _fileManagerComponent: FileManagerComponent,
 		private _router: Router,
 		private _fileManagerService: FileManagerService,
-		private _fuseMediaWatcherService: FuseMediaWatcherService,
-		private dialog: MatDialog
+		private _fuseMediaWatcherService: FuseMediaWatcherService
 	) {}
 
 	// -----------------------------------------------------------------------------------------------------
@@ -136,7 +140,6 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 		if (files && files.length > 0) {
 			const formData = new FormData();
 			for (let i = 0; i < files.length; i++) {
-				console.log(files[i].type);
 				if (
 					this.acceptedFileTypes.indexOf(`.${files[i].type.split('/')[1]}`) === -1
 				)
@@ -144,57 +147,34 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 				formData.append(`file${i}`, files[i]);
 			}
 			formData.append('firmaDiscountId', this.firmaDiscountId);
+			// Hide the alert
+			this.showAlert = false;
 			this._fileManagerService
 				.uploadFiles(formData)
-				.pipe(catchError((err) => of(err.error)))
-				.subscribe((res) => {
-					console.log(res);
-				});
+				.pipe(
+					catchError((err) => of(err.error)),
+					switchMap((response) => {
+						// Show the alert
+						this.showAlert = true;
+						this._changeDetectorRef.markForCheck();
+						if (response.error) {
+							const error = JSON.parse(response.message);
+							// Set the alert
+							this.alert = {
+								type: 'error',
+								message: `${error.Succes} incarcari cu succes, ${error.Failed} esuate.`,
+							};
+							return of(false);
+						} else {
+							this.alert = {
+								type: 'success',
+								message: 'Incarcarea a fost efectuata cu succes.',
+							};
+							return of(true);
+						}
+					})
+				)
+				.subscribe();
 		}
-	}
-
-	async openCamera(): Promise<void> {
-		this.dialog.open(this.cameraDialog);
-
-		try {
-			const constraints = { video: { facingMode: 'user' }, audio: false };
-			const stream = await navigator.mediaDevices.getUserMedia(constraints);
-			this.videoElement.nativeElement.srcObject = stream;
-			this.videoElement.nativeElement.play();
-		} catch (err) {
-			console.error('Error opening camera:', err);
-		}
-	}
-
-	closeCamera(): void {
-		const stream = this.videoElement.nativeElement.srcObject;
-		if (stream) {
-			stream.getTracks().forEach((track) => track.stop());
-		}
-		this.dialog.closeAll();
-	}
-
-	public captureImage(): void {
-		// Create a temporary canvas element
-		const canvas = document.createElement('canvas');
-		canvas.width = 540;
-		canvas.height = 960;
-		const ctx = canvas.getContext('2d');
-
-		// Draw the image from the video element to the canvas
-		ctx.drawImage(this.videoElement.nativeElement, 0, 0, 540, 960);
-		canvas.toBlob((blob) => {
-			console.log('Captured image:', blob);
-			const formData = new FormData();
-
-			formData.append(`file`, blob, 'image.jpg');
-			formData.append('firmaDiscountId', this.firmaDiscountId);
-			this._fileManagerService
-				.uploadFiles(formData)
-				.pipe(catchError((err) => of(err.error)))
-				.subscribe((res) => {
-					console.log(res);
-				});
-		}, 'image/jpg');
 	}
 }
