@@ -76,23 +76,27 @@
 											Numar document
 										</th>
 										<td mat-cell *matCellDef="let transaction">
-											<span
-												class="pr-6 font-medium text-sm text-secondary whitespace-nowrap"
+											<div
+												class="w-30 truncate"
+												[matTooltip]="transaction.ocrData?.docNumber?.value"
 											>
-												{{ transaction.docNumber }}
-											</span>
+												{{ transaction.ocrData?.docNumber?.value }}
+											</div>
 										</td>
 									</ng-container>
 
 									<!-- Bussines Details -->
 									<ng-container matColumnDef="extractedBusinessData">
 										<th mat-header-cell mat-sort-header *matHeaderCellDef>
-											Detalii companie
+											Punct de lucru
 										</th>
 										<td mat-cell *matCellDef="let transaction">
-											<span class="pr-6 whitespace-wrap">
-												{{ transaction.extractedBusinessData }}
-											</span>
+											<div
+												class="w-50 truncate"
+												[matTooltip]="transaction.ocrData?.adresaFirma?.value"
+											>
+												{{ transaction.ocrData?.adresaFirma?.value }}
+											</div>
 										</td>
 									</ng-container>
 
@@ -111,12 +115,12 @@
 										<th mat-header-cell mat-sort-header *matHeaderCellDef>Total</th>
 										<td mat-cell *matCellDef="let transaction">
 											<span class="pr-6 font-medium whitespace-nowrap">
-												{{ transaction.total | currency : "RON " }}
+												{{ transaction.ocrData?.total?.value | currency : "RON " }}
 											</span>
 										</td>
 									</ng-container>
 
-									<!-- Amount -->
+									<!-- Discount Amount -->
 									<ng-container matColumnDef="discountValue">
 										<th mat-header-cell mat-sort-header *matHeaderCellDef>
 											Valoare discount
@@ -195,34 +199,39 @@
 										aria-label="Select page"
 									></mat-paginator>
 									<div
-										class="flex flex-row justify-end items-center mr-10"
+										class="flex flex-row justify-end items-center mr-5"
 										*ngIf="countSelected() > 0"
 									>
-										<!-- Accept -->
+										<button
+											mat-flat-button
+											[class.bg-orange-300]="true"
+											[class.scale-75]="true"
+											title="Transfera"
+											(click)="makeTransferSelected()"
+										>
+											<mat-icon
+												[svgIcon]="'heroicons_outline:switch-horizontal'"
+											></mat-icon>
+										</button>
 										<button
 											mat-flat-button
 											[class.bg-green-300]="true"
 											[class.scale-75]="true"
+											title="Retrage"
 											(click)="makeWithdrawalSelected()"
-											title="Aproba"
 										>
-											<mat-icon [svgIcon]="'heroicons_outline:check-circle'"></mat-icon>
+											<mat-icon [svgIcon]="'heroicons_outline:cash'"></mat-icon>
 										</button>
-										<!-- Reject button -->
-										<button
-											mat-flat-button
-											[class.bg-red-300]="true"
-											[class.scale-75]="true"
-											(click)="makeTransferSelected()"
-											title="Respinge"
+										<div
+											class="ml-5 mr-5 mt-2 mb-2 p-2 bg-green-100 border-2 border-dashed border-green-400 rounded-2xl max-w-fit"
 										>
-											<mat-icon [svgIcon]="'heroicons_outline:x-circle'"></mat-icon>
-										</button>
-									</div>
-									<div
-										class="mr-10 mt-2 mb-2 p-2 bg-yellow-100 border-2 border-dashed border-yellow-400 rounded-2xl max-w-fit"
-									>
-										<h6>{{ countSelected() }} randuri selectate</h6>
+											<h6>{{ countTotal() }} discount total</h6>
+										</div>
+										<div
+											class="mr-5 mt-2 mb-2 p-2 bg-yellow-100 border-2 border-dashed border-yellow-400 rounded-2xl max-w-fit"
+										>
+											<h6>{{ countSelected() }} randuri selectate</h6>
+										</div>
 									</div>
 								</div>
 							</div>

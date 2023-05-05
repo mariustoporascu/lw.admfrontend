@@ -79,4 +79,16 @@ export class FuseUtilsService {
 			new Date().setMonth(new Date().getMonth() - 1)
 		).toLocaleString('default', { month: 'long' });
 	}
+	parseDate(date: string) {
+		return new Date(date).toLocaleDateString('ro');
+	}
+	getDetaliiBusiness(data: any) {
+		return (
+			data.ocrData?.denumireFirma?.value +
+			', ' +
+			data.ocrData?.cuiFirma?.value +
+			', ' +
+			data.ocrData?.adresaFirma?.value
+		);
+	}
 }

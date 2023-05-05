@@ -16,6 +16,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { firmaDocsWFPRoutes } from './firma-docsWFP.routing';
 import { FirmaDocsWFPComponent } from './firma-docsWFP.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
 	declarations: [FirmaDocsWFPComponent],
@@ -30,6 +31,7 @@ import { FirmaDocsWFPComponent } from './firma-docsWFP.component';
 		MatProgressBarModule,
 		MatAutocompleteModule,
 		MatSortModule,
+		MatTooltipModule,
 		MatTableModule,
 		MatPaginatorModule,
 		MatSidenavModule,

@@ -17,6 +17,7 @@ import { FuseAlertModule } from '@fuse/components/alert';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { SearchForUserComponent } from './search-user/search-user.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
 	declarations: [UserOperationsComponent, SearchForUserComponent],
@@ -31,6 +32,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 		MatProgressBarModule,
 		MatAutocompleteModule,
 		MatSortModule,
+		MatTooltipModule,
 		MatTableModule,
 		MatPaginatorModule,
 		MatSidenavModule,

@@ -11,15 +11,12 @@ export interface ConexiuniConturi {
 }
 export interface Documente {
 	id: string;
-	docNumber?: string;
-	total: number;
 	isInvoice: boolean;
 	status: number;
 	statusName?: string;
-	receiptId?: string;
 	discountValue: number;
-	extractedBusinessData?: string;
-	extractedBusinessAddress?: string;
+	ocrDataJson?: string;
+	ocrData?: object;
 	uploaded: Date;
 	firmaDiscountId?: string;
 	conexId?: string;

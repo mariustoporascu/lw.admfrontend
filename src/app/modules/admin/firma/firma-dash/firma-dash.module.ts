@@ -13,6 +13,7 @@ import { firmaDashRoutes } from './firma-dash.routing';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
 import { NgChartsModule } from 'ng2-charts';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
 	declarations: [FirmaDashComponent],
@@ -22,6 +23,7 @@ import { NgChartsModule } from 'ng2-charts';
 		MatDividerModule,
 		MatIconModule,
 		MatMenuModule,
+		MatTooltipModule,
 		MatProgressBarModule,
 		MatSortModule,
 		MatTableModule,

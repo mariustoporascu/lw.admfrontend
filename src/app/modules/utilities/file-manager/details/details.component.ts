@@ -116,6 +116,9 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 	splitByCapitalLetters(str: string): string {
 		return this._utilsService.splitByCapitalLetters(str);
 	}
+	getDate(date: string): string {
+		return this._utilsService.parseDate(date);
+	}
 	async openCamera(): Promise<void> {
 		this.dialog.open(this.cameraDialog);
 
@@ -199,5 +202,19 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 					}
 				});
 		}, 'image/png');
+	}
+	sendForApproval(): void {
+		this._fileManagerService
+			.sendForApproval(this.documentId)
+			.subscribe((resp) => {
+				console.log(resp);
+				this._fileManagerService.getFiles().subscribe((res) => {
+					this._fileManagerService.setItems(
+						this._fileManagerListComponent.firmaDiscountId
+					);
+					this.closeDrawer();
+					this._changeDetectorRef.markForCheck();
+				});
+			});
 	}
 }

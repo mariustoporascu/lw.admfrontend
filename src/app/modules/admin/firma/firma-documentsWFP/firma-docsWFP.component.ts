@@ -209,7 +209,13 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 	makeWithdrawalRow(row: Documente) {
 		this.sendRequestToServer([row.id], 1);
 	}
-
+	countTotal() {
+		let total = 0;
+		this.selection.selected.forEach((item: any) => {
+			total += item.discountValue;
+		});
+		return total;
+	}
 	sendRequestToServer(documenteIds: string[], status: number) {
 		// Hide the alert
 		this.showAlert = false;
@@ -228,11 +234,11 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 					this._firmaFunctDataService.getDocumentsWFP().subscribe();
 
 					if (response.error) {
-						const error = JSON.parse(response.message);
+						const error = response.message;
 						// Set the alert
 						this.alert = {
 							type: 'error',
-							message: `${error.Succes} operatiuni cu succes, ${error.Failed} esuate.`,
+							message: `${error.succes} operatiuni cu succes, ${error.failed} esuate.`,
 						};
 						return of(false);
 					} else {

@@ -121,7 +121,12 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 		// Mark for check
 		this._changeDetectorRef.markForCheck();
 	}
-
+	refreshData() {
+		this._fileManagerService.getFiles().subscribe((res) => {
+			this._fileManagerService.setItems(this.firmaDiscountId);
+			this._changeDetectorRef.markForCheck();
+		});
+	}
 	/**
 	 * Track by function for ngFor loops
 	 *
@@ -156,13 +161,16 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 					switchMap((response) => {
 						// Show the alert
 						this.showAlert = true;
-						this._changeDetectorRef.markForCheck();
+						this._fileManagerService.getFiles().subscribe((res) => {
+							this._fileManagerService.setItems(this.firmaDiscountId);
+							this._changeDetectorRef.markForCheck();
+						});
 						if (response.error) {
-							const error = JSON.parse(response.message);
+							const error = response.messag;
 							// Set the alert
 							this.alert = {
 								type: 'error',
-								message: `${error.Succes} incarcari cu succes, ${error.Failed} esuate.`,
+								message: `${error.succes} incarcari cu succes, ${error.failed} esuate.`,
 							};
 							return of(false);
 						} else {
