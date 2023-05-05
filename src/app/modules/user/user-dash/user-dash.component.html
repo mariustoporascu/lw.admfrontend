@@ -150,9 +150,12 @@
 						<ng-container matColumnDef="docNumber">
 							<th mat-header-cell mat-sort-header *matHeaderCellDef>Numar document</th>
 							<td mat-cell *matCellDef="let transaction">
-								<span class="pr-6 font-medium text-sm text-secondary whitespace-nowrap">
-									{{ transaction.docNumber }}
-								</span>
+								<div
+									class="w-30 truncate"
+									[matTooltip]="transaction.ocrData?.docNumber?.value"
+								>
+									{{ transaction.ocrData?.docNumber?.value }}
+								</div>
 							</td>
 						</ng-container>
 
@@ -162,9 +165,12 @@
 								Detalii companie
 							</th>
 							<td mat-cell *matCellDef="let transaction">
-								<span class="pr-6 whitespace-nowrap">
-									{{ transaction.extractedBusinessData }}
-								</span>
+								<div
+									class="w-50 truncate"
+									[matTooltip]="getDetaliiBusiness(transaction)"
+								>
+									{{ getDetaliiBusiness(transaction) }}
+								</div>
 							</td>
 						</ng-container>
 
@@ -183,12 +189,12 @@
 							<th mat-header-cell mat-sort-header *matHeaderCellDef>Total</th>
 							<td mat-cell *matCellDef="let transaction">
 								<span class="pr-6 font-medium whitespace-nowrap">
-									{{ transaction.total | currency : "RON " }}
+									{{ transaction.ocrData?.total?.value | currency : "RON " }}
 								</span>
 							</td>
 						</ng-container>
 
-						<!-- Amount -->
+						<!-- Discount Amount -->
 						<ng-container matColumnDef="discountValue">
 							<th mat-header-cell mat-sort-header *matHeaderCellDef>
 								Valoare discount

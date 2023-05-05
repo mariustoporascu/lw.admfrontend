@@ -189,6 +189,13 @@ export class UserOperationsComponent
 	countSelected() {
 		return this.selection.selected.length;
 	}
+	countTotal() {
+		let total = 0;
+		this.selection.selected.forEach((item: any) => {
+			total += item.discountValue;
+		});
+		return total;
+	}
 	// transfer guid 3a242ee5-111b-48e9-8b7d-d7592ddb23ba
 	makeTransferSelected() {
 		this.transferIds = [...this.selection.selected.map((item) => item.id)];
@@ -236,11 +243,11 @@ export class UserOperationsComponent
 					this._userFunctDataService.getApprovedDocuments().subscribe();
 					this.selection.clear();
 					if (response.error) {
-						const error = JSON.parse(response.message);
+						const error = response.message;
 						// Set the alert
 						this.alert = {
 							type: 'error',
-							message: `${error.Succes} operatiuni cu succes, ${error.Failed} esuate.`,
+							message: `${error.succes} operatiuni cu succes, ${error.failed} esuate.`,
 						};
 						return of(false);
 					} else {
@@ -253,5 +260,8 @@ export class UserOperationsComponent
 				})
 			)
 			.subscribe();
+	}
+	getDetaliiBusiness(data: any): string {
+		return this._utilsService.getDetaliiBusiness(data);
 	}
 }

@@ -13,6 +13,7 @@ import { userDashRoutes } from './user-dash.routing';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
 import { NgChartsModule } from 'ng2-charts';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
 	declarations: [UserDashComponent],
@@ -26,6 +27,7 @@ import { NgChartsModule } from 'ng2-charts';
 		MatSortModule,
 		MatTableModule,
 		MatPaginatorModule,
+		MatTooltipModule,
 		MatInputModule,
 		NgChartsModule,
 		SharedModule,

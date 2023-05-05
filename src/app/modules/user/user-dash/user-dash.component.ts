@@ -142,4 +142,7 @@ export class UserDashComponent implements OnInit, AfterViewInit, OnDestroy {
 	splitByCapitalLetters(str: string): string {
 		return this._utilsService.splitByCapitalLetters(str);
 	}
+	getDetaliiBusiness(data: any): string {
+		return this._utilsService.getDetaliiBusiness(data);
+	}
 }
