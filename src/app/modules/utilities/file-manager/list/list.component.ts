@@ -17,6 +17,10 @@ import { Item, Items } from '../../../../core/filemanager/file-manager.types';
 import { FileManagerComponent } from '../file-manager.component';
 import { MatDialog } from '@angular/material/dialog';
 import { FuseAlertType } from '@fuse/components/alert';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { FuseUtilsService } from '@fuse/services/utils';
 
 @Component({
 	selector: 'file-manager-list',
@@ -26,12 +30,26 @@ import { FuseAlertType } from '@fuse/components/alert';
 })
 export class FileManagerListComponent implements OnInit, OnDestroy {
 	@ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
+	@ViewChild('recentTransactionsTable', { read: MatSort })
+	recentTransactionsTableMatSort: MatSort;
+	@ViewChild('recentTransactionsTablePagination')
+	recentTransactionsTablePagination: MatPaginator;
 
 	alert: { type: FuseAlertType; message: string } = {
 		type: 'success',
 		message: '',
 	};
 	showAlert: boolean = false;
+	recentTransactionsDataSource: MatTableDataSource<any> =
+		new MatTableDataSource();
+	recentTransactionsTableColumns: string[] = [
+		'docNumber',
+		'docType',
+		'fileName',
+		'fileExtension',
+		'created',
+		'status',
+	];
 
 	acceptedFileTypes: string[] = ['.jpg', '.jpeg', '.png', '.pdf'];
 	drawerMode: 'side' | 'over';
@@ -47,6 +65,7 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 	constructor(
 		private _activatedRoute: ActivatedRoute,
 		private _changeDetectorRef: ChangeDetectorRef,
+		private _utilsService: FuseUtilsService,
 		private _fileManagerComponent: FileManagerComponent,
 		private _router: Router,
 		private _fileManagerService: FileManagerService,
@@ -66,11 +85,19 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 		this._activatedRoute.paramMap.subscribe((params) => {
 			this.firmaDiscountId = params.get('folderId');
 		});
+		this.recentTransactionsDataSource.filterPredicate = (
+			data: Item,
+			filter: string
+		) => {
+			let dataStr = JSON.stringify(data).toLowerCase();
+			return dataStr.includes(filter);
+		};
 		// Get the items
 		this._fileManagerService.Items$.pipe(
 			takeUntil(this._unsubscribeAll)
 		).subscribe((items: Items) => {
 			this.items = items;
+			this.recentTransactionsDataSource.data = items.files;
 			// Mark for check
 			this._changeDetectorRef.markForCheck();
 		});
@@ -122,6 +149,7 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 		this._changeDetectorRef.markForCheck();
 	}
 	refreshData() {
+		this.showAlert = false;
 		this._fileManagerService.getFiles().subscribe((res) => {
 			this._fileManagerService.setItems(this.firmaDiscountId);
 			this._changeDetectorRef.markForCheck();
@@ -136,6 +164,21 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 	trackByFn(index: number, item: any): any {
 		return item.id || index;
 	}
+
+	datePicked(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
+		let startDate = new Date(dateRangeStart.value).getTime();
+		let tempEndDate = new Date(dateRangeEnd.value);
+		tempEndDate.setHours(23, 59, 59, 999);
+		let endDate = tempEndDate.getTime();
+		this.recentTransactionsDataSource.data = this.items.files.filter((item) => {
+			var currDate = new Date(item.fileInfo.fisiereDocumente.created).getTime();
+			return currDate >= startDate && currDate <= endDate;
+		});
+		if (this.recentTransactionsDataSource.paginator) {
+			this.recentTransactionsDataSource.paginator.firstPage();
+		}
+	}
+
 	checkIfFolder(): void {
 		this.isFolderPath = this._activatedRoute.snapshot.url.length > 0;
 	}
@@ -183,6 +226,17 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 					})
 				)
 				.subscribe();
+		}
+	}
+	splitByCapitalLetters(str: string): string {
+		return this._utilsService.splitByCapitalLetters(str);
+	}
+	applyFilter(event: Event) {
+		const filterValue = (event.target as HTMLInputElement).value;
+		this.recentTransactionsDataSource.filter = filterValue.trim().toLowerCase();
+
+		if (this.recentTransactionsDataSource.paginator) {
+			this.recentTransactionsDataSource.paginator.firstPage();
 		}
 	}
 }

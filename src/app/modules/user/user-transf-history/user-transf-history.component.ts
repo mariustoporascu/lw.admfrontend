@@ -13,6 +13,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { FuseUtilsService } from '@fuse/services/utils';
+import { Tranzactii } from 'app/core/bkendmodels/models.types';
 
 @Component({
 	selector: 'user-transf-history',
@@ -27,6 +28,7 @@ export class UserTransfHistoryComponent
 	recentTransactionsTableMatSort: MatSort;
 	@ViewChild('recentTransactionsTablePagination')
 	recentTransactionsTablePagination: MatPaginator;
+	items: Tranzactii[];
 
 	recentTransactionsDataSource: MatTableDataSource<any> =
 		new MatTableDataSource();
@@ -55,12 +57,20 @@ export class UserTransfHistoryComponent
 	 * On init
 	 */
 	ngOnInit(): void {
+		this.recentTransactionsDataSource.filterPredicate = (
+			data: Tranzactii,
+			filter: string
+		) => {
+			let dataStr = JSON.stringify(data).toLowerCase();
+			return dataStr.includes(filter);
+		};
 		// Get the data
 		this._userFunctDataService.transferData$
 			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe((data) => {
 				// Store the table data
 				this.recentTransactionsDataSource.data = data;
+				this.items = data;
 			});
 	}
 
@@ -96,7 +106,19 @@ export class UserTransfHistoryComponent
 	trackByFn(index: number, item: any): any {
 		return item.id || index;
 	}
-
+	datePicked(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
+		let startDate = new Date(dateRangeStart.value).getTime();
+		let tempEndDate = new Date(dateRangeEnd.value);
+		tempEndDate.setHours(23, 59, 59, 999);
+		let endDate = tempEndDate.getTime();
+		this.recentTransactionsDataSource.data = this.items.filter((item) => {
+			var currDate = new Date(item.created).getTime();
+			return currDate >= startDate && currDate <= endDate;
+		});
+		if (this.recentTransactionsDataSource.paginator) {
+			this.recentTransactionsDataSource.paginator.firstPage();
+		}
+	}
 	// -----------------------------------------------------------------------------------------------------
 	// @ Private methods
 	// -----------------------------------------------------------------------------------------------------
