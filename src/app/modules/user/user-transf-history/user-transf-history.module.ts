@@ -12,6 +12,8 @@ import { UserTransfHistoryComponent } from './user-transf-history.component';
 import { userTransfRoutes } from './user-transf-history.routing';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @NgModule({
 	declarations: [UserTransfHistoryComponent],
@@ -26,6 +28,8 @@ import { MatInputModule } from '@angular/material/input';
 		MatTableModule,
 		MatPaginatorModule,
 		MatInputModule,
+		MatDatepickerModule,
+		MatNativeDateModule,
 		SharedModule,
 	],
 })

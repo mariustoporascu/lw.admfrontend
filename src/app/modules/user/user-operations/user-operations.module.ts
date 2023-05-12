@@ -18,6 +18,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { SearchForUserComponent } from './search-user/search-user.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @NgModule({
 	declarations: [UserOperationsComponent, SearchForUserComponent],
@@ -37,6 +39,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 		MatPaginatorModule,
 		MatSidenavModule,
 		MatInputModule,
+		MatDatepickerModule,
+		MatNativeDateModule,
 		SharedModule,
 	],
 })

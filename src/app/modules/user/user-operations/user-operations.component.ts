@@ -34,6 +34,7 @@ export class UserOperationsComponent
 	recentTransactionsTableMatSort: MatSort;
 	@ViewChild('recentTransactionsTablePagination')
 	recentTransactionsTablePagination: MatPaginator;
+	items: Documente[];
 
 	recentTransactionsDataSource: MatTableDataSource<any> =
 		new MatTableDataSource();
@@ -81,12 +82,20 @@ export class UserOperationsComponent
 	 * On init
 	 */
 	ngOnInit(): void {
+		this.recentTransactionsDataSource.filterPredicate = (
+			data: Documente,
+			filter: string
+		) => {
+			let dataStr = JSON.stringify(data).toLowerCase();
+			return dataStr.includes(filter);
+		};
 		// Get the data
 		this._userFunctDataService.operatiuniData$
 			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe((data) => {
 				// Store the table data
 				this.recentTransactionsDataSource.data = data;
+				this.items = data;
 			});
 		// Subscribe to media query change
 		this._fuseMediaWatcherService
@@ -133,7 +142,19 @@ export class UserOperationsComponent
 	trackByFn(index: number, item: any): any {
 		return item.id || index;
 	}
-
+	datePicked(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
+		let startDate = new Date(dateRangeStart.value).getTime();
+		let tempEndDate = new Date(dateRangeEnd.value);
+		tempEndDate.setHours(23, 59, 59, 999);
+		let endDate = tempEndDate.getTime();
+		this.recentTransactionsDataSource.data = this.items.filter((item) => {
+			var currDate = new Date(item.uploaded).getTime();
+			return currDate >= startDate && currDate <= endDate;
+		});
+		if (this.recentTransactionsDataSource.paginator) {
+			this.recentTransactionsDataSource.paginator.firstPage();
+		}
+	}
 	// -----------------------------------------------------------------------------------------------------
 	// @ Private methods
 	// -----------------------------------------------------------------------------------------------------

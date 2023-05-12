@@ -204,6 +204,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 		}, 'image/png');
 	}
 	sendForApproval(): void {
+		this._fileManagerListComponent.showAlert = false;
 		this._fileManagerService
 			.sendForApproval(this.documentId)
 			.subscribe((resp) => {
@@ -212,6 +213,12 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 					this._fileManagerService.setItems(
 						this._fileManagerListComponent.firmaDiscountId
 					);
+					this._fileManagerListComponent.showAlert = true;
+					// Set the alert
+					this._fileManagerListComponent.alert = {
+						type: 'success',
+						message: `Fisierul a fost trimis la aprobat.`,
+					};
 					this.closeDrawer();
 					this._changeDetectorRef.markForCheck();
 				});

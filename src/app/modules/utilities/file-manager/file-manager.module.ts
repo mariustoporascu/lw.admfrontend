@@ -11,6 +11,15 @@ import { fileManagerRoutes } from './file-manager.routing';
 import { FileManagerListComponent } from './list/list.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FuseAlertModule } from '@fuse/components/alert';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
 	declarations: [
@@ -21,11 +30,20 @@ import { FuseAlertModule } from '@fuse/components/alert';
 	imports: [
 		RouterModule.forChild(fileManagerRoutes),
 		FuseAlertModule,
-		MatButtonModule,
-		MatIconModule,
 		MatDialogModule,
 		MatSidenavModule,
 		MatTooltipModule,
+		MatButtonModule,
+		MatDividerModule,
+		MatIconModule,
+		MatMenuModule,
+		MatProgressBarModule,
+		MatSortModule,
+		MatTableModule,
+		MatPaginatorModule,
+		MatInputModule,
+		MatDatepickerModule,
+		MatNativeDateModule,
 		SharedModule,
 	],
 })
