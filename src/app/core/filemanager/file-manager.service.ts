@@ -150,7 +150,6 @@ export class FileManagerService {
 			)
 			.pipe(
 				tap((data) => {
-					console.log(data);
 					let files = data
 						? data.map((item) => {
 								item.uploaded = new Date(item.uploaded);
@@ -173,6 +172,12 @@ export class FileManagerService {
 	sendForApproval(documentId: string): Observable<any> {
 		return this._httpClient.get(
 			`${this._backEndUrl}/regularuser/sendForApproval?documentId=${documentId}`
+		);
+	}
+	downloadFile(identifier: string): Observable<ArrayBuffer> {
+		return this._httpClient.get(
+			`${this._dataProcUrl}/filemanager/getFileStream?identifier=${identifier}`,
+			{ responseType: 'arraybuffer' }
 		);
 	}
 }

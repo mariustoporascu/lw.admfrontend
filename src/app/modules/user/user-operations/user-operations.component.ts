@@ -151,6 +151,8 @@ export class UserOperationsComponent
 			var currDate = new Date(item.uploaded).getTime();
 			return currDate >= startDate && currDate <= endDate;
 		});
+		this.selection.clear();
+
 		if (this.recentTransactionsDataSource.paginator) {
 			this.recentTransactionsDataSource.paginator.firstPage();
 		}
@@ -173,7 +175,7 @@ export class UserOperationsComponent
 	applyFilter(event: Event) {
 		const filterValue = (event.target as HTMLInputElement).value;
 		this.recentTransactionsDataSource.filter = filterValue.trim().toLowerCase();
-
+		this.selection.clear();
 		if (this.recentTransactionsDataSource.paginator) {
 			this.recentTransactionsDataSource.paginator.firstPage();
 		}
@@ -195,7 +197,7 @@ export class UserOperationsComponent
 			return;
 		}
 
-		this.selection.select(...this.recentTransactionsDataSource.data);
+		this.selection.select(...this.recentTransactionsDataSource.filteredData);
 	}
 
 	/** The label for the checkbox on the passed row */

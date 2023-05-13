@@ -20,6 +20,7 @@ import { MatDrawer } from '@angular/material/sidenav';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FirmaFunctDataService } from 'app/core/firma-funct-data/firma-funct-data.service';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
 	selector: 'firma-docsWFP',
@@ -32,7 +33,9 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 	recentTransactionsTableMatSort: MatSort;
 	@ViewChild('recentTransactionsTablePagination')
 	recentTransactionsTablePagination: MatPaginator;
+	@ViewChild('confirmDialogView', { static: true }) confirmDialogView: any;
 
+	items: Documente[];
 	recentTransactionsDataSource: MatTableDataSource<any> =
 		new MatTableDataSource();
 	recentTransactionsTableColumns: string[] = [
@@ -68,6 +71,7 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 		private _firmaFunctDataService: FirmaFunctDataService,
 		private _cdr: ChangeDetectorRef,
 		private _router: Router,
+		private _dialog: MatDialog,
 		private _fuseMediaWatcherService: FuseMediaWatcherService
 	) {}
 
@@ -79,12 +83,20 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 	 * On init
 	 */
 	ngOnInit(): void {
+		this.recentTransactionsDataSource.filterPredicate = (
+			data: Documente,
+			filter: string
+		) => {
+			let dataStr = JSON.stringify(data).toLowerCase();
+			return dataStr.includes(filter);
+		};
 		// Get the data
 		this._firmaFunctDataService.docsData$
 			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe((data) => {
 				// Store the table data
 				this.recentTransactionsDataSource.data = data;
+				this.items = data;
 			});
 		// Subscribe to media query change
 		this._fuseMediaWatcherService
@@ -150,7 +162,7 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 	applyFilter(event: Event) {
 		const filterValue = (event.target as HTMLInputElement).value;
 		this.recentTransactionsDataSource.filter = filterValue.trim().toLowerCase();
-
+		this.selection.clear();
 		if (this.recentTransactionsDataSource.paginator) {
 			this.recentTransactionsDataSource.paginator.firstPage();
 		}
@@ -172,7 +184,7 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 			return;
 		}
 
-		this.selection.select(...this.recentTransactionsDataSource.data);
+		this.selection.select(...this.recentTransactionsDataSource.filteredData);
 	}
 
 	/** The label for the checkbox on the passed row */
@@ -188,14 +200,14 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 		return this.selection.selected.length;
 	}
 
-	makeTransferSelected() {
+	rejectSelected() {
 		this.sendRequestToServer(
 			[...this.selection.selected.map((item) => item.id)],
 			2
 		);
 		this.selection.clear();
 	}
-	makeWithdrawalSelected() {
+	approveSelected() {
 		this.sendRequestToServer(
 			[...this.selection.selected.map((item) => item.id)],
 			1
@@ -203,10 +215,10 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.selection.clear();
 	}
 	// transfer guid
-	makeTransferRow(row: Documente) {
+	rejectRow(row: Documente) {
 		this.sendRequestToServer([row.id], 2);
 	}
-	makeWithdrawalRow(row: Documente) {
+	approveRow(row: Documente) {
 		this.sendRequestToServer([row.id], 1);
 	}
 	countTotal() {
@@ -215,6 +227,20 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 			total += item.discountValue;
 		});
 		return total;
+	}
+	datePicked(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
+		let startDate = new Date(dateRangeStart.value).getTime();
+		let tempEndDate = new Date(dateRangeEnd.value);
+		tempEndDate.setHours(23, 59, 59, 999);
+		let endDate = tempEndDate.getTime();
+		this.recentTransactionsDataSource.data = this.items.filter((item) => {
+			var currDate = new Date(item.uploaded).getTime();
+			return currDate >= startDate && currDate <= endDate;
+		});
+		this.selection.clear();
+		if (this.recentTransactionsDataSource.paginator) {
+			this.recentTransactionsDataSource.paginator.firstPage();
+		}
 	}
 	sendRequestToServer(documenteIds: string[], status: number) {
 		// Hide the alert
@@ -251,5 +277,21 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 				})
 			)
 			.subscribe();
+	}
+	closeDialog() {
+		this._dialog.closeAll();
+	}
+	openDialog(row?: Documente) {
+		this.dialogRow = row;
+		this._dialog.open(this.confirmDialogView);
+	}
+	dialogRow: Documente;
+	confirmDialog() {
+		if (this.dialogRow) {
+			this.rejectRow(this.dialogRow);
+		} else {
+			this.rejectSelected();
+		}
+		this._dialog.closeAll();
 	}
 }

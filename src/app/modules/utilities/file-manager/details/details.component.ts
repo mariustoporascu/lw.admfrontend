@@ -173,7 +173,6 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 					catchError((err) => of(err.error)),
 					switchMap((response) => {
 						return this._ngZone.run(() => {
-							console.log(response);
 							// Show the alert
 							this.showAlert = true;
 							if (response.error) {
@@ -208,7 +207,6 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 		this._fileManagerService
 			.sendForApproval(this.documentId)
 			.subscribe((resp) => {
-				console.log(resp);
 				this._fileManagerService.getFiles().subscribe((res) => {
 					this._fileManagerService.setItems(
 						this._fileManagerListComponent.firmaDiscountId
@@ -222,6 +220,44 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 					this.closeDrawer();
 					this._changeDetectorRef.markForCheck();
 				});
+			});
+	}
+	downloadFile(): void {
+		this._fileManagerListComponent.showAlert = false;
+		this._fileManagerService
+			.downloadFile(this.item.fileInfo.fisiereDocumente.identifier)
+			.pipe(takeUntil(this._unsubscribeAll))
+			.subscribe({
+				next: (fileStream: ArrayBuffer) => {
+					if (!fileStream) {
+						this._fileManagerListComponent.showAlert = true;
+						// Set the alert
+						this._fileManagerListComponent.alert = {
+							type: 'error',
+							message: `Fisierul nu a putut fi descarcat.`,
+						};
+						return;
+					}
+
+					const blob = new Blob([fileStream]);
+					const url = window.URL.createObjectURL(blob);
+					const link = document.createElement('a');
+					link.href = url;
+					link.download = this.item.fileInfo.fisiereDocumente.fileName; // provide the filename here
+					document.body.appendChild(link);
+					link.click();
+					document.body.removeChild(link);
+				},
+				error: (error) => {
+					// Handle any other errors here.
+					console.error('An error occurred while downloading the file', error);
+					this._fileManagerListComponent.showAlert = true;
+					// Set the alert
+					this._fileManagerListComponent.alert = {
+						type: 'error',
+						message: `Fisierul nu a putut fi descarcat.`,
+					};
+				},
 			});
 	}
 }

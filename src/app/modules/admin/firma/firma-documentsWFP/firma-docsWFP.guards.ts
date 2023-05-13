@@ -1,21 +1,21 @@
 import { Injectable } from '@angular/core';
 import {
-	ActivatedRouteSnapshot,
 	CanDeactivate,
+	ActivatedRouteSnapshot,
 	RouterStateSnapshot,
 	UrlTree,
 } from '@angular/router';
 import { Observable } from 'rxjs';
-import { FileManagerDetailsComponent } from './details/details.component';
+import { ViewDocumentComponent } from './view-document/view-document.component';
 
 @Injectable({
 	providedIn: 'root',
 })
-export class CanDeactivateFileManagerDetails
-	implements CanDeactivate<FileManagerDetailsComponent>
+export class CanDeactivateViewDocumentComponent
+	implements CanDeactivate<ViewDocumentComponent>
 {
 	canDeactivate(
-		component: FileManagerDetailsComponent,
+		component: ViewDocumentComponent,
 		currentRoute: ActivatedRouteSnapshot,
 		currentState: RouterStateSnapshot,
 		nextState: RouterStateSnapshot
@@ -33,13 +33,12 @@ export class CanDeactivateFileManagerDetails
 		// If the next state doesn't contain '/file-manager'
 		// it means we are navigating away from the
 		// file manager app
-		if (!nextState.url.includes('filemanager')) {
+		if (!nextState.url.includes('docsapproval')) {
 			// Let it navigate
 			return true;
 		}
-
 		// If we are navigating to another item...
-		if (nextState.url.includes('/details') && component.item !== null) {
+		if (nextState.url.includes('/view-document') && component.document) {
 			// Just navigate
 			return true;
 		}

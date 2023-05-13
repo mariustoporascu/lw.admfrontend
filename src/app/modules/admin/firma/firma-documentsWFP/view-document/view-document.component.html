@@ -1,0 +1,29 @@
+<div class="flex flex-col flex-auto p-6 md:p-8">
+	<!-- Close button -->
+	<div class="flex items-center justify-end">
+		<a mat-icon-button [routerLink]="['../../']">
+			<mat-icon [svgIcon]="'heroicons_outline:x'"></mat-icon>
+		</a>
+	</div>
+	<ngx-extended-pdf-viewer
+		height="calc(100vh - 180px)"
+		[src]="fileBlob"
+		[showToolbar]="true"
+		[showSidebarButton]="false"
+		[showFindButton]="false"
+		[showPagingButtons]="false"
+		[showDrawEditor]="false"
+		[showTextEditor]="false"
+		[showZoomButtons]="true"
+		[showPresentationModeButton]="false"
+		[showOpenFileButton]="false"
+		[showPrintButton]="false"
+		[showDownloadButton]="false"
+		[showSecondaryToolbarButton]="true"
+		[showRotateButton]="true"
+		[showHandToolButton]="false"
+		[showScrollingButton]="false"
+		[showSpreadButton]="false"
+		[showPropertiesButton]="true"
+	></ngx-extended-pdf-viewer>
+</div>

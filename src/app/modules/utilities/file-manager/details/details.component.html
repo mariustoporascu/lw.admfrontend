@@ -150,34 +150,35 @@
 
 	<!-- Actions -->
 	<div class="grid grid-cols-2 gap-4 w-full mt-8" *ngIf="item.type !== 'folder'">
-		<button class="flex-auto" mat-flat-button [class.bg-blue-600]="true">
-			Descarca
-		</button>
-		<button class="flex-auto" mat-flat-button [class.bg-red-600]="true">
-			Sterge
-		</button>
-	</div>
-	<div
-		class="grid grid-cols-2 gap-4 w-full mt-8"
-		*ngIf="item.type !== 'folder' && item.fileInfo.status === 7"
-	>
 		<button
 			class="flex-auto"
 			mat-flat-button
-			[class.bg-green-600]="true"
-			(click)="sendForApproval()"
+			[class.bg-blue-600]="true"
+			(click)="downloadFile()"
+			*ngIf="item.fileInfo.status !== 6"
 		>
-			Trimite la aprobare
+			Descarca
 		</button>
-		<!-- Upload button -->
+
 		<button
 			class="flex-auto"
 			mat-flat-button
 			[color]="'primary'"
 			(click)="openCamera()"
+			*ngIf="item.fileInfo.status === 7"
 		>
 			<mat-icon [svgIcon]="'heroicons_outline:camera'"></mat-icon>
 			<span class="ml-2 mr-1">Captura cod bare/QR</span>
+		</button>
+	</div>
+	<div class="grid grid-cols-2 gap-4 w-full mt-8" *ngIf="item.type !== 'folder'">
+		<button
+			class="flex-auto"
+			mat-flat-button
+			[class.bg-red-600]="true"
+			*ngIf="item.fileInfo.status === 6"
+		>
+			Sterge
 		</button>
 	</div>
 </div>

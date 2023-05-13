@@ -2,7 +2,7 @@
 	<mat-drawer-container class="flex-auto h-full bg-card dark:bg-transparent">
 		<!-- Drawer -->
 		<mat-drawer
-			class="w-full sm:w-128 dark:bg-gray-900"
+			class="w-full sm:w-200 dark:bg-gray-900"
 			[mode]="drawerMode"
 			[opened]="false"
 			[position]="'end'"
@@ -102,7 +102,25 @@
 
 									<!-- Date -->
 									<ng-container matColumnDef="uploaded">
-										<th mat-header-cell mat-sort-header *matHeaderCellDef>Data</th>
+										<th mat-header-cell *matHeaderCellDef>
+											<div class="flex flex-row">
+												<div mat-sort-header class="flex">Data</div>
+												<mat-datepicker-toggle
+													matIconSuffix
+													[for]="picker"
+												></mat-datepicker-toggle>
+												<mat-date-range-picker #picker></mat-date-range-picker>
+												<mat-date-range-input [rangePicker]="picker" class="hidden">
+													<input matStartDate placeholder="Start date" #dateStart />
+													<input
+														matEndDate
+														placeholder="End date"
+														#dateEnd
+														(dateChange)="datePicked(dateStart, dateEnd)"
+													/>
+												</mat-date-range-input>
+											</div>
+										</th>
 										<td mat-cell *matCellDef="let transaction">
 											<span class="pr-6 whitespace-nowrap">
 												{{ transaction.uploaded | date : "dd MMM y" : "" : "ro" }}
@@ -159,7 +177,7 @@
 													mat-flat-button
 													[class.bg-green-300]="true"
 													[class.scale-75]="true"
-													(click)="makeWithdrawalRow(transaction)"
+													(click)="approveRow(transaction)"
 													title="Aproba"
 												>
 													<mat-icon [svgIcon]="'heroicons_outline:check-circle'"></mat-icon>
@@ -169,11 +187,23 @@
 													mat-flat-button
 													[class.bg-red-300]="true"
 													[class.scale-75]="true"
-													(click)="makeTransferRow(transaction)"
+													(click)="openDialog(transaction)"
 													title="Respinge"
 												>
 													<mat-icon [svgIcon]="'heroicons_outline:x-circle'"></mat-icon>
 												</button>
+												<a
+													mat-flat-button
+													[class.bg-purple-300]="true"
+													title="Vezi documentul"
+													[routerLink]="[
+														'./view-document/',
+														transaction.fisiereDocumente?.identifier
+													]"
+													[class.scale-75]="true"
+												>
+													<mat-icon [svgIcon]="'heroicons_outline:eye'"></mat-icon>
+												</a>
 											</div>
 										</td>
 									</ng-container>
@@ -204,23 +234,21 @@
 									>
 										<button
 											mat-flat-button
-											[class.bg-orange-300]="true"
+											[class.bg-green-300]="true"
 											[class.scale-75]="true"
-											title="Transfera"
-											(click)="makeTransferSelected()"
+											title="Aproba"
+											(click)="approveSelected()"
 										>
-											<mat-icon
-												[svgIcon]="'heroicons_outline:switch-horizontal'"
-											></mat-icon>
+											<mat-icon [svgIcon]="'heroicons_outline:check-circle'"></mat-icon>
 										</button>
 										<button
 											mat-flat-button
-											[class.bg-green-300]="true"
+											[class.bg-red-300]="true"
 											[class.scale-75]="true"
-											title="Retrage"
-											(click)="makeWithdrawalSelected()"
+											title="Respinge"
+											(click)="openDialog()"
 										>
-											<mat-icon [svgIcon]="'heroicons_outline:cash'"></mat-icon>
+											<mat-icon [svgIcon]="'heroicons_outline:x-circle'"></mat-icon>
 										</button>
 										<div
 											class="ml-5 mr-5 mt-2 mb-2 p-2 bg-green-100 border-2 border-dashed border-green-400 rounded-2xl max-w-fit"
@@ -253,3 +281,18 @@
 		</mat-drawer-content>
 	</mat-drawer-container>
 </div>
+<ng-template #confirmDialogView>
+	<mat-dialog-content>
+		<h3 class="text-black text-lg">
+			Esti sigur ca vrei sa respingi documentele?
+		</h3>
+	</mat-dialog-content>
+	<mat-dialog-actions class="flex flex-auto justify-end">
+		<button mat-icon-button (click)="confirmDialog()" [class.bg-red-400]="true">
+			<span class="text-md">Da</span>
+		</button>
+		<button mat-icon-button (click)="closeDialog()" [class.bg-green-400]="true">
+			<span class="text-md">Nu</span>
+		</button>
+	</mat-dialog-actions>
+</ng-template>
