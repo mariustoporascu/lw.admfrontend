@@ -17,15 +17,21 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { firmaDocsWFPRoutes } from './firma-docsWFP.routing';
 import { FirmaDocsWFPComponent } from './firma-docsWFP.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { ViewDocumentComponent } from './view-document/view-document.component';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
-	declarations: [FirmaDocsWFPComponent],
+	declarations: [FirmaDocsWFPComponent, ViewDocumentComponent],
 	imports: [
 		RouterModule.forChild(firmaDocsWFPRoutes),
 		FuseAlertModule,
 		MatButtonModule,
 		MatDividerModule,
 		MatCheckboxModule,
+		MatDialogModule,
 		MatIconModule,
 		MatMenuModule,
 		MatProgressBarModule,
@@ -36,6 +42,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 		MatPaginatorModule,
 		MatSidenavModule,
 		MatInputModule,
+		MatDatepickerModule,
+		NgxExtendedPdfViewerModule,
+		MatNativeDateModule,
 		SharedModule,
 	],
 })
