@@ -11,20 +11,19 @@ export interface ConexiuniConturi {
 }
 export interface Documente {
 	id: string;
-	docNumber?: string;
-	total: number;
 	isInvoice: boolean;
 	status: number;
 	statusName?: string;
-	receiptId?: string;
 	discountValue: number;
-	extractedBusinessData?: string;
-	extractedBusinessAddress?: string;
+	ocrDataJson?: string;
+	ocrData?: object;
 	uploaded: Date;
 	firmaDiscountId?: string;
 	conexId?: string;
 	nextConexId?: string;
 	fisiereDocumente?: FisiereDocumente;
+	conexiuniConturi?: ConexiuniConturi;
+	nextConexiuniConturi?: ConexiuniConturi;
 }
 
 export interface FirmaDiscount {
@@ -78,9 +77,11 @@ export interface ProfilCont {
 }
 export interface Tranzactii {
 	id: string;
-	isWithdraw: boolean;
+	type: number;
+	typeName?: string;
 	amount: number;
 	created: Date;
 	documenteId?: string;
 	conexId?: string;
+	documente?: Documente;
 }

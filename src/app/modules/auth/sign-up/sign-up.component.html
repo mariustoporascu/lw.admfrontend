@@ -31,6 +31,7 @@
 				[showIcon]="false"
 				[type]="alert.type"
 				[@shake]="alert.type === 'error'"
+				[dismissible]="true"
 			>
 				{{ alert.message }}
 			</fuse-alert>

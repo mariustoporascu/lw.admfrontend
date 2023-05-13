@@ -12,6 +12,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
 import { UserWithdHistoryComponent } from './user-withd-history.component';
 import { userWithdRoutes } from './user-withd-history.routing';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
 	declarations: [UserWithdHistoryComponent],
@@ -26,6 +28,8 @@ import { userWithdRoutes } from './user-withd-history.routing';
 		MatTableModule,
 		MatPaginatorModule,
 		MatInputModule,
+		MatDatepickerModule,
+		MatNativeDateModule,
 		SharedModule,
 	],
 })

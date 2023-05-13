@@ -32,13 +32,13 @@
 		<div
 			class="mt-1 px-1.5 rounded text-sm font-semibold leading-5 text-white"
 			[class.bg-indigo-600]="item.type === 'folder'"
-			[class.bg-red-600]="item.type === 'PDF'"
-			[class.bg-blue-600]="item.type === 'DOC'"
-			[class.bg-green-600]="item.type === 'XLS'"
-			[class.bg-gray-600]="item.type === 'TXT'"
-			[class.bg-amber-600]="item.type === 'JPG'"
+			[class.bg-red-600]="item.type.toLowerCase().includes('pdf')"
+			[class.bg-blue-600]="item.type.toLocaleLowerCase().includes('doc')"
+			[class.bg-green-600]="item.type.toLocaleLowerCase().includes('xls')"
+			[class.bg-gray-600]="item.type.toLocaleLowerCase() === 'txt'"
+			[class.bg-amber-600]="item.type.toLocaleLowerCase().includes('image')"
 		>
-			{{ item.type.toUpperCase() }}
+			{{ item.type.toUpperCase().split("/")[1] }}
 		</div>
 	</div>
 
@@ -48,6 +48,10 @@
 		class="flex flex-col mt-4 border-t border-b divide-y font-medium"
 		*ngIf="item.type === 'folder'"
 	>
+		<div class="flex items-center justify-between py-3">
+			<div class="text-secondary">Cui firma</div>
+			<div>{{ item.folderInfo.cuiNumber }}</div>
+		</div>
 		<div class="flex items-center justify-between py-3">
 			<div class="text-secondary">Discount acordat</div>
 			<div>{{ item.folderInfo.discountPercent }} %</div>
@@ -59,15 +63,73 @@
 	>
 		<div class="flex items-center justify-between py-3">
 			<div class="text-secondary">Nr Document</div>
-			<div>{{ item.fileInfo.docNumber }}</div>
+			<div *ngIf="!item.fileInfo.ocrData?.docNumber?.hasErrors">
+				{{ item.fileInfo.ocrData?.docNumber?.value }}
+			</div>
+			<div
+				class="text-red-500"
+				*ngIf="item.fileInfo.ocrData?.docNumber?.hasErrors"
+			>
+				{{ item.fileInfo.ocrData?.docNumber?.errorMessage }}
+			</div>
 		</div>
 		<div class="flex items-center justify-between py-3">
 			<div class="text-secondary">Compania extrasa</div>
-			<div>{{ item.fileInfo.extractedBusinessData }}</div>
+			<div *ngIf="!item.fileInfo.ocrData?.denumireFirma?.hasErrors">
+				{{ item.fileInfo.ocrData?.denumireFirma?.value }}
+			</div>
+			<div
+				class="text-red-500"
+				*ngIf="item.fileInfo.ocrData?.denumireFirma?.hasErrors"
+			>
+				{{ item.fileInfo.ocrData?.denumireFirma?.errorMessage }}
+			</div>
+		</div>
+		<div class="flex items-center justify-between py-3">
+			<div class="text-secondary">Cui extras</div>
+			<div *ngIf="!item.fileInfo.ocrData?.cuiFirma?.hasErrors">
+				{{ item.fileInfo.ocrData?.cuiFirma?.value }}
+			</div>
+			<div class="text-red-500" *ngIf="item.fileInfo.ocrData?.cuiFirma?.hasErrors">
+				{{ item.fileInfo.ocrData?.cuiFirma?.errorMessage }}
+			</div>
 		</div>
 		<div class="flex items-center justify-between py-3">
 			<div class="text-secondary">Adresa extrasa</div>
-			<div>{{ item.fileInfo.extractedBusinessAddress }}</div>
+			<div *ngIf="!item.fileInfo.ocrData?.adresaFirma?.hasErrors">
+				{{ item.fileInfo.ocrData?.adresaFirma?.value }}
+			</div>
+			<div
+				class="text-red-500"
+				*ngIf="item.fileInfo.ocrData?.adresaFirma?.hasErrors"
+			>
+				{{ item.fileInfo.ocrData?.adresaFirma?.errorMessage }}
+			</div>
+		</div>
+		<div class="flex items-center justify-between py-3">
+			<div class="text-secondary">Data tranzactie</div>
+			<div *ngIf="!item.fileInfo.ocrData?.dataTranzactie?.hasErrors">
+				{{ getDate(item.fileInfo.ocrData?.dataTranzactie?.value) }}
+			</div>
+			<div
+				class="text-red-500"
+				*ngIf="item.fileInfo.ocrData?.dataTranzactie?.hasErrors"
+			>
+				{{ item.fileInfo.ocrData?.dataTranzactie?.errorMessage }}
+			</div>
+		</div>
+		<div class="flex items-center justify-between py-3">
+			<div class="text-secondary">Total extras</div>
+			<div *ngIf="!item.fileInfo.ocrData?.total?.hasErrors">
+				{{ item.fileInfo.ocrData?.total?.value }}
+			</div>
+			<div class="text-red-500" *ngIf="item.fileInfo.ocrData?.total?.hasErrors">
+				{{ item.fileInfo.ocrData?.total?.errorMessage }}
+			</div>
+		</div>
+		<div class="flex items-center justify-between py-3">
+			<div class="text-secondary">Discount posibil</div>
+			<div>{{ item.fileInfo.discountValue }}</div>
 		</div>
 		<div class="flex items-center justify-between py-3">
 			<div class="text-secondary">Status</div>
@@ -75,18 +137,10 @@
 				[class.text-gray-600]="item.fileInfo.status === 0"
 				[class.text-red-600]="item.fileInfo.status === 6"
 				[class.text-blue-600]="item.fileInfo.status === 4"
-				[class.text-green-600]="item.fileInfo.status === 5"
+				[class.text-purple-600]="item.fileInfo.status === 7"
 			>
 				{{ splitByCapitalLetters(item.fileInfo.statusName) }}
 			</div>
-		</div>
-		<div class="flex items-center justify-between py-3">
-			<div class="text-secondary">Total extras</div>
-			<div>{{ item.fileInfo.total }}</div>
-		</div>
-		<div class="flex items-center justify-between py-3">
-			<div class="text-secondary">Discount posibil</div>
-			<div>{{ item.fileInfo.discountValue }}</div>
 		</div>
 		<div class="flex items-center justify-between py-3">
 			<div class="text-secondary">Tip document</div>
@@ -94,31 +148,62 @@
 		</div>
 	</div>
 
-	<!-- Description -->
-	<!-- <div class="flex items-center justify-between mt-8">
-        <div class="text-lg font-medium">Description</div>
-        <button mat-icon-button>
-            <mat-icon
-                class="icon-size-5"
-                [svgIcon]="'heroicons_solid:pencil'"></mat-icon>
-        </button>
-    </div>
-    <div class="flex mt-2 border-t">
-        <div class="py-3">
-            <ng-container *ngIf="item.description">
-                <div>{{item.description}}</div>
-            </ng-container>
-            <ng-container *ngIf="!item.description">
-                <div class="italic text-secondary">Click here to add a description</div>
-            </ng-container>
-        </div>
-    </div> -->
-
 	<!-- Actions -->
 	<div class="grid grid-cols-2 gap-4 w-full mt-8" *ngIf="item.type !== 'folder'">
-		<button class="flex-auto" mat-flat-button [color]="'primary'">
-			Download
+		<button
+			class="flex-auto"
+			mat-flat-button
+			[class.bg-blue-600]="true"
+			(click)="downloadFile()"
+			*ngIf="item.fileInfo.status !== 6"
+		>
+			Descarca
 		</button>
-		<button class="flex-auto" mat-stroked-button>Delete</button>
+
+		<button
+			class="flex-auto"
+			mat-flat-button
+			[color]="'primary'"
+			(click)="openCamera()"
+			*ngIf="item.fileInfo.status === 7"
+		>
+			<mat-icon [svgIcon]="'heroicons_outline:camera'"></mat-icon>
+			<span class="ml-2 mr-1">Captura cod bare/QR</span>
+		</button>
+	</div>
+	<div class="grid grid-cols-2 gap-4 w-full mt-8" *ngIf="item.type !== 'folder'">
+		<button
+			class="flex-auto"
+			mat-flat-button
+			[class.bg-red-600]="true"
+			*ngIf="item.fileInfo.status === 6"
+		>
+			Sterge
+		</button>
 	</div>
 </div>
+<ng-template #cameraDialog>
+	<mat-dialog-content>
+		<video #videoElement width="600" height="800"></video>
+	</mat-dialog-content>
+	<div class="grid gap-4 w-full mt-8">
+		<!-- Alert -->
+		<fuse-alert
+			*ngIf="showAlert"
+			[appearance]="'outline'"
+			[showIcon]="false"
+			[type]="alert.type"
+			[dismissible]="true"
+		>
+			{{ alert.message }}
+		</fuse-alert>
+	</div>
+	<mat-dialog-actions class="flex flex-auto justify-end">
+		<button mat-button (click)="closeCamera()" [class.bg-orange-600]="true">
+			Inchide
+		</button>
+		<button mat-button (click)="captureImage()" [class.bg-green-600]="true">
+			Captura
+		</button>
+	</mat-dialog-actions>
+</ng-template>

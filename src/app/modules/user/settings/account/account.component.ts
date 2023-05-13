@@ -9,6 +9,10 @@ import {
 	UntypedFormGroup,
 	Validators,
 } from '@angular/forms';
+import { FuseAlertType } from '@fuse/components/alert';
+import { AuthService } from 'app/core/auth/auth.service';
+import { UserService } from 'app/core/user/user.service';
+import { catchError, of, switchMap } from 'rxjs';
 
 @Component({
 	selector: 'settings-account',
@@ -18,11 +22,22 @@ import {
 })
 export class SettingsAccountComponent implements OnInit {
 	accountForm: UntypedFormGroup;
+	private _userType: string;
+
+	alert: { type: FuseAlertType; message: string } = {
+		type: 'success',
+		message: '',
+	};
+	showAlert: boolean = false;
 
 	/**
 	 * Constructor
 	 */
-	constructor(private _formBuilder: UntypedFormBuilder) {}
+	constructor(
+		private _authService: AuthService,
+		private _formBuilder: UntypedFormBuilder,
+		private userService: UserService
+	) {}
 
 	// -----------------------------------------------------------------------------------------------------
 	// @ Lifecycle hooks
@@ -32,19 +47,62 @@ export class SettingsAccountComponent implements OnInit {
 	 * On init
 	 */
 	ngOnInit(): void {
-		// Create the form
-		this.accountForm = this._formBuilder.group({
-			lastName: ['Brian Hughes'],
-			firstName: ['brianh'],
-			title: ['Senior Frontend Developer'],
-			company: ['YXZ Software'],
-			about: [
-				"Hey! This is Brian; husband, father and gamer. I'm mostly passionate about bleeding edge tech and chocolate! 🍫",
-			],
-			email: ['hughes.brian@mail.com', Validators.email],
-			phone: ['121-490-33-12'],
-			country: ['usa'],
-			language: ['english'],
+		// Get the user data
+		this.userService.user$.subscribe((user) => {
+			// Create the form
+			this.accountForm = this._formBuilder.group({
+				name: [user.name, Validators.required],
+				firstName: [user.firstName, Validators.required],
+				email: [user.email, Validators.email],
+				phoneNumber: [user.phoneNumber, Validators.required],
+			});
 		});
+	}
+	/**
+	 * Reset password
+	 */
+	updateProfile(): void {
+		// Return if the form is invalid
+		if (this.accountForm.invalid) {
+			return;
+		}
+
+		// Disable the form
+		this.accountForm.disable();
+
+		// Hide the alert
+		this.showAlert = false;
+
+		// Send the request to the server
+		this._authService
+			.updateProfile(this.accountForm.value)
+			.pipe(
+				catchError((error: any) => of(error.error)),
+				switchMap((response: any) => {
+					// If there is an error...
+					this.accountForm.enable();
+
+					// Show the alert
+					this.showAlert = true;
+
+					if (response.error) {
+						// Set the alert
+						this.alert = {
+							type: 'error',
+							message: 'Profilul nu a putut fi actualizat.',
+						};
+						return of(false);
+					} else {
+						// Set the alert
+						this._authService.signInUsingRefreshToken().subscribe();
+						this.alert = {
+							type: 'success',
+							message: 'Profilul a fost actualizat.',
+						};
+						return of(true);
+					}
+				})
+			)
+			.subscribe();
 	}
 }

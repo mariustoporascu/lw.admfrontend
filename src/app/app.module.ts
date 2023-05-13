@@ -9,6 +9,10 @@ import { appConfig } from 'app/core/config/app.config';
 import { LayoutModule } from 'app/layout/layout.module';
 import { AppComponent } from 'app/app.component';
 import { appRoutes } from 'app/app.routing';
+import localeRo from '@angular/common/locales/ro';
+import { registerLocaleData } from '@angular/common';
+
+registerLocaleData(localeRo, 'ro');
 
 const routerConfig: ExtraOptions = {
 	preloadingStrategy: PreloadAllModules,

@@ -26,7 +26,6 @@
                         "tsConfig": "tsconfig.app.json",
                         "inlineStyleLanguage": "scss",
                         "allowedCommonJsDependencies": [
-                            "apexcharts",
                             "highlight.js",
                             "crypto-js/enc-utf8",
                             "crypto-js/hmac-sha256",
@@ -42,7 +41,12 @@
                                 "glob": "_redirects",
                                 "input": "src",
                                 "output": "/"
-                            }
+                            },
+                            {
+                                "glob": "**/*",
+                                "input": "node_modules/ngx-extended-pdf-viewer/assets/",
+                                "output": "/assets/"
+                              }
                         ],
                         "stylePreprocessorOptions": {
                             "includePaths": [
