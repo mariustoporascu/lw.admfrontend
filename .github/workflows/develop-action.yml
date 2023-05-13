@@ -84,4 +84,4 @@ jobs:
       # Human readable expire duration
       expire-in: 0
       # Github auth token
-      token: $
+      token: ${{ secrets.GITHUB_TOKEN }}
