@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Item, Items } from './file-manager.types';
-import { backendUrl } from '../config/app.config';
+import { backendUrl, dataprocUrl } from '../config/app.config';
 import { Documente, FirmaDiscount } from '../bkendmodels/models.types';
 
 @Injectable({
@@ -15,6 +15,7 @@ export class FileManagerService {
 	private _files: BehaviorSubject<Item[] | null> = new BehaviorSubject(null);
 	private _items: BehaviorSubject<Items | null> = new BehaviorSubject(null);
 	private _backEndUrl: string = backendUrl;
+	private _dataProcUrl: string = dataprocUrl;
 
 	/**
 	 * Constructor
@@ -42,7 +43,18 @@ export class FileManagerService {
 	// -----------------------------------------------------------------------------------------------------
 	// @ Public methods
 	// -----------------------------------------------------------------------------------------------------
-
+	public uploadFiles(formData: FormData): Observable<any> {
+		return this._httpClient.post<any>(
+			`${this._dataProcUrl}/filemanager/uploadFiles`,
+			formData
+		);
+	}
+	public rescanCode(formData: FormData): Observable<any> {
+		return this._httpClient.post<any>(
+			`${this._dataProcUrl}/filemanager/rescanCode`,
+			formData
+		);
+	}
 	/**
 	 * Set items
 	 */
@@ -59,10 +71,10 @@ export class FileManagerService {
 		// Sort the folders and files alphabetically by filename
 		folders.sort((a, b) => a.folderInfo.name.localeCompare(b.folderInfo.name));
 		files.sort((a, b) =>
-			a.fileInfo.uploaded
+			b.fileInfo.uploaded
 				.getTime()
 				.toString()
-				.localeCompare(b.fileInfo.uploaded.getTime().toString())
+				.localeCompare(a.fileInfo.uploaded.getTime().toString())
 		);
 
 		// Figure out the path and attach it to the response
@@ -133,7 +145,9 @@ export class FileManagerService {
 	}
 	public getFiles(): Observable<Documente[]> {
 		return this._httpClient
-			.get<Documente[]>(`${this._backEndUrl}/regularuser/getAllDocumente`)
+			.get<Documente[]>(
+				`${this._backEndUrl}/regularuser/getAllDocumenteFileManager`
+			)
 			.pipe(
 				tap((data) => {
 					let files = data
@@ -143,7 +157,7 @@ export class FileManagerService {
 									id: item.id,
 									folderId: item.firmaDiscountId,
 									fileInfo: item,
-									type: 'PDF', // item.fisiereDocumente.fileExtension
+									type: item.fisiereDocumente.fileExtension,
 								} as Item;
 								return file;
 						  })
@@ -151,5 +165,19 @@ export class FileManagerService {
 					this._files.next(files);
 				})
 			);
+	}
+	/**
+	 * send for approval
+	 */
+	sendForApproval(documentId: string): Observable<any> {
+		return this._httpClient.get(
+			`${this._backEndUrl}/regularuser/sendForApproval?documentId=${documentId}`
+		);
+	}
+	downloadFile(identifier: string): Observable<ArrayBuffer> {
+		return this._httpClient.get(
+			`${this._dataProcUrl}/filemanager/getFileStream?identifier=${identifier}`,
+			{ responseType: 'arraybuffer' }
+		);
 	}
 }

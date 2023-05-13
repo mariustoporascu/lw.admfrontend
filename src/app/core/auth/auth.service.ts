@@ -212,6 +212,31 @@ export class AuthService {
 	}
 
 	/**
+	 * Change password
+	 *
+	 * @param user
+	 */
+	changePassword(user: {
+		email: string;
+		password: string;
+		newPassword: string;
+	}): Observable<any> {
+		return this._httpClient.post(
+			`${this._backEndUrl}/auth/change-password`,
+			user
+		);
+	}
+
+	/**
+	 * Update profile
+	 *
+	 * @param user
+	 */
+	updateProfile(user): Observable<any> {
+		return this._httpClient.post(`${this._backEndUrl}/auth/update-profile`, user);
+	}
+
+	/**
 	 * Unlock session
 	 *
 	 * @param credentials

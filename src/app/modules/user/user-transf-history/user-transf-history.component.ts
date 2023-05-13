@@ -12,6 +12,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Subject, takeUntil } from 'rxjs';
 import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.service';
 import { MatPaginator } from '@angular/material/paginator';
+import { FuseUtilsService } from '@fuse/services/utils';
+import { Tranzactii } from 'app/core/bkendmodels/models.types';
 
 @Component({
 	selector: 'user-transf-history',
@@ -26,14 +28,14 @@ export class UserTransfHistoryComponent
 	recentTransactionsTableMatSort: MatSort;
 	@ViewChild('recentTransactionsTablePagination')
 	recentTransactionsTablePagination: MatPaginator;
+	items: Tranzactii[];
 
-	data: any;
 	recentTransactionsDataSource: MatTableDataSource<any> =
 		new MatTableDataSource();
 	recentTransactionsTableColumns: string[] = [
 		'transactionId',
-		'date',
-		'name',
+		'latestOwner',
+		'created',
 		'amount',
 		'status',
 	];
@@ -42,7 +44,10 @@ export class UserTransfHistoryComponent
 	/**
 	 * Constructor
 	 */
-	constructor(private _userFunctDataService: UserFunctDataService) {}
+	constructor(
+		private _userFunctDataService: UserFunctDataService,
+		private _utilsService: FuseUtilsService
+	) {}
 
 	// -----------------------------------------------------------------------------------------------------
 	// @ Lifecycle hooks
@@ -52,15 +57,20 @@ export class UserTransfHistoryComponent
 	 * On init
 	 */
 	ngOnInit(): void {
+		this.recentTransactionsDataSource.filterPredicate = (
+			data: Tranzactii,
+			filter: string
+		) => {
+			let dataStr = JSON.stringify(data).toLowerCase();
+			return dataStr.includes(filter);
+		};
 		// Get the data
-		this._userFunctDataService.data$
+		this._userFunctDataService.transferData$
 			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe((data) => {
-				// Store the data
-				this.data = data;
-
 				// Store the table data
-				this.recentTransactionsDataSource.data = data.recentTransactions;
+				this.recentTransactionsDataSource.data = data;
+				this.items = data;
 			});
 	}
 
@@ -96,23 +106,33 @@ export class UserTransfHistoryComponent
 	trackByFn(index: number, item: any): any {
 		return item.id || index;
 	}
-
+	datePicked(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
+		let startDate = new Date(dateRangeStart.value).getTime();
+		let tempEndDate = new Date(dateRangeEnd.value);
+		tempEndDate.setHours(23, 59, 59, 999);
+		let endDate = tempEndDate.getTime();
+		this.recentTransactionsDataSource.data = this.items.filter((item) => {
+			var currDate = new Date(item.created).getTime();
+			return currDate >= startDate && currDate <= endDate;
+		});
+		if (this.recentTransactionsDataSource.paginator) {
+			this.recentTransactionsDataSource.paginator.firstPage();
+		}
+	}
 	// -----------------------------------------------------------------------------------------------------
 	// @ Private methods
 	// -----------------------------------------------------------------------------------------------------
 
 	getCurrentDate() {
-		return new Date().toLocaleDateString();
+		return this._utilsService.getCurrentDate();
 	}
 
 	getCurrentMonth() {
-		return new Date().toLocaleString('default', { month: 'long' });
+		return this._utilsService.getCurrentMonth();
 	}
 
 	getLastMonth() {
-		return new Date(
-			new Date().setMonth(new Date().getMonth() - 1)
-		).toLocaleString('default', { month: 'long' });
+		return this._utilsService.getLastMonth();
 	}
 	applyFilter(event: Event) {
 		const filterValue = (event.target as HTMLInputElement).value;

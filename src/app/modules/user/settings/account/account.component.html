@@ -1,9 +1,20 @@
 <div class="w-full max-w-3xl">
+	<!-- Alert -->
+	<fuse-alert
+		class="mt-8"
+		*ngIf="showAlert"
+		[appearance]="'outline'"
+		[showIcon]="false"
+		[type]="alert.type"
+		[dismissible]="true"
+	>
+		{{ alert.message }}
+	</fuse-alert>
 	<!-- Form -->
 	<form [formGroup]="accountForm">
 		<!-- Section -->
 		<div class="w-full">
-			<div class="text-xl">Profil</div>
+			<div class="text-xl">Detalii generale</div>
 		</div>
 		<div class="grid sm:grid-cols-4 gap-6 w-full mt-8">
 			<!-- Name -->
@@ -15,7 +26,7 @@
 						[svgIcon]="'heroicons_solid:user'"
 						matPrefix
 					></mat-icon>
-					<input [formControlName]="'lastName'" matInput />
+					<input [formControlName]="'name'" matInput />
 				</mat-form-field>
 			</div>
 			<!-- FirstName -->
@@ -32,17 +43,6 @@
 			</div>
 		</div>
 
-		<!-- Divider -->
-		<div class="my-10 border-t"></div>
-
-		<!-- Section -->
-		<div class="w-full">
-			<div class="text-xl">Personal Information</div>
-			<div class="text-secondary">
-				Communication details in case we want to connect with you. These will be
-				kept private.
-			</div>
-		</div>
 		<div class="grid sm:grid-cols-4 gap-6 w-full mt-8">
 			<!-- Email -->
 			<div class="sm:col-span-2">
@@ -65,7 +65,7 @@
 						[svgIcon]="'heroicons_solid:phone'"
 						matPrefix
 					></mat-icon>
-					<input [formControlName]="'phone'" matInput />
+					<input [formControlName]="'phoneNumber'" matInput />
 				</mat-form-field>
 			</div>
 		</div>
@@ -75,8 +75,14 @@
 
 		<!-- Actions -->
 		<div class="flex items-center justify-end">
-			<button class="ml-4" mat-flat-button type="button" [color]="'primary'">
-				Save
+			<button
+				class="ml-4"
+				mat-flat-button
+				type="button"
+				[color]="'primary'"
+				(click)="updateProfile()"
+			>
+				<mat-icon [svgIcon]="'feather:save'"></mat-icon>
 			</button>
 		</div>
 	</form>

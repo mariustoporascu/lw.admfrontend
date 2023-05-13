@@ -73,3 +73,6 @@ export const appConfig: AppConfig = {
 export const backendUrl = environment.production
 	? 'https://lw-bkend-dev.azurewebsites.net'
 	: 'http://localhost:5031';
+export const dataprocUrl = environment.production
+	? 'https://lw-dataproc-dev.azurewebsites.net'
+	: 'http://localhost:5187';

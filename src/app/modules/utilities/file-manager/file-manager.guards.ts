@@ -39,7 +39,7 @@ export class CanDeactivateFileManagerDetails
 		}
 
 		// If we are navigating to another item...
-		if (nextState.url.includes('/details')) {
+		if (nextState.url.includes('/details') && component.item !== null) {
 			// Just navigate
 			return true;
 		}
