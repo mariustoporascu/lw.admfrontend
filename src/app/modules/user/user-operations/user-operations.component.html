@@ -184,7 +184,7 @@
 											<div class="flex flex-row" *ngIf="transaction.status === 1">
 												<!-- Transfer button -->
 												<button
-													mat-flat-button
+													mat-icon-button
 													[class.bg-orange-300]="true"
 													[class.scale-75]="true"
 													(click)="makeTransferRow(transaction)"
@@ -192,18 +192,37 @@
 												>
 													<mat-icon
 														[svgIcon]="'heroicons_outline:switch-horizontal'"
+														[class.text-black]="true"
 													></mat-icon>
 												</button>
 												<!-- Withdraw button -->
 												<button
-													mat-flat-button
+													mat-icon-button
 													[class.bg-green-300]="true"
 													[class.scale-75]="true"
 													(click)="makeWithdrawalRow(transaction)"
 													title="Retrage"
 												>
-													<mat-icon [svgIcon]="'heroicons_outline:cash'"></mat-icon>
+													<mat-icon
+														[svgIcon]="'heroicons_outline:cash'"
+														[class.text-black]="true"
+													></mat-icon>
 												</button>
+												<a
+													mat-icon-button
+													[class.bg-purple-300]="true"
+													title="Vezi documentul"
+													[routerLink]="[
+														'./view-document/',
+														transaction.fisiereDocumente?.identifier
+													]"
+													[class.scale-75]="true"
+												>
+													<mat-icon
+														[svgIcon]="'heroicons_outline:eye'"
+														[class.text-black]="true"
+													></mat-icon>
+												</a>
 											</div>
 										</td>
 									</ng-container>
@@ -233,7 +252,7 @@
 										*ngIf="countSelected() > 0"
 									>
 										<button
-											mat-flat-button
+											mat-icon-button
 											[class.bg-orange-300]="true"
 											[class.scale-75]="true"
 											title="Transfera"
@@ -241,16 +260,20 @@
 										>
 											<mat-icon
 												[svgIcon]="'heroicons_outline:switch-horizontal'"
+												[class.text-black]="true"
 											></mat-icon>
 										</button>
 										<button
-											mat-flat-button
+											mat-icon-button
 											[class.bg-green-300]="true"
 											[class.scale-75]="true"
 											title="Retrage"
 											(click)="makeWithdrawalSelected()"
 										>
-											<mat-icon [svgIcon]="'heroicons_outline:cash'"></mat-icon>
+											<mat-icon
+												[svgIcon]="'heroicons_outline:cash'"
+												[class.text-black]="true"
+											></mat-icon>
 										</button>
 										<div
 											class="ml-5 mr-5 mt-2 mb-2 p-2 bg-green-100 border-2 border-dashed border-green-400 rounded-2xl max-w-fit"

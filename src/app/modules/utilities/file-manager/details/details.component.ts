@@ -36,7 +36,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 		message: '',
 	};
 	showAlert: boolean = false;
-
+	disabled: boolean = false;
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
 	baseRoute: string = 'filemanager';
 	documentId: string;
@@ -120,7 +120,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 		return this._utilsService.parseDate(date);
 	}
 	async openCamera(): Promise<void> {
-		this.dialog.open(this.cameraDialog);
+		this.dialog.open(this.cameraDialog, { disableClose: true });
 
 		try {
 			const constraints = { video: { facingMode: 'environment' }, audio: false };
@@ -161,6 +161,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 			formData.append(`file`, blob, 'image.png');
 			formData.append('documentId', this.documentId);
 			this._ngZone.run(() => {
+				this.disabled = true;
 				this.showAlert = false;
 				this.alert = {
 					type: 'success',
@@ -174,6 +175,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 					switchMap((response) => {
 						return this._ngZone.run(() => {
 							// Show the alert
+							this.disabled = false;
 							this.showAlert = true;
 							if (response.error) {
 								// Set the alert

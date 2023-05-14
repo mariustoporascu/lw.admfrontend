@@ -256,8 +256,9 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 				switchMap((response: any) => {
 					// Show the alert
 					this.showAlert = true;
-					this._cdr.markForCheck();
-					this._firmaFunctDataService.getDocumentsWFP().subscribe();
+					this._firmaFunctDataService.getDocumentsWFP().subscribe(() => {
+						this._cdr.markForCheck();
+					});
 
 					if (response.error) {
 						const error = response.message;

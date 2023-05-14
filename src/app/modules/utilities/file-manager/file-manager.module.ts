@@ -20,6 +20,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
 	declarations: [
@@ -43,6 +44,7 @@ import { MatTableModule } from '@angular/material/table';
 		MatPaginatorModule,
 		MatInputModule,
 		MatDatepickerModule,
+		MatProgressSpinnerModule,
 		MatNativeDateModule,
 		SharedModule,
 	],

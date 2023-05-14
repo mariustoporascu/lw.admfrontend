@@ -14,10 +14,10 @@ import {
 import { MatDrawerToggleResult } from '@angular/material/sidenav';
 import { Subject } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FirmaDocsWFPComponent } from '../firma-docsWFP.component';
 import { FileManagerService } from 'app/core/filemanager/file-manager.service';
 import { Documente } from 'app/core/bkendmodels/models.types';
 import { FuseUtilsService } from '@fuse/services/utils';
+import { UserOperationsComponent } from '../user-operations.component';
 
 @Component({
 	selector: 'view-document',
@@ -34,7 +34,7 @@ export class ViewDocumentComponent implements OnInit, OnDestroy {
 	 * Constructor
 	 */
 	constructor(
-		private _firmaDocsWFPComponent: FirmaDocsWFPComponent,
+		private _userOperationsComponent: UserOperationsComponent,
 		private _fileManagerService: FileManagerService,
 		private _router: Router,
 		private _cdr: ChangeDetectorRef,
@@ -54,13 +54,12 @@ export class ViewDocumentComponent implements OnInit, OnDestroy {
 		this._activatedRoute.paramMap.subscribe((params) => {
 			this.documentId = params.get('id');
 			this._ngZone.run(() => {
-				this.document = this._firmaDocsWFPComponent.items.find(
+				this.document = this._userOperationsComponent.items.find(
 					(item) => item.fisiereDocumente.identifier === this.documentId
 				);
+				this._userOperationsComponent.matDrawer.open();
 				this._cdr.markForCheck();
 			});
-			this._firmaDocsWFPComponent.matDrawer.open();
-
 			this.downloadFile();
 		});
 	}
@@ -80,7 +79,7 @@ export class ViewDocumentComponent implements OnInit, OnDestroy {
 	 * Close the drawer
 	 */
 	closeDrawer(): Promise<MatDrawerToggleResult> {
-		return this._firmaDocsWFPComponent.matDrawer.close();
+		return this._userOperationsComponent.matDrawer.close();
 	}
 	downloadFile(): void {
 		this._fileManagerService.downloadFile(this.documentId).subscribe({

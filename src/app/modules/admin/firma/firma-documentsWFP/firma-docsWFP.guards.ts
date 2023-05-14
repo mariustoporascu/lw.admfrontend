@@ -38,7 +38,7 @@ export class CanDeactivateViewDocumentComponent
 			return true;
 		}
 		// If we are navigating to another item...
-		if (nextState.url.includes('/view-document') && component.document) {
+		if (nextState.url.includes('/view-document')) {
 			// Just navigate
 			return true;
 		}
