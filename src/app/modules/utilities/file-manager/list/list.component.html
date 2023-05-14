@@ -84,14 +84,18 @@
 							mat-flat-button
 							[class.bg-blue-300]="true"
 							(click)="refreshData()"
+							title="Reincarca datele"
 						>
 							<mat-icon [svgIcon]="'heroicons_outline:refresh'"></mat-icon>
-							<span class="ml-2 mr-1">Refresh fisiere</span>
 						</button>
 						<!-- Upload button -->
-						<button mat-flat-button [color]="'primary'" (click)="fileInput.click()">
-							<mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-							<span class="ml-2 mr-1">Incarca fisiere</span>
+						<button
+							mat-flat-button
+							[color]="'primary'"
+							(click)="fileInput.click()"
+							title="Incarca documente"
+						>
+							<mat-icon [svgIcon]="'heroicons_outline:document-add'"></mat-icon>
 						</button>
 					</div>
 				</div>

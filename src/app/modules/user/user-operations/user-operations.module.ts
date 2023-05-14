@@ -20,9 +20,15 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { ViewDocumentComponent } from './view-document/view-document.component';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 
 @NgModule({
-	declarations: [UserOperationsComponent, SearchForUserComponent],
+	declarations: [
+		UserOperationsComponent,
+		SearchForUserComponent,
+		ViewDocumentComponent,
+	],
 	imports: [
 		RouterModule.forChild(userOperationsRoutes),
 		FuseAlertModule,
@@ -41,6 +47,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 		MatInputModule,
 		MatDatepickerModule,
 		MatNativeDateModule,
+		NgxExtendedPdfViewerModule,
 		SharedModule,
 	],
 })
