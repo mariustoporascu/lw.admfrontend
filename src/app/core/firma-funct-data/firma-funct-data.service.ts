@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { Documente, Tranzactii } from '../bkendmodels/models.types';
+import { Documente, Hybrid, Tranzactii } from '../bkendmodels/models.types';
 import { backendUrl } from '../config/app.config';
 
 @Injectable({
@@ -12,6 +12,8 @@ export class FirmaFunctDataService {
 	private _docsData: BehaviorSubject<Documente[] | null> = new BehaviorSubject(
 		null
 	);
+	private _externalUsrsData: BehaviorSubject<Hybrid[] | null> =
+		new BehaviorSubject(null);
 
 	private _backEndUrl: string = backendUrl;
 	/**
@@ -35,6 +37,10 @@ export class FirmaFunctDataService {
 	 */
 	get docsData$(): Observable<any> {
 		return this._docsData.asObservable();
+	}
+
+	get externalUsrsData$(): Observable<any> {
+		return this._externalUsrsData.asObservable();
 	}
 
 	// -----------------------------------------------------------------------------------------------------
@@ -67,6 +73,31 @@ export class FirmaFunctDataService {
 			);
 	}
 
+	getExternalUsers(): Observable<Hybrid[]> {
+		return this._httpClient
+			.get<Hybrid[]>(`${this._backEndUrl}/FirmaDiscount/getFirmaHybrids`)
+			.pipe(
+				tap((response: any) => {
+					this._externalUsrsData.next(response ?? []);
+				})
+			);
+	}
+	deleteExternalGroups(body: {}): Observable<any> {
+		return this._httpClient.post(
+			`${this._backEndUrl}/FirmaDiscount/deleteHybrids`,
+			body
+		);
+	}
+	createHybrid(createHybridDTO: {
+		name: string;
+		initialEmail: string;
+		initialPassword: string;
+	}): Observable<any> {
+		return this._httpClient.post(
+			`${this._backEndUrl}/FirmaDiscount/createHybrid`,
+			createHybridDTO
+		);
+	}
 	/**
 	 * Make Tranzaction
 	 */
@@ -79,9 +110,9 @@ export class FirmaFunctDataService {
 	/**
 	 * Query user
 	 */
-	queryUsers(query: string): Observable<any> {
+	checkIfEmailNotTaken(query: string): Observable<any> {
 		return this._httpClient.get(
-			`${this._backEndUrl}/regularuser/query-users?query=${query}`
+			`${this._backEndUrl}/FirmaDiscount/checkIfEmailNotTaken?email=${query}`
 		);
 	}
 }

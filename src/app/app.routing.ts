@@ -105,6 +105,20 @@ export const appRoutes: Route[] = [
 						'app/modules/admin/firma/firma-documentsWFP/firma-docsWFP.module'
 					).then((m) => m.FirmaDocsWFPModule),
 			},
+			{
+				path: 'internalusrs',
+				loadChildren: () =>
+					import('app/modules/landing/example/example.module').then(
+						(m) => m.ExampleModule
+					),
+			},
+			{
+				path: 'externalusrs',
+				loadChildren: () =>
+					import(
+						'app/modules/admin/firma/firma-ext-usrs/firma-ext-usrs.module'
+					).then((m) => m.FirmaExternalUsersModule),
+			},
 		],
 	},
 	// Hybrid routes

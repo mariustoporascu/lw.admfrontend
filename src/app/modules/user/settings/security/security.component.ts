@@ -27,12 +27,12 @@ import { catchError, of, switchMap } from 'rxjs';
 export class SettingsSecurityComponent implements OnInit {
 	private _email: string;
 	@ViewChild('securityNgForm') securityNgForm: NgForm;
+	securityForm: UntypedFormGroup;
 
 	alert: { type: FuseAlertType; message: string } = {
 		type: 'success',
 		message: '',
 	};
-	securityForm: UntypedFormGroup;
 	showAlert: boolean = false;
 
 	/**
