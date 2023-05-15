@@ -181,7 +181,10 @@
 											</div>
 										</th>
 										<td mat-cell *matCellDef="let transaction">
-											<div class="flex flex-row" *ngIf="transaction.status === 1">
+											<div
+												class="flex flex-row justify-center"
+												*ngIf="transaction.status === 1"
+											>
 												<!-- Transfer button -->
 												<button
 													mat-icon-button

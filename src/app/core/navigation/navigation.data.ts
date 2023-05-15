@@ -94,6 +94,30 @@ export const defaultNavigation: FuseNavigationItem[] = [
 		],
 	},
 	{
+		id: 'accountsmgmt',
+		title: 'Management conturi',
+		subtitle: '',
+		type: 'group',
+		userType: 'firma-admin',
+		icon: 'heroicons_outline:user-group',
+		children: [
+			{
+				id: 'accountsmgmt.internalusrs',
+				title: 'Useri interni',
+				type: 'basic',
+				icon: 'heroicons_outline:users',
+				link: '/firma-admin/internalusrs',
+			},
+			{
+				id: 'accountsmgmt.externalusrs',
+				title: 'Useri externi',
+				type: 'basic',
+				icon: 'heroicons_outline:users',
+				link: '/firma-admin/externalusrs',
+			},
+		],
+	},
+	{
 		id: 'utilities',
 		title: 'Utilitati',
 		subtitle: '',
