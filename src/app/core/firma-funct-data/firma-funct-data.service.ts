@@ -78,6 +78,11 @@ export class FirmaFunctDataService {
 			.get<Hybrid[]>(`${this._backEndUrl}/FirmaDiscount/getFirmaHybrids`)
 			.pipe(
 				tap((response: any) => {
+					if (response) {
+						response.forEach((element: Hybrid) => {
+							element.isEditMode = false;
+						});
+					}
 					this._externalUsrsData.next(response ?? []);
 				})
 			);
