@@ -70,8 +70,18 @@
 						<ng-container matColumnDef="name">
 							<th mat-header-cell mat-sort-header *matHeaderCellDef>Nume grup</th>
 							<td mat-cell *matCellDef="let transaction">
-								<div class="w-30 truncate" [matTooltip]="transaction.name">
-									{{ transaction.name }}
+								<div class="w-50 truncate" [matTooltip]="transaction.name">
+									<ng-container *ngIf="!transaction.isEditMode">{{
+										transaction.name
+									}}</ng-container>
+									<ng-container *ngIf="transaction.isEditMode">
+										<input
+											type="text"
+											matInput
+											[(ngModel)]="transaction.name"
+											class="border-black border-2 rounded-md w-48"
+										/>
+									</ng-container>
 								</div>
 							</td>
 						</ng-container>
@@ -111,9 +121,24 @@
 										[class.bg-orange-300]="true"
 										[class.scale-75]="true"
 										title="Modifica grup"
+										*ngIf="!transaction.isEditMode"
+										(click)="transaction.isEditMode = true"
 									>
 										<mat-icon
 											[svgIcon]="'heroicons_outline:pencil-alt'"
+											[class.text-black]="true"
+										></mat-icon>
+									</button>
+									<button
+										mat-icon-button
+										[class.bg-green-300]="true"
+										[class.scale-75]="true"
+										title="Salveaza"
+										*ngIf="transaction.isEditMode"
+										(click)="transaction.isEditMode = false"
+									>
+										<mat-icon
+											[svgIcon]="'heroicons_outline:check'"
 											[class.text-black]="true"
 										></mat-icon>
 									</button>

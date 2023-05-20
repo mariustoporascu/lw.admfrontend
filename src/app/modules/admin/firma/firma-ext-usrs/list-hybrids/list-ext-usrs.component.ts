@@ -32,6 +32,7 @@ export class ListExtUsersComponent implements OnInit, AfterViewInit, OnDestroy {
 	@ViewChild('recentTransactionsTablePagination')
 	recentTransactionsTablePagination: MatPaginator;
 	@ViewChild('confirmDialogView', { static: true }) confirmDialogView: any;
+	isEditMode: boolean = false;
 
 	items: Hybrid[];
 	recentTransactionsDataSource: MatTableDataSource<any> =

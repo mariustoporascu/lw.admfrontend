@@ -199,32 +199,40 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 			this.showAlert = false;
 			this._fileManagerService
 				.uploadFiles(formData)
-				.pipe(
-					switchMap((response) => {
-						// Show the alert
-						this.showAlert = true;
-						this._fileManagerService.getFiles().subscribe((res) => {
-							this._fileManagerService.setItems(this.firmaDiscountId);
-							this._changeDetectorRef.markForCheck();
-						});
-						if (response.error) {
-							const error = response.messag;
+
+				.subscribe({
+					next: (response) => {
+						this.alert = {
+							type: 'success',
+							message: 'Incarcarea a fost efectuata cu succes.',
+						};
+					},
+					error: (err) => {
+						if (err.error) {
+							const error = err.message;
 							// Set the alert
 							this.alert = {
 								type: 'error',
 								message: `${error.succes} incarcari cu succes, ${error.failed} esuate.`,
 							};
-							return of(false);
 						} else {
 							this.alert = {
-								type: 'success',
-								message: 'Incarcarea a fost efectuata cu succes.',
+								type: 'warning',
+								message: 'Eroare pe server. Echipa tehnica a fost notificata.',
 							};
-							return of(true);
 						}
-					})
-				)
-				.subscribe();
+					},
+				})
+				.add(() => {
+					this._fileManagerService
+						.getFiles()
+						.subscribe()
+						.add(() => {
+							this.showAlert = true;
+							this._fileManagerService.setItems(this.firmaDiscountId);
+							this._changeDetectorRef.markForCheck();
+						});
+				});
 		}
 	}
 	splitByCapitalLetters(str: string): string {

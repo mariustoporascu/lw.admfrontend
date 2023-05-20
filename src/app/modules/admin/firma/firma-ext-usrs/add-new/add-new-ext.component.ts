@@ -101,8 +101,13 @@ export class AddExternalGroupComponent implements OnInit {
 			})
 			.add(() => {
 				// Show the alert
-				this.showAlert = true;
-				this.securityForm.enable();
+				this._firmaFunctDataService
+					.getExternalUsers()
+					.subscribe()
+					.add(() => {
+						this.showAlert = true;
+						this.securityForm.enable();
+					});
 			});
 	}
 }

@@ -116,32 +116,32 @@ export class SettingsSecurityComponent implements OnInit {
 		// Send the request to the server
 		this._authService
 			.changePassword({ ...this.securityForm.value, email: this._email })
-			.pipe(
-				switchMap((response: any) => {
-					// If there is an error...
-					this.securityForm.enable();
-
-					// Show the alert
-					this.showAlert = true;
-
-					if (response.error) {
-						// Set the alert
+			.subscribe({
+				next: (response) => {
+					this.securityNgForm.resetForm();
+					this.alert = {
+						type: 'success',
+						message: 'Parola a fost schimbata.',
+					};
+				},
+				error: (err) => {
+					if (err.error) {
 						this.alert = {
 							type: 'error',
 							message: 'Parola nu a putut fi schimbata.',
 						};
-						return of(false);
 					} else {
-						// Set the alert
-						this.securityNgForm.resetForm();
 						this.alert = {
-							type: 'success',
-							message: 'Parola a fost schimbata.',
+							type: 'warning',
+							message: 'Eroare pe server. Echipa tehnica a fost notificata.',
 						};
-						return of(true);
 					}
-				})
-			)
-			.subscribe();
+				},
+			})
+			.add(() => {
+				this.securityForm.enable();
+				// Show the alert
+				this.showAlert = true;
+			});
 	}
 }

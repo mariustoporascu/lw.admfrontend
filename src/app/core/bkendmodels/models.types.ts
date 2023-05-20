@@ -58,6 +58,7 @@ export interface Hybrid {
 	noDocsUploaded: number;
 	conexiuniConturi?: ConexiuniConturi[];
 	preferinteHybrid?: PreferinteHybrid[];
+	isEditMode?: boolean;
 }
 export interface PreferinteHybrid {
 	id: string;
