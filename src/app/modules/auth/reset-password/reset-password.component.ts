@@ -5,7 +5,6 @@ import {
 	NgForm,
 	Validators,
 } from '@angular/forms';
-import { catchError, finalize, of, switchMap } from 'rxjs';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseValidators } from '@fuse/validators';
 import { FuseAlertType } from '@fuse/components/alert';
@@ -98,38 +97,39 @@ export class AuthResetPasswordComponent implements OnInit {
 
 		// Hide the alert
 		this.showAlert = false;
-
 		// Send the request to the server
 		this._authService
 			.resetPassword(this._token, this.resetPasswordForm.value)
-			.pipe(
-				catchError((error: any) => of(error.error)),
-				switchMap((response: any) => {
-					// If there is an error...
-					this.resetPasswordForm.enable();
-
-					// Show the alert
-					this.showAlert = true;
-
-					if (response.error) {
-						this.resetPasswordForm.get('email').setValue(this._email);
-						// Set the alert
+			.subscribe({
+				next: () => {
+					// Set the alert
+					this.resetPasswordNgForm.resetForm();
+					this.alert = {
+						type: 'success',
+						message: 'Parola a fost resetata.',
+					};
+				},
+				error: (err) => {
+					console.log(err);
+					this.resetPasswordForm.get('email').setValue(this._email);
+					if (err.error) {
 						this.alert = {
 							type: 'error',
 							message: 'Parola nu a putut fi resetata.',
 						};
-						return of(false);
 					} else {
-						// Set the alert
-						this.resetPasswordNgForm.resetForm();
 						this.alert = {
-							type: 'success',
-							message: 'Parola a fost resetata.',
+							type: 'warning',
+							message: 'Eroare pe server. Echipa tehnica a fost notificata.',
 						};
-						return of(true);
 					}
-				})
-			)
-			.subscribe();
+				},
+			})
+			.add(() => {
+				this.resetPasswordForm.enable();
+
+				// Show the alert
+				this.showAlert = true;
+			});
 	}
 }

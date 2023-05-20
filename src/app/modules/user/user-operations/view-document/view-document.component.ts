@@ -93,9 +93,9 @@ export class ViewDocumentComponent implements OnInit, OnDestroy {
 				// Mark for check
 				this._cdr.markForCheck();
 			},
-			error: (error) => {
+			error: () => {
 				// Handle any other errors here.
-				console.error('An error occurred while downloading the file', error);
+				console.error('An error occurred while downloading the file');
 			},
 		});
 	}

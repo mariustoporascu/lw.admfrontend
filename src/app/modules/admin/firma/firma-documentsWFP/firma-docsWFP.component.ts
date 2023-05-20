@@ -205,14 +205,12 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 			[...this.selection.selected.map((item) => item.id)],
 			2
 		);
-		this.selection.clear();
 	}
 	approveSelected() {
 		this.sendRequestToServer(
 			[...this.selection.selected.map((item) => item.id)],
 			1
 		);
-		this.selection.clear();
 	}
 	// transfer guid
 	rejectRow(row: Documente) {
@@ -251,33 +249,39 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 				documenteIds,
 				status,
 			})
-			.pipe(
-				catchError((error: any) => of(error.error)),
-				switchMap((response: any) => {
-					// Show the alert
-					this.showAlert = true;
-					this._firmaFunctDataService.getDocumentsWFP().subscribe(() => {
-						this._cdr.markForCheck();
-					});
-
-					if (response.error) {
-						const error = response.message;
+			.subscribe({
+				next: () => {
+					this.alert = {
+						type: 'success',
+						message: 'Operatiunea a fost efectuata cu succes.',
+					};
+				},
+				error: (err) => {
+					if (err.error) {
+						const error = err.message;
 						// Set the alert
 						this.alert = {
 							type: 'error',
 							message: `${error.succes} operatiuni cu succes, ${error.failed} esuate.`,
 						};
-						return of(false);
 					} else {
 						this.alert = {
-							type: 'success',
-							message: 'Operatiunea a fost efectuata cu succes.',
+							type: 'warning',
+							message: 'Eroare pe server. Echipa tehnica a fost notificata.',
 						};
-						return of(true);
 					}
-				})
-			)
-			.subscribe();
+				},
+			})
+			.add(() => {
+				this._firmaFunctDataService
+					.getDocumentsWFP()
+					.subscribe()
+					.add(() => {
+						this.showAlert = true;
+						this.selection.clear();
+						this._cdr.markForCheck();
+					});
+			});
 	}
 	closeDialog() {
 		this._dialog.closeAll();

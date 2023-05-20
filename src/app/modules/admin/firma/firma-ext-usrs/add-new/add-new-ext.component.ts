@@ -62,33 +62,47 @@ export class AddExternalGroupComponent implements OnInit {
 		// Send the request to the server
 		this._firmaFunctDataService
 			.createHybrid({ ...this.securityForm.value })
-			.pipe(
-				catchError((error: any) => of(error.error)),
-				switchMap((response: any) => {
-					// If there is an error...
-					this.securityForm.enable();
-
-					// Show the alert
-					this.showAlert = true;
-
-					if (response.error) {
-						// Set the alert
-						this.alert = {
-							type: 'error',
-							message: 'Grupul nu a putut fi creat.',
-						};
-						return of(false);
+			.subscribe({
+				next: () => {
+					// Set the alert
+					this.securityNgForm.resetForm();
+					this.alert = {
+						type: 'success',
+						message: 'Grupul a fost creat.',
+					};
+				},
+				error: (err) => {
+					if (err.error) {
+						const message = err.message;
+						if (message === 'Hybrid could not get created') {
+							// Set the alert
+							this.alert = {
+								type: 'error',
+								message: 'Grupul nu a putut fi creat.',
+							};
+						} else if (message === 'Hybrid name already exists') {
+							this.alert = {
+								type: 'warning',
+								message: 'Ai deja un grup cu numele acesta.',
+							};
+						} else {
+							this.alert = {
+								type: 'warning',
+								message: 'Userul cu emailul folosit exista deja in sistem.',
+							};
+						}
 					} else {
-						// Set the alert
-						this.securityNgForm.resetForm();
 						this.alert = {
-							type: 'success',
-							message: 'Grupul a fost creat.',
+							type: 'warning',
+							message: 'Eroare pe server. Echipa tehnica a fost notificata.',
 						};
-						return of(true);
 					}
-				})
-			)
-			.subscribe();
+				},
+			})
+			.add(() => {
+				// Show the alert
+				this.showAlert = true;
+				this.securityForm.enable();
+			});
 	}
 }

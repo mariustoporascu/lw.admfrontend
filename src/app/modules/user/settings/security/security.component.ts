@@ -117,7 +117,6 @@ export class SettingsSecurityComponent implements OnInit {
 		this._authService
 			.changePassword({ ...this.securityForm.value, email: this._email })
 			.pipe(
-				catchError((error: any) => of(error.error)),
 				switchMap((response: any) => {
 					// If there is an error...
 					this.securityForm.enable();

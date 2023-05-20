@@ -12,7 +12,6 @@ import {
 import { FuseAlertType } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
 import { UserService } from 'app/core/user/user.service';
-import { catchError, of, switchMap } from 'rxjs';
 
 @Component({
 	selector: 'settings-account',
@@ -76,33 +75,35 @@ export class SettingsAccountComponent implements OnInit {
 		// Send the request to the server
 		this._authService
 			.updateProfile(this.accountForm.value)
-			.pipe(
-				catchError((error: any) => of(error.error)),
-				switchMap((response: any) => {
-					// If there is an error...
-					this.accountForm.enable();
-
-					// Show the alert
-					this.showAlert = true;
-
-					if (response.error) {
+			.subscribe({
+				next: (response) => {
+					// Set the alert
+					this._authService.signInUsingRefreshToken().subscribe();
+					this.alert = {
+						type: 'success',
+						message: 'Profilul a fost actualizat.',
+					};
+				},
+				error: (err) => {
+					if (err.error) {
 						// Set the alert
 						this.alert = {
 							type: 'error',
 							message: 'Profilul nu a putut fi actualizat.',
 						};
-						return of(false);
 					} else {
-						// Set the alert
-						this._authService.signInUsingRefreshToken().subscribe();
 						this.alert = {
-							type: 'success',
-							message: 'Profilul a fost actualizat.',
+							type: 'warning',
+							message: 'Eroare pe server. Echipa tehnica a fost notificata.',
 						};
-						return of(true);
 					}
-				})
-			)
-			.subscribe();
+				},
+			})
+			.add(() => {
+				this.accountForm.enable();
+
+				// Show the alert
+				this.showAlert = true;
+			});
 	}
 }

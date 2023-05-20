@@ -200,7 +200,6 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 			this._fileManagerService
 				.uploadFiles(formData)
 				.pipe(
-					catchError((err) => of(err.error)),
 					switchMap((response) => {
 						// Show the alert
 						this.showAlert = true;

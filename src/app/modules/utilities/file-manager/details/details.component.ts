@@ -171,7 +171,6 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 			this._fileManagerService
 				.rescanCode(formData)
 				.pipe(
-					catchError((err) => of(err.error)),
 					switchMap((response) => {
 						return this._ngZone.run(() => {
 							// Show the alert
