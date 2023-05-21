@@ -9,7 +9,6 @@ import {
 	throwError,
 } from 'rxjs';
 import { AuthUtils } from 'app/core/auth/auth.utils';
-import { User } from '../user/user.types';
 import { backendUrl } from '../config/app.config';
 
 @Injectable()
@@ -72,10 +71,10 @@ export class AuthService {
 	 *
 	 * @param password
 	 */
-	resetPassword(token: string, user: User): Observable<any> {
+	resetPassword(token: string, user: any): Observable<any> {
 		return this._httpClient.post(
 			`${this._backEndUrl}/auth/password-reset`,
-			{ user },
+			{ ...user },
 			{ params: { resetPasswordToken: token } }
 		);
 	}
@@ -94,10 +93,6 @@ export class AuthService {
 		return this._httpClient
 			.post(`${this._backEndUrl}/auth/login`, credentials)
 			.pipe(
-				catchError((error: any) =>
-					// Return false
-					of(error.error)
-				),
 				switchMap((response: any) => {
 					if (!response.token) {
 						if (response.error) {
@@ -147,7 +142,7 @@ export class AuthService {
 				`${this._backEndUrl}/auth/refresh-token?refreshToken=${this.refreshToken}&refreshTokenId=${this.refreshTokenId}`
 			)
 			.pipe(
-				catchError((err) =>
+				catchError(() =>
 					// Return false
 					of(false)
 				),

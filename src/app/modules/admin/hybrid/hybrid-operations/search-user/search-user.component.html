@@ -1,0 +1,65 @@
+<div class="flex flex-col flex-auto p-6 md:p-8">
+	<!-- Close button -->
+	<div class="flex items-center justify-end">
+		<a mat-icon-button [routerLink]="['../']">
+			<mat-icon [svgIcon]="'heroicons_outline:x'"></mat-icon>
+		</a>
+	</div>
+	<!-- Close button -->
+	<div class="flex items-center justify-center mt-5">
+		<span class="text-black text-lg font-medium"
+			>Cauta utilizator pentru transfer</span
+		>
+	</div>
+	<!-- EmailOrPhone -->
+	<div class="sm:col-span-4 mt-5">
+		<mat-form-field class="w-full" [subscriptSizing]="'dynamic'">
+			<mat-label>Email sau numar de telefon</mat-label>
+			<mat-icon
+				class="icon-size-5"
+				[svgIcon]="'heroicons_solid:mail'"
+				matPrefix
+			></mat-icon>
+			<mat-icon
+				class="icon-size-5"
+				[svgIcon]="'heroicons_solid:phone'"
+				matPrefix
+			></mat-icon>
+			<input
+				[formControl]="searchControl"
+				matInput
+				#EmailOrPhone
+				[placeholder]="'Cauta user...'"
+				(keydown)="onKeydown($event)"
+			/>
+		</mat-form-field>
+	</div>
+	<div class="sm:col-span-4 mt-5">
+		<span class="text-black text-md font-medium"
+			>Utilizatori gasiti: {{ resultSets?.length || 0 }}</span
+		>
+	</div>
+	<div
+		class="flex flex-col mt-4 border-t border-b divide-y font-medium"
+		*ngIf="resultSets && resultSets.length > 0"
+	>
+		<div
+			class="flex items-center justify-between py-3"
+			*ngFor="let usr of resultSets"
+		>
+			<div>{{ usr.fullName }}</div>
+			<div>{{ usr.phoneNumber }}</div>
+			<div>
+				<button
+					mat-flat-button
+					[class.bg-green-300]="true"
+					[class.scale-75]="true"
+					title="Selecteaza"
+					(click)="selectAndTransfer(usr.conexId)"
+				>
+					<mat-icon [svgIcon]="'heroicons_outline:check'"></mat-icon>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>

@@ -49,10 +49,9 @@ export class AuthInterceptor implements HttpInterceptor {
 
 		// Response
 		return next.handle(newReq).pipe(
-			catchError((error) => {
+			catchError((error: HttpErrorResponse) => {
 				// Catch "401 Unauthorized" responses
 				if (
-					error instanceof HttpErrorResponse &&
 					error.status === 401 &&
 					error.error.message === 'Refresh token or jwt token invalid'
 				) {

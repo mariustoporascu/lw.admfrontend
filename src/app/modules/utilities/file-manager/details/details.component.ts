@@ -36,7 +36,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 		message: '',
 	};
 	showAlert: boolean = false;
-
+	disabled: boolean = false;
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
 	baseRoute: string = 'filemanager';
 	documentId: string;
@@ -45,7 +45,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 	 */
 	constructor(
 		private _activatedRoute: ActivatedRoute,
-		private _changeDetectorRef: ChangeDetectorRef,
+		private _cdr: ChangeDetectorRef,
 		private _fileManagerListComponent: FileManagerListComponent,
 		private _fileManagerComponent: FileManagerComponent,
 		private _fileManagerService: FileManagerService,
@@ -80,7 +80,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 			this.item = item;
 
 			// Mark for check
-			this._changeDetectorRef.markForCheck();
+			this._cdr.markForCheck();
 		});
 	}
 
@@ -120,7 +120,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 		return this._utilsService.parseDate(date);
 	}
 	async openCamera(): Promise<void> {
-		this.dialog.open(this.cameraDialog);
+		this.dialog.open(this.cameraDialog, { disableClose: true });
 
 		try {
 			const constraints = { video: { facingMode: 'environment' }, audio: false };
@@ -161,6 +161,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 			formData.append(`file`, blob, 'image.png');
 			formData.append('documentId', this.documentId);
 			this._ngZone.run(() => {
+				this.disabled = true;
 				this.showAlert = false;
 				this.alert = {
 					type: 'success',
@@ -169,36 +170,40 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 			});
 			this._fileManagerService
 				.rescanCode(formData)
-				.pipe(
-					catchError((err) => of(err.error)),
-					switchMap((response) => {
-						return this._ngZone.run(() => {
-							// Show the alert
-							this.showAlert = true;
-							if (response.error) {
-								// Set the alert
+				.subscribe({
+					next: (response) => {
+						this._ngZone.run(() => {
+							this.alert = {
+								type: 'success',
+								message: 'Codul a fost extras cu succes din imagine.',
+							};
+							setTimeout(() => {
+								this.closeCamera();
+							}, 1000);
+						});
+					},
+					error: (err) => {
+						this._ngZone.run(() => {
+							if (err.error) {
 								this.alert = {
 									type: 'error',
 									message: 'Codul nu a putut fi extras din imagine, mai incearca.',
 								};
-								return of(false);
 							} else {
 								this.alert = {
-									type: 'success',
-									message: 'Codul a fost extras cu succes din imagine.',
+									type: 'warning',
+									message: 'Eroare pe server. Echipa tehnica a fost notificata.',
 								};
-								return of(true);
 							}
 						});
-					})
-				)
-				.subscribe((resp) => {
-					this._changeDetectorRef.markForCheck();
-					if (resp) {
-						setTimeout(() => {
-							this.closeCamera();
-						}, 1000);
-					}
+					},
+				})
+				.add(() => {
+					this._ngZone.run(() => {
+						this.disabled = false;
+						this.showAlert = true;
+						this._cdr.markForCheck();
+					});
 				});
 		}, 'image/png');
 	}
@@ -218,7 +223,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 						message: `Fisierul a fost trimis la aprobat.`,
 					};
 					this.closeDrawer();
-					this._changeDetectorRef.markForCheck();
+					this._cdr.markForCheck();
 				});
 			});
 	}
@@ -226,14 +231,13 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 		this._fileManagerListComponent.showAlert = false;
 		this._fileManagerService
 			.downloadFile(this.item.fileInfo.fisiereDocumente.identifier)
-			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe({
 				next: (fileStream: ArrayBuffer) => {
 					if (!fileStream) {
 						this._fileManagerListComponent.showAlert = true;
 						// Set the alert
 						this._fileManagerListComponent.alert = {
-							type: 'error',
+							type: 'warning',
 							message: `Fisierul nu a putut fi descarcat.`,
 						};
 						return;
@@ -255,9 +259,12 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 					// Set the alert
 					this._fileManagerListComponent.alert = {
 						type: 'error',
-						message: `Fisierul nu a putut fi descarcat.`,
+						message: `Eroare pe server. Echipa tehnica a fost notificata.`,
 					};
 				},
+			})
+			.add(() => {
+				this._cdr.markForCheck();
 			});
 	}
 }

@@ -5,7 +5,6 @@ import {
 	NgForm,
 	Validators,
 } from '@angular/forms';
-import { catchError, finalize, of, switchMap } from 'rxjs';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseAlertType } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
@@ -70,33 +69,34 @@ export class AuthForgotPasswordComponent implements OnInit {
 		// Forgot password
 		this._authService
 			.forgotPassword(this.forgotPasswordForm.get('email').value)
-			.pipe(
-				catchError((error: any) => of(error.error)),
-				switchMap((response: any) => {
-					// If there is an error...
-					this.forgotPasswordForm.enable();
-					// Show the alert
-					this.showAlert = true;
-
-					if (response.error) {
-						// Set the alert
+			.subscribe({
+				next: (response) => {
+					this.forgotPasswordNgForm.resetForm();
+					// Set the alert
+					this.alert = {
+						type: 'success',
+						message:
+							'Un link de resetare a parolei a fost trimis la adresa de email.',
+					};
+				},
+				error: (err) => {
+					if (err.error) {
 						this.alert = {
 							type: 'error',
 							message: 'Email-ul nu a fost gasit in sistemul nostru.',
 						};
-						return of(false);
 					} else {
-						this.forgotPasswordNgForm.resetForm();
-						// Set the alert
 						this.alert = {
-							type: 'success',
-							message:
-								'Un link de resetare a parolei a fost trimis la adresa de email.',
+							type: 'warning',
+							message: 'Eroare pe server. Echipa tehnica a fost notificata.',
 						};
-						return of(true);
 					}
-				})
-			)
-			.subscribe();
+				},
+			})
+			.add(() => {
+				this.forgotPasswordForm.enable();
+				// Show the alert
+				this.showAlert = true;
+			});
 	}
 }
