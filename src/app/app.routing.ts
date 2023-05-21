@@ -63,7 +63,7 @@ export const appRoutes: Route[] = [
 			{
 				path: 'settings',
 				loadChildren: () =>
-					import('app/modules/user/settings/settings.module').then(
+					import('app/modules/user/user-settings/settings.module').then(
 						(m) => m.SettingsModule
 					),
 			},
@@ -113,6 +113,13 @@ export const appRoutes: Route[] = [
 					),
 			},
 			{
+				path: 'settings',
+				loadChildren: () =>
+					import('app/modules/admin/firma/user-settings/settings.module').then(
+						(m) => m.SettingsModule
+					),
+			},
+			{
 				path: 'externalusrs',
 				loadChildren: () =>
 					import(
@@ -130,6 +137,49 @@ export const appRoutes: Route[] = [
 		children: [
 			{
 				path: 'dashboard',
+				loadChildren: () =>
+					import('app/modules/admin/hybrid/hybrid-dash/user-dash.module').then(
+						(m) => m.UserDashModule
+					),
+			},
+			{
+				path: 'transfers',
+				loadChildren: () =>
+					import(
+						'app/modules/admin/hybrid/hybrid-transf-history/user-transf-history.module'
+					).then((m) => m.UserTransfHistoryModule),
+			},
+			{
+				path: 'filemanager',
+				data: { baseRoute: '/hybrid-admin/filemanager' },
+				loadChildren: () =>
+					import(
+						'app/modules/utilities/file-manager-hybrid/file-manager.module'
+					).then((m) => m.FileManagerModule),
+			},
+			{
+				path: 'settings',
+				loadChildren: () =>
+					import('app/modules/admin/hybrid/user-settings/settings.module').then(
+						(m) => m.SettingsModule
+					),
+			},
+			{
+				path: 'operations',
+				loadChildren: () =>
+					import(
+						'app/modules/admin/hybrid/hybrid-operations/user-operations.module'
+					).then((m) => m.UserOperationsModule),
+			},
+			{
+				path: 'internalusrs',
+				loadChildren: () =>
+					import('app/modules/landing/example/example.module').then(
+						(m) => m.ExampleModule
+					),
+			},
+			{
+				path: 'externalusrs',
 				loadChildren: () =>
 					import('app/modules/landing/example/example.module').then(
 						(m) => m.ExampleModule
