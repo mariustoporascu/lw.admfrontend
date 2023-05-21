@@ -73,7 +73,7 @@ export class UserComponent implements OnInit, OnDestroy {
 	// -----------------------------------------------------------------------------------------------------
 
 	goToSettings() {
-		this._router.navigateByUrl('/user/settings');
+		this._router.navigateByUrl(`/${this.user.type}/settings`);
 	}
 	/**
 	 * Sign out

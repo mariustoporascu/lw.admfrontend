@@ -1,0 +1,371 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden">
+	<mat-drawer-container
+		class="flex-auto h-full bg-card dark:bg-transparent"
+		(backdropClick)="onBackdropClicked()"
+	>
+		<!-- Drawer -->
+		<mat-drawer
+			class="w-full sm:w-128 dark:bg-gray-900"
+			[mode]="drawerMode"
+			[opened]="false"
+			[position]="'end'"
+			[disableClose]="true"
+			#matDrawer
+		>
+			<router-outlet></router-outlet>
+		</mat-drawer>
+
+		<mat-drawer-content class="flex flex-col bg-gray-100 dark:bg-transparent">
+			<!-- Main -->
+			<div class="flex flex-col flex-auto">
+				<!-- Header -->
+				<div
+					class="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between p-6 sm:py-12 md:px-8 border-b bg-card dark:bg-transparent"
+				>
+					<!-- Title -->
+					<div>
+						<div class="text-4xl font-extrabold tracking-tight leading-none">
+							Manager fisiere
+						</div>
+						<div class="flex items-center mt-0.5 font-medium text-secondary">
+							<!-- Breadcrumbs -->
+							<ng-container *ngIf="items.path.length">
+								<div class="flex items-center space-x-2">
+									<a class="text-primary cursor-pointer" [routerLink]="[baseRoute]"
+										>Main
+									</a>
+									<div class="">/</div>
+									<ng-container
+										*ngFor="let path of items.path; let last = last; trackBy: trackByFn"
+									>
+										<ng-container *ngIf="!last">
+											<a
+												class="text-primary cursor-pointer"
+												[routerLink]="[baseRoute + '/folders/', path.id]"
+												>{{ path.folderInfo.name }}</a
+											>
+										</ng-container>
+										<ng-container *ngIf="last">
+											<div>{{ path.folderInfo.name }}</div>
+										</ng-container>
+										<ng-container *ngIf="!last">
+											<div class="">/</div>
+										</ng-container>
+									</ng-container>
+								</div>
+							</ng-container>
+						</div>
+					</div>
+					<div class="grid mt-4 sm:mt-0 gap-5" *ngIf="isFolderPath">
+						<!-- Alert -->
+						<fuse-alert
+							class="ml-8 mt-8 mr-8"
+							*ngIf="showAlert"
+							[appearance]="'outline'"
+							[showIcon]="false"
+							[type]="alert.type"
+							[dismissible]="true"
+						>
+							{{ alert.message }}
+						</fuse-alert>
+					</div>
+					<!-- Actions -->
+					<div class="grid grid-cols-2 mt-4 sm:mt-0 gap-5" *ngIf="isFolderPath">
+						<input
+							#fileInput
+							multiple
+							[attr.accept]="acceptedFileTypes"
+							type="file"
+							(change)="onFileSelected($event)"
+							style="display: none"
+						/>
+						<!-- Upload button -->
+						<button
+							mat-flat-button
+							[class.bg-blue-300]="true"
+							(click)="refreshData()"
+							title="Reincarca datele"
+						>
+							<mat-icon [svgIcon]="'heroicons_outline:refresh'"></mat-icon>
+						</button>
+						<!-- Upload button -->
+						<button
+							mat-flat-button
+							[color]="'primary'"
+							(click)="fileInput.click()"
+							title="Incarca documente"
+						>
+							<mat-icon [svgIcon]="'heroicons_outline:document-add'"></mat-icon>
+						</button>
+					</div>
+				</div>
+
+				<!-- Items list -->
+				<ng-container
+					*ngIf="
+						items && (items.folders.length > 0 || items.files.length > 0);
+						else noItems
+					"
+				>
+					<div class="p-6 md:p-8 space-y-8">
+						<!-- Folders -->
+						<ng-container *ngIf="items.folders.length > 0">
+							<div>
+								<div class="font-medium">Firme</div>
+								<div class="flex flex-wrap -m-2 mt-2">
+									<ng-container *ngFor="let folder of items.folders; trackBy: trackByFn">
+										<div class="relative w-40 h-40 m-2 p-4 shadow rounded-2xl bg-card">
+											<a
+												class="absolute z-20 top-1.5 right-1.5 w-8 h-8 min-h-8"
+												(click)="$event.preventDefault()"
+												[routerLink]="['./details/', folder.id]"
+												mat-icon-button
+											>
+												<mat-icon
+													class="icon-size-5"
+													[svgIcon]="'heroicons_solid:information-circle'"
+												></mat-icon>
+											</a>
+											<a
+												class="z-10 absolute inset-0 flex flex-col p-4 cursor-pointer"
+												[routerLink]="[baseRoute + '/folders/', folder.id]"
+											>
+												<div class="aspect-[9/6]">
+													<div class="flex items-center justify-center h-full">
+														<!-- Icon -->
+														<mat-icon
+															class="icon-size-14 text-hint opacity-50"
+															[svgIcon]="'heroicons_solid:folder'"
+														></mat-icon>
+													</div>
+												</div>
+												<div
+													class="flex flex-col flex-auto justify-center text-center text-sm font-medium"
+												>
+													<div class="truncate" [matTooltip]="folder.folderInfo.name">
+														{{ folder.folderInfo.name }}
+													</div>
+													<div class="truncate" [matTooltip]="folder.folderInfo.cuiNumber">
+														{{ folder.folderInfo.cuiNumber }}
+													</div>
+													<ng-container *ngIf="folder.folderInfo">
+														<div class="text-secondary truncate">
+															Discount {{ folder.folderInfo.discountPercent }} %
+														</div>
+													</ng-container>
+												</div>
+											</a>
+										</div>
+									</ng-container>
+								</div>
+							</div>
+						</ng-container>
+
+						<!-- Files -->
+						<ng-container *ngIf="items.files.length > 0">
+							<div class="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full mt-8">
+								<!-- Recent transactions table -->
+								<div
+									class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden"
+								>
+									<mat-form-field class="ml-10 mr-10 mt-5">
+										<mat-label>Filtrare</mat-label>
+										<input
+											matInput
+											(keyup)="applyFilter($event)"
+											placeholder="Filtrare dupa toate coloanele..."
+											#input
+										/>
+									</mat-form-field>
+									<div class="overflow-x-auto mx-6">
+										<table
+											class="w-full bg-transparent"
+											mat-table
+											matSort
+											[dataSource]="recentTransactionsDataSource"
+											[trackBy]="trackByFn"
+											#recentTransactionsTable
+										>
+											<!-- Transaction ID -->
+											<ng-container matColumnDef="docNumber">
+												<th mat-header-cell mat-sort-header *matHeaderCellDef>
+													Numar document
+												</th>
+												<td mat-cell *matCellDef="let transaction">
+													<span
+														class="pr-6 font-medium text-sm text-secondary whitespace-nowrap"
+													>
+														{{ transaction.fileInfo.ocrData?.docNumber?.value }}
+													</span>
+												</td>
+											</ng-container>
+											<!-- Transaction ID -->
+											<ng-container matColumnDef="fileName">
+												<th mat-header-cell mat-sort-header *matHeaderCellDef>
+													Nume fisier
+												</th>
+												<td mat-cell *matCellDef="let transaction">
+													<span
+														class="pr-6 font-medium text-sm text-secondary whitespace-nowrap"
+													>
+														{{ transaction.fileInfo.fisiereDocumente.fileName }}
+													</span>
+												</td>
+											</ng-container>
+											<!-- Transaction ID -->
+											<ng-container matColumnDef="fileExtension">
+												<th mat-header-cell mat-sort-header *matHeaderCellDef>Extensie</th>
+												<td mat-cell *matCellDef="let transaction">
+													<div
+														class="px-1.5 rounded text-sm font-semibold leading-5 text-white w-fit"
+														[class.bg-red-600]="
+															transaction.type.toLowerCase().includes('pdf')
+														"
+														[class.bg-blue-600]="
+															transaction.type.toLocaleLowerCase().includes('doc')
+														"
+														[class.bg-green-600]="
+															transaction.type.toLocaleLowerCase().includes('xls')
+														"
+														[class.bg-gray-600]="
+															transaction.type.toLocaleLowerCase() === 'txt'
+														"
+														[class.bg-amber-600]="
+															transaction.type.toLocaleLowerCase().includes('image')
+														"
+													>
+														{{ transaction.type.toUpperCase().split("/")[1] }}
+													</div>
+												</td>
+											</ng-container>
+											<!-- Transaction ID -->
+											<ng-container matColumnDef="docType">
+												<th mat-header-cell mat-sort-header *matHeaderCellDef>
+													Tip Document
+												</th>
+												<td mat-cell *matCellDef="let transaction">
+													<span
+														class="pr-6 font-medium text-sm text-secondary whitespace-nowrap"
+													>
+														{{ transaction.fileInfo.isInvoice ? "Factura" : "Bon fiscal" }}
+													</span>
+												</td>
+											</ng-container>
+											<!-- Date -->
+											<ng-container matColumnDef="created">
+												<th mat-header-cell *matHeaderCellDef>
+													<div class="flex flex-row">
+														<div mat-sort-header class="flex">Data</div>
+														<mat-datepicker-toggle
+															matIconSuffix
+															[for]="picker"
+														></mat-datepicker-toggle>
+														<mat-date-range-picker #picker></mat-date-range-picker>
+														<mat-date-range-input [rangePicker]="picker" class="hidden">
+															<input matStartDate placeholder="Start date" #dateStart />
+															<input
+																matEndDate
+																placeholder="End date"
+																#dateEnd
+																(dateChange)="datePicked(dateStart, dateEnd)"
+															/>
+														</mat-date-range-input>
+													</div>
+												</th>
+												<td mat-cell *matCellDef="let transaction">
+													<span class="pr-6 whitespace-nowrap">
+														{{
+															transaction.fileInfo.fisiereDocumente.created
+																| date : "dd MMM y" : "" : "ro"
+														}}
+													</span>
+												</td>
+											</ng-container>
+
+											<!-- Status -->
+											<ng-container matColumnDef="status">
+												<th mat-header-cell mat-sort-header *matHeaderCellDef>Status</th>
+												<td mat-cell *matCellDef="let transaction">
+													<div class="flex flex-row">
+														<mat-icon
+															[class.text-purple-600]="transaction.fileInfo.status === 7"
+															*ngIf="transaction.fileInfo.status === 7"
+															class="icon-size-5"
+															[svgIcon]="'heroicons_solid:check-circle'"
+														></mat-icon>
+														<mat-icon
+															[class.text-red-600]="transaction.fileInfo.status === 6"
+															*ngIf="transaction.fileInfo.status === 6"
+															class="icon-size-5"
+															[svgIcon]="'heroicons_solid:x-circle'"
+														></mat-icon>
+														<mat-icon
+															[class.text-gray-600]="transaction.fileInfo.status === 0"
+															*ngIf="transaction.fileInfo.status === 0"
+															class="icon-size-5"
+															[svgIcon]="'heroicons_solid:minus-circle'"
+														></mat-icon>
+														<mat-icon
+															*ngIf="transaction.fileInfo.status === 4"
+															[class.text-blue-600]="transaction.fileInfo.status === 4"
+															class="icon-size-5"
+															[svgIcon]="'heroicons_solid:information-circle'"
+														></mat-icon>
+														<div
+															[class.text-gray-600]="transaction.fileInfo.status === 0"
+															[class.text-red-600]="transaction.fileInfo.status === 6"
+															[class.text-blue-600]="transaction.fileInfo.status === 4"
+															[class.text-purple-600]="transaction.fileInfo.status === 7"
+														>
+															{{ splitByCapitalLetters(transaction.fileInfo.statusName) }}
+														</div>
+													</div>
+												</td>
+											</ng-container>
+
+											<tr
+												mat-header-row
+												*matHeaderRowDef="recentTransactionsTableColumns"
+											></tr>
+											<tr
+												class="order-row h-16"
+												mat-row
+												*matRowDef="let row; columns: recentTransactionsTableColumns"
+												[routerLink]="['./details/', row.id]"
+											></tr>
+											<tr class="mat-row" *matNoDataRow>
+												<td class="mat-cell" colspan="4">
+													Nu am gasit date din filtrarea dupa "{{ input.value }}"
+												</td>
+											</tr>
+										</table>
+										<mat-paginator
+											#recentTransactionsTablePagination
+											[pageSizeOptions]="[5, 10, 25, 100]"
+											aria-label="Select page"
+										></mat-paginator>
+									</div>
+								</div>
+							</div>
+						</ng-container>
+					</div>
+				</ng-container>
+
+				<!-- No items template -->
+				<ng-template #noItems>
+					<div
+						class="flex flex-auto flex-col items-center justify-center bg-gray-100 dark:bg-transparent"
+					>
+						<mat-icon
+							class="icon-size-24"
+							[svgIcon]="'heroicons_outline:folder-open'"
+						></mat-icon>
+						<div class="mt-4 text-2xl font-semibold tracking-tight text-secondary">
+							Nu sunt date din filtrare!
+						</div>
+					</div>
+				</ng-template>
+			</div>
+		</mat-drawer-content>
+	</mat-drawer-container>
+</div>
