@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Subject, catchError, of, switchMap, takeUntil } from 'rxjs';
+import { Subject, catchError, of, switchMap, takeUntil, tap } from 'rxjs';
 import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { FuseUtilsService } from '@fuse/services/utils';
@@ -257,32 +257,39 @@ export class UserOperationsComponent
 				tranzactionType,
 				nextConexId,
 			})
-			.pipe(
-				catchError((error: any) => of(error.error)),
-				switchMap((response: any) => {
-					// Show the alert
-					this.showAlert = true;
-					this._cdr.markForCheck();
-					this._userFunctDataService.getApprovedDocuments().subscribe();
-					this.selection.clear();
-					if (response.error) {
-						const error = response.message;
+			.subscribe({
+				next: () => {
+					this.alert = {
+						type: 'success',
+						message: 'Operatiunea a fost efectuata cu succes.',
+					};
+				},
+				error: (err) => {
+					if (err.error) {
+						const error = err.message;
 						// Set the alert
 						this.alert = {
 							type: 'error',
 							message: `${error.succes} operatiuni cu succes, ${error.failed} esuate.`,
 						};
-						return of(false);
 					} else {
 						this.alert = {
-							type: 'success',
-							message: 'Operatiunea a fost efectuata cu succes.',
+							type: 'warning',
+							message: 'Eroare pe server. Echipa tehnica a fost notificata.',
 						};
-						return of(true);
 					}
-				})
-			)
-			.subscribe();
+				},
+			})
+			.add(() => {
+				this._userFunctDataService
+					.getApprovedDocuments()
+					.subscribe()
+					.add(() => {
+						this.showAlert = true;
+						this.selection.clear();
+						this._cdr.markForCheck();
+					});
+			});
 	}
 	getDetaliiBusiness(data: any): string {
 		return this._utilsService.getDetaliiBusiness(data);

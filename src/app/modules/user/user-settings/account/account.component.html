@@ -27,6 +27,9 @@
 						matPrefix
 					></mat-icon>
 					<input [formControlName]="'name'" matInput />
+					<mat-error *ngIf="accountForm.get('name').hasError('required')">
+						Numele este obligatoriu
+					</mat-error>
 				</mat-form-field>
 			</div>
 			<!-- FirstName -->
@@ -39,6 +42,9 @@
 						matPrefix
 					></mat-icon>
 					<input [formControlName]="'firstName'" matInput />
+					<mat-error *ngIf="accountForm.get('firstName').hasError('required')">
+						Prenumele este obligatoriu
+					</mat-error>
 				</mat-form-field>
 			</div>
 		</div>
@@ -66,6 +72,9 @@
 						matPrefix
 					></mat-icon>
 					<input [formControlName]="'phoneNumber'" matInput />
+					<mat-error *ngIf="accountForm.get('phoneNumber').hasError('required')">
+						Numarul de telefon este obligatoriu
+					</mat-error>
 				</mat-form-field>
 			</div>
 		</div>
@@ -78,7 +87,7 @@
 			<button
 				class="ml-4"
 				mat-flat-button
-				type="button"
+				type="submit"
 				[color]="'primary'"
 				(click)="updateProfile()"
 			>

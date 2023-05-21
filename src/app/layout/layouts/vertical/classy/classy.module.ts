@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
@@ -17,34 +17,36 @@ import { ShortcutsModule } from 'app/layout/common/shortcuts/shortcuts.module';
 import { UserModule } from 'app/layout/common/user/user.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { ClassyLayoutComponent } from 'app/layout/layouts/vertical/classy/classy.component';
+import { ErrorInterceptor } from './classy.interceptor';
 
 @NgModule({
-    declarations: [
-        ClassyLayoutComponent
-    ],
-    imports     : [
-        HttpClientModule,
-        RouterModule,
-        MatButtonModule,
-        MatDividerModule,
-        MatIconModule,
-        MatMenuModule,
-        FuseFullscreenModule,
-        FuseLoadingBarModule,
-        FuseNavigationModule,
-        LanguagesModule,
-        MessagesModule,
-        NotificationsModule,
-        QuickChatModule,
-        SearchModule,
-        ShortcutsModule,
-        UserModule,
-        SharedModule
-    ],
-    exports     : [
-        ClassyLayoutComponent
-    ]
+	declarations: [ClassyLayoutComponent],
+	imports: [
+		HttpClientModule,
+		RouterModule,
+		MatButtonModule,
+		MatDividerModule,
+		MatIconModule,
+		MatMenuModule,
+		FuseFullscreenModule,
+		FuseLoadingBarModule,
+		FuseNavigationModule,
+		LanguagesModule,
+		MessagesModule,
+		NotificationsModule,
+		QuickChatModule,
+		SearchModule,
+		ShortcutsModule,
+		UserModule,
+		SharedModule,
+	],
+	providers: [
+		{
+			provide: HTTP_INTERCEPTORS,
+			useClass: ErrorInterceptor,
+			multi: true,
+		},
+	],
+	exports: [ClassyLayoutComponent],
 })
-export class ClassyLayoutModule
-{
-}
+export class ClassyLayoutModule {}

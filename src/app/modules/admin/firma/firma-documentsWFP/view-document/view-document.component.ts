@@ -5,6 +5,7 @@ import {
 	Component,
 	ElementRef,
 	Input,
+	NgZone,
 	OnDestroy,
 	OnInit,
 	ViewChild,
@@ -16,6 +17,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FirmaDocsWFPComponent } from '../firma-docsWFP.component';
 import { FileManagerService } from 'app/core/filemanager/file-manager.service';
 import { Documente } from 'app/core/bkendmodels/models.types';
+import { FuseUtilsService } from '@fuse/services/utils';
 
 @Component({
 	selector: 'view-document',
@@ -23,10 +25,10 @@ import { Documente } from 'app/core/bkendmodels/models.types';
 	encapsulation: ViewEncapsulation.None,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ViewDocumentComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ViewDocumentComponent implements OnInit, OnDestroy {
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
 	documentId: string;
-	document: Documente | null = null;
+	document: Documente;
 	fileBlob: Blob;
 	/**
 	 * Constructor
@@ -36,7 +38,9 @@ export class ViewDocumentComponent implements OnInit, AfterViewInit, OnDestroy {
 		private _fileManagerService: FileManagerService,
 		private _router: Router,
 		private _cdr: ChangeDetectorRef,
-		private _activatedRoute: ActivatedRoute
+		private _activatedRoute: ActivatedRoute,
+		private _utilsService: FuseUtilsService,
+		private _ngZone: NgZone
 	) {}
 
 	// -----------------------------------------------------------------------------------------------------
@@ -49,34 +53,19 @@ export class ViewDocumentComponent implements OnInit, AfterViewInit, OnDestroy {
 	ngOnInit(): void {
 		this._activatedRoute.paramMap.subscribe((params) => {
 			this.documentId = params.get('id');
+			this._ngZone.run(() => {
+				this.document = this._firmaDocsWFPComponent.items.find(
+					(item) => item.fisiereDocumente.identifier === this.documentId
+				);
+				this._cdr.markForCheck();
+			});
+			this._firmaDocsWFPComponent.matDrawer.open();
 
-			this.document = this._firmaDocsWFPComponent.items.find(
-				(item) => item.id === this.documentId
-			);
 			this.downloadFile();
 		});
-		this._firmaDocsWFPComponent.matDrawer.open();
 	}
-
-	ngAfterViewInit(): void {}
-
-	/**
-	 * Setter for bar search input
-	 *
-	 * @param value
-	 */
-	@ViewChild('EmailOrPhone')
-	set EmailOrPhone(value: ElementRef) {
-		// If the value exists, it means that the search input
-		// is now in the DOM, and we can focus on the input..
-		if (value) {
-			// Give Angular time to complete the change detection cycle
-			setTimeout(() => {
-				// Focus to the input element
-				value.nativeElement.focus();
-			});
-		}
-		//
+	getDate(date: string): string {
+		return this._utilsService.parseDate(date);
 	}
 
 	/**
@@ -102,6 +91,8 @@ export class ViewDocumentComponent implements OnInit, AfterViewInit, OnDestroy {
 				}
 
 				this.fileBlob = new Blob([fileStream]);
+				// Mark for check
+				this._cdr.markForCheck();
 			},
 			error: (error) => {
 				// Handle any other errors here.
