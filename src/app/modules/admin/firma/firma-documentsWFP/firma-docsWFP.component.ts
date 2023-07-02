@@ -224,7 +224,7 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.selection.selected.forEach((item: any) => {
 			total += item.discountValue;
 		});
-		return total;
+		return total.toFixed(2);
 	}
 	datePicked(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
 		let startDate = new Date(dateRangeStart.value).getTime();

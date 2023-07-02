@@ -4,7 +4,7 @@
 		<div class="flex items-center justify-between w-full">
 			<div>
 				<h2 class="text-3xl font-semibold tracking-tight leading-8">
-					Useri externi
+					Puncte de lucru
 				</h2>
 			</div>
 			<div>
@@ -68,7 +68,9 @@
 						</ng-container>
 						<!-- Transaction ID -->
 						<ng-container matColumnDef="name">
-							<th mat-header-cell mat-sort-header *matHeaderCellDef>Nume grup</th>
+							<th mat-header-cell mat-sort-header *matHeaderCellDef>
+								Nume de identificare
+							</th>
 							<td mat-cell *matCellDef="let transaction">
 								<div class="w-50 truncate" [matTooltip]="transaction.name">
 									<ng-container *ngIf="!transaction.isEditMode">{{
@@ -88,17 +90,19 @@
 
 						<!-- Bussines Details -->
 						<ng-container matColumnDef="noSubAccounts">
-							<th mat-header-cell mat-sort-header *matHeaderCellDef>Numar conturi</th>
+							<th mat-header-cell mat-sort-header *matHeaderCellDef>
+								Are cont creat?
+							</th>
 							<td mat-cell *matCellDef="let transaction">
 								<span class="pr-6 whitespace-wrap">
-									{{ transaction.noSubAccounts ?? "N/A" }}
+									{{ transaction.noSubAccounts > 0 ? "Da" : "Nu" }}
 								</span>
 							</td>
 						</ng-container>
 						<!-- Bussines Details -->
 						<ng-container matColumnDef="noDocsUploaded">
 							<th mat-header-cell mat-sort-header *matHeaderCellDef>
-								Numar documente
+								Numar documente incarcate pe punctul de lucru
 							</th>
 							<td mat-cell *matCellDef="let transaction">
 								<span class="pr-6 whitespace-wrap">

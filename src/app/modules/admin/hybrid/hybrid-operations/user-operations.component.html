@@ -31,15 +31,26 @@
 						<div
 							class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden"
 						>
-							<mat-form-field class="ml-10 mr-10 mt-5">
-								<mat-label>Filtrare</mat-label>
-								<input
-									matInput
-									(keyup)="applyFilter($event)"
-									placeholder="Filtrare dupa toate coloanele..."
-									#input
-								/>
-							</mat-form-field>
+							<div class="flex flex-row flex-auto justify-between">
+								<mat-form-field class="ml-10 mr-10 mt-5 w-128">
+									<mat-label>Filtrare</mat-label>
+									<input
+										matInput
+										(keyup)="applyFilter($event)"
+										placeholder="Filtrare dupa toate coloanele..."
+										#inputFilter
+									/>
+								</mat-form-field>
+								<mat-form-field class="ml-10 mr-10 mt-5 w-128">
+									<mat-label>Selecteza dupa discount total</mat-label>
+									<input
+										matInput
+										(keyup)="selectByDiscountValue($event)"
+										placeholder="Introduceti o valoare totala de discount(Ex: 123.4)..."
+										#inputDiscount
+									/>
+								</mat-form-field>
+							</div>
 							<div class="overflow-x-auto mx-6">
 								<table
 									class="w-full bg-transparent"
@@ -226,7 +237,7 @@
 									></tr>
 									<tr class="mat-row" *matNoDataRow>
 										<td class="mat-cell" colspan="4">
-											Nu am gasit date din filtrarea dupa "{{ input.value }}"
+											Nu am gasit date din filtrarea dupa "{{ inputFilter.value }}"
 										</td>
 									</tr>
 								</table>
