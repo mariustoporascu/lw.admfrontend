@@ -11,7 +11,6 @@ import {
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subject, catchError, of, switchMap, takeUntil, tap } from 'rxjs';
-import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { FuseUtilsService } from '@fuse/services/utils';
 import { Documente } from 'app/core/bkendmodels/models.types';
@@ -176,7 +175,7 @@ export class UserOperationsComponent
 	applyFilter(event: Event) {
 		const filterValue = (event.target as HTMLInputElement).value;
 		this.recentTransactionsDataSource.filter = filterValue.trim().toLowerCase();
-		this.selection.clear();
+		// this.selection.clear();
 		if (this.recentTransactionsDataSource.paginator) {
 			this.recentTransactionsDataSource.paginator.firstPage();
 		}
@@ -193,7 +192,11 @@ export class UserOperationsComponent
 
 	/** Selects all rows if they are not all selected; otherwise clear selection. */
 	toggleAllRows() {
-		if (this.isAllSelected()) {
+		if (
+			this.isAllSelected() ||
+			(this.selection.selected.length > 0 &&
+				this.recentTransactionsDataSource.filteredData.length === 0)
+		) {
 			this.selection.clear();
 			return;
 		}
@@ -201,6 +204,17 @@ export class UserOperationsComponent
 		this.selection.select(...this.recentTransactionsDataSource.filteredData);
 	}
 
+	/** Select by filtering rows with sum of discount value */
+	selectByDiscountValue(event: Event) {
+		this.selection.clear();
+		const filterValue = (event.target as HTMLInputElement).value;
+		this.selection.select(
+			...this._utilsService.getOptimalCombination(
+				this.recentTransactionsDataSource.data.filter((item) => item.status === 1),
+				parseInt(filterValue)
+			)
+		);
+	}
 	/** The label for the checkbox on the passed row */
 	checkboxLabel(row?: Documente): string {
 		if (!row) {
@@ -218,7 +232,7 @@ export class UserOperationsComponent
 		this.selection.selected.forEach((item: any) => {
 			total += item.discountValue;
 		});
-		return total;
+		return total.toFixed(2);
 	}
 	// transfer guid 3a242ee5-111b-48e9-8b7d-d7592ddb23ba
 	makeTransferSelected() {

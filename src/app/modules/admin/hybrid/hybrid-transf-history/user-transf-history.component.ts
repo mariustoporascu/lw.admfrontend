@@ -10,7 +10,6 @@ import {
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subject, takeUntil } from 'rxjs';
-import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { FuseUtilsService } from '@fuse/services/utils';
 import { Tranzactii } from 'app/core/bkendmodels/models.types';

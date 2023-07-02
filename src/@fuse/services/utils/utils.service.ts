@@ -5,6 +5,7 @@ import { IsActiveMatchOptions } from '@angular/router';
 	providedIn: 'root',
 })
 export class FuseUtilsService {
+	private deviation: number = 10;
 	/**
 	 * Constructor
 	 */
@@ -90,5 +91,43 @@ export class FuseUtilsService {
 			', ' +
 			data.ocrData?.adresaFirma?.value
 		);
+	}
+	getOptimalCombination(items: any[], targetValue: number): any[] {
+		let closestSum = Infinity;
+		let closestCombination: any[] = [];
+
+		// Generate all combinations
+		const powerSet = this.generatePowerSet(items);
+
+		// For each combination calculate the sum
+		for (let combination of powerSet) {
+			const sum = combination.reduce(
+				(total, item) => total + item.discountValue,
+				0
+			);
+
+			// Check if it's within deviation and closer to target than previous combinations
+			if (
+				Math.abs(targetValue - sum) < Math.abs(targetValue - closestSum) &&
+				Math.abs(sum - targetValue) <= this.deviation
+			) {
+				closestSum = sum;
+				closestCombination = combination;
+			}
+		}
+
+		return closestCombination;
+	}
+
+	private generatePowerSet(array: any[]): any[][] {
+		const powerSet = [[]];
+
+		for (let element of array) {
+			for (let i = 0, length = powerSet.length; i < length; i++) {
+				powerSet.push([...powerSet[i], element]);
+			}
+		}
+
+		return powerSet;
 	}
 }

@@ -120,7 +120,7 @@ export const appRoutes: Route[] = [
 					),
 			},
 			{
-				path: 'externalusrs',
+				path: 'pointsofsale',
 				loadChildren: () =>
 					import(
 						'app/modules/admin/firma/firma-ext-usrs/firma-ext-usrs.module'
@@ -170,20 +170,6 @@ export const appRoutes: Route[] = [
 					import(
 						'app/modules/admin/hybrid/hybrid-operations/user-operations.module'
 					).then((m) => m.UserOperationsModule),
-			},
-			{
-				path: 'internalusrs',
-				loadChildren: () =>
-					import('app/modules/landing/example/example.module').then(
-						(m) => m.ExampleModule
-					),
-			},
-			{
-				path: 'externalusrs',
-				loadChildren: () =>
-					import('app/modules/landing/example/example.module').then(
-						(m) => m.ExampleModule
-					),
 			},
 		],
 	},
