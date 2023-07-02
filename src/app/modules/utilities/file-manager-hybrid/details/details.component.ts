@@ -247,7 +247,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 					const url = window.URL.createObjectURL(blob);
 					const link = document.createElement('a');
 					link.href = url;
-					link.download = this.item.fileInfo.fisiereDocumente.fileName; // provide the filename here
+					link.download = this.item.fileInfo.fisiereDocumente.fileName + '.pdf'; // provide the filename here
 					document.body.appendChild(link);
 					link.click();
 					document.body.removeChild(link);
