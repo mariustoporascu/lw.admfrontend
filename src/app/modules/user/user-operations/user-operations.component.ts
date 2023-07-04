@@ -306,6 +306,7 @@ export class UserOperationsComponent
 					});
 			});
 	}
+
 	getDetaliiBusiness(data: any): string {
 		return this._utilsService.getDetaliiBusiness(data);
 	}

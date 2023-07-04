@@ -1,15 +1,43 @@
-<div class="flex flex-col flex-auto p-6 md:p-8">
-	<!-- Close button -->
-	<div class="flex items-center justify-end">
-		<a mat-icon-button [routerLink]="['../']">
-			<mat-icon [svgIcon]="'heroicons_outline:x'"></mat-icon>
-		</a>
+<div class="w-full max-w-3xl">
+	<!-- Alert -->
+	<fuse-alert
+		class="mt-8"
+		*ngIf="showAlert"
+		[appearance]="'outline'"
+		[showIcon]="false"
+		[type]="alert.type"
+		[dismissible]="true"
+	>
+		{{ alert.message }}
+	</fuse-alert>
+	<!-- My current list of favorites -->
+	<div
+		class="flex flex-col mt-4 border-t border-b divide-y font-medium"
+		*ngIf="favoritesResultSets && favoritesResultSets.length > 0"
+	>
+		<div
+			class="flex items-center justify-between py-3"
+			*ngFor="let usr of favoritesResultSets"
+		>
+			<div>{{ usr.fullName }}</div>
+			<div>{{ usr.phoneNumber }}</div>
+			<div>{{ usr.email }}</div>
+			<div>
+				<button
+					mat-flat-button
+					[class.bg-orange-300]="true"
+					[class.scale-75]="true"
+					title="Sterge"
+					(click)="deleteFavorite(usr.conexId)"
+				>
+					<mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+				</button>
+			</div>
+		</div>
 	</div>
 	<!-- search user -->
 	<div class="flex items-center justify-center mt-5">
-		<span class="text-black text-lg font-medium"
-			>Cauta utilizator pentru transfer</span
-		>
+		<span class="text-black text-lg font-medium">Cauta utilizator</span>
 	</div>
 	<!-- EmailOrPhone -->
 	<div class="sm:col-span-4 mt-5">
@@ -39,17 +67,6 @@
 			<span class="text-black text-xl font-medium"
 				>Utilizatori gasiti: {{ resultSets?.length || 0 }}</span
 			>
-			<div class="flex flex-col items-center mr-2">
-				<span class="text-black text-md font-medium"
-					>Salveaza userul selectat la favorite?</span
-				>
-				<mat-checkbox
-					(click)="$event.stopPropagation()"
-					(change)="$event ? toggleSelectedForFavorite() : null"
-					[checked]="selectedForFavorite"
-				>
-				</mat-checkbox>
-			</div>
 		</div>
 	</div>
 	<div class="row-span-2 mt-5" *ngIf="resultSets && resultSets.length > 0"></div>
@@ -71,7 +88,7 @@
 					[class.bg-green-300]="true"
 					[class.scale-75]="true"
 					title="Selecteaza"
-					(click)="selectAndTransfer(usr.conexId)"
+					(click)="addNewFavorite(usr.conexId)"
 				>
 					<mat-icon [svgIcon]="'heroicons_outline:check'"></mat-icon>
 				</button>

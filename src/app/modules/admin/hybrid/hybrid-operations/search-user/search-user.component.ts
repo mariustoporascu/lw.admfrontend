@@ -30,7 +30,7 @@ export class SearchForUserComponent
 	searchControl: UntypedFormControl = new UntypedFormControl();
 	@Input() debounce: number = 200;
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
-	@Input() minLength: number = 5;
+	@Input() minLength: number = 3;
 	resultSets: any[];
 
 	/**

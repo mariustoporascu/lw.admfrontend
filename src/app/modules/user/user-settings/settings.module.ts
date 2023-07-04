@@ -16,6 +16,8 @@ import { SettingsPlanBillingComponent } from './plan-billing/plan-billing.compon
 import { SettingsSecurityComponent } from './security/security.component';
 import { SettingsComponent } from './settings.component';
 import { settingsRoutes } from './settings.routing';
+import { SettingsFavoritesComponent } from './favorites/favorites.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
 	declarations: [
@@ -24,6 +26,7 @@ import { settingsRoutes } from './settings.routing';
 		SettingsSecurityComponent,
 		SettingsPlanBillingComponent,
 		SettingsNotificationsComponent,
+		SettingsFavoritesComponent,
 	],
 	imports: [
 		RouterModule.forChild(settingsRoutes),
@@ -31,6 +34,7 @@ import { settingsRoutes } from './settings.routing';
 		MatFormFieldModule,
 		MatIconModule,
 		MatInputModule,
+		MatCheckboxModule,
 		MatRadioModule,
 		MatSelectModule,
 		MatSidenavModule,

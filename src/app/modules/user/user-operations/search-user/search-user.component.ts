@@ -17,6 +17,7 @@ import { UntypedFormControl } from '@angular/forms';
 import { MatAutocomplete } from '@angular/material/autocomplete';
 import { Subject, debounceTime, filter, map, takeUntil } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
+import { SelectionModel } from '@angular/cdk/collections';
 
 @Component({
 	selector: 'search-user',
@@ -30,8 +31,9 @@ export class SearchForUserComponent
 	searchControl: UntypedFormControl = new UntypedFormControl();
 	@Input() debounce: number = 200;
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
-	@Input() minLength: number = 5;
+	@Input() minLength: number = 3;
 	resultSets: any[];
+	selectedForFavorite: boolean = false;
 
 	/**
 	 * Constructor
@@ -91,7 +93,7 @@ export class SearchForUserComponent
 	 */
 	onKeydown(event: KeyboardEvent): void {
 		// Escape
-		if (event.code === 'Enter') {
+		if (event.code.includes('Enter')) {
 			// Subscribe to the search field value changes
 			const formValue = this.searchControl.value;
 			if (!formValue || formValue.length < this.minLength) {
@@ -125,9 +127,23 @@ export class SearchForUserComponent
 			1,
 			conexId
 		);
+		if (this.selectedForFavorite) {
+			this._userFunctDataService.addFavorite(conexId).subscribe({
+				next: (result) => {
+					console.log('addFavorite', result);
+				},
+				error: (err) => {
+					console.log('addFavorite', err);
+				},
+			});
+		}
 		this.closeDrawer();
 		this._router.navigate(['../'], {
 			relativeTo: this._activatedRoute,
 		});
+	}
+	toggleSelectedForFavorite() {
+		this.selectedForFavorite = !this.selectedForFavorite;
+		console.log('toggleSelectedForFavorite', this.selectedForFavorite);
 	}
 }
