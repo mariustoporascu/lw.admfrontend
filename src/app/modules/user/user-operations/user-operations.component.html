@@ -2,7 +2,7 @@
 	<mat-drawer-container class="flex-auto h-full bg-card dark:bg-transparent">
 		<!-- Drawer -->
 		<mat-drawer
-			class="w-full sm:w-128 dark:bg-gray-900"
+			class="w-full sm:w-160 dark:bg-gray-900"
 			[mode]="drawerMode"
 			[opened]="false"
 			[position]="'end'"
@@ -215,6 +215,7 @@
 													mat-icon-button
 													[class.bg-green-300]="true"
 													[class.scale-75]="true"
+													*ngIf="userType !== 'user-admin'"
 													(click)="makeWithdrawalRow(transaction)"
 													title="Retrage"
 												>
@@ -283,6 +284,7 @@
 											[class.bg-green-300]="true"
 											[class.scale-75]="true"
 											title="Retrage"
+											*ngIf="userType !== 'user-admin'"
 											(click)="makeWithdrawalSelected()"
 										>
 											<mat-icon

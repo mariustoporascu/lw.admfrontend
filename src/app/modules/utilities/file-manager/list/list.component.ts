@@ -1,4 +1,5 @@
 import {
+	AfterViewInit,
 	ChangeDetectionStrategy,
 	ChangeDetectorRef,
 	Component,
@@ -28,7 +29,9 @@ import { FuseUtilsService } from '@fuse/services/utils';
 	encapsulation: ViewEncapsulation.None,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FileManagerListComponent implements OnInit, OnDestroy {
+export class FileManagerListComponent
+	implements OnInit, AfterViewInit, OnDestroy
+{
 	@ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
 	@ViewChild('recentTransactionsTable', { read: MatSort })
 	recentTransactionsTableMatSort: MatSort;
@@ -43,10 +46,8 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 	recentTransactionsDataSource: MatTableDataSource<any> =
 		new MatTableDataSource();
 	recentTransactionsTableColumns: string[] = [
-		'docNumber',
 		'docType',
 		'fileName',
-		'fileExtension',
 		'created',
 		'status',
 	];
@@ -124,7 +125,15 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 			});
 		this.checkIfFolder();
 	}
-
+	/**
+	 * After view init
+	 */
+	ngAfterViewInit(): void {
+		// Make the data source sortable
+		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
+		this.recentTransactionsDataSource.paginator =
+			this.recentTransactionsTablePagination;
+	}
 	/**
 	 * On destroy
 	 */
@@ -224,6 +233,7 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 					},
 				})
 				.add(() => {
+					(event.target as HTMLInputElement).value = '';
 					this._fileManagerService
 						.getFiles()
 						.subscribe()

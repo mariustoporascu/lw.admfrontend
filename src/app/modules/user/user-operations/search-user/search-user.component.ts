@@ -17,6 +17,7 @@ import { UntypedFormControl } from '@angular/forms';
 import { MatAutocomplete } from '@angular/material/autocomplete';
 import { Subject, debounceTime, filter, map, takeUntil } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
+import { SelectionModel } from '@angular/cdk/collections';
 
 @Component({
 	selector: 'search-user',
@@ -30,8 +31,10 @@ export class SearchForUserComponent
 	searchControl: UntypedFormControl = new UntypedFormControl();
 	@Input() debounce: number = 200;
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
-	@Input() minLength: number = 5;
+	@Input() minLength: number = 3;
 	resultSets: any[];
+	selectedForFavorite: boolean = false;
+	favoritesResultSets: any[];
 
 	/**
 	 * Constructor
@@ -53,6 +56,11 @@ export class SearchForUserComponent
 	 */
 	ngOnInit(): void {
 		this._userOperationsComponent.matDrawer.open();
+		// Get the UserFavoritesList
+		this._userFunctDataService.getFavoriteList().subscribe((favResultSets) => {
+			this.favoritesResultSets = favResultSets;
+			this._cdr.markForCheck();
+		});
 	}
 
 	ngAfterViewInit(): void {
@@ -91,7 +99,7 @@ export class SearchForUserComponent
 	 */
 	onKeydown(event: KeyboardEvent): void {
 		// Escape
-		if (event.code === 'Enter') {
+		if (event.code.includes('Enter')) {
 			// Subscribe to the search field value changes
 			const formValue = this.searchControl.value;
 			if (!formValue || formValue.length < this.minLength) {
@@ -119,15 +127,29 @@ export class SearchForUserComponent
 	closeDrawer(): Promise<MatDrawerToggleResult> {
 		return this._userOperationsComponent.matDrawer.close();
 	}
-	selectAndTransfer(conexId: string) {
+	selectAndTransfer(conexId: string, isFromFavorite: boolean = false) {
 		this._userOperationsComponent.sendRequestToServer(
 			this._userOperationsComponent.transferIds,
 			1,
 			conexId
 		);
+		if (this.selectedForFavorite && !isFromFavorite) {
+			this._userFunctDataService.addFavorite(conexId).subscribe({
+				next: (result) => {
+					console.log('addFavorite', result);
+				},
+				error: (err) => {
+					console.log('addFavorite', err);
+				},
+			});
+		}
 		this.closeDrawer();
 		this._router.navigate(['../'], {
 			relativeTo: this._activatedRoute,
 		});
+	}
+	toggleSelectedForFavorite() {
+		this.selectedForFavorite = !this.selectedForFavorite;
+		console.log('toggleSelectedForFavorite', this.selectedForFavorite);
 	}
 }

@@ -134,13 +134,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
 			},
 		],
 	},
-	// hybrid-admin
+	// user-admin
 	{
 		id: 'dashboard',
 		title: 'Dashboard',
 		subtitle: '',
 		type: 'group',
-		userType: 'hybrid-admin',
+		userType: 'user-admin',
 		icon: 'heroicons_outline:home',
 		children: [
 			{
@@ -148,14 +148,14 @@ export const defaultNavigation: FuseNavigationItem[] = [
 				title: 'Statistici',
 				type: 'basic',
 				icon: 'heroicons_outline:chart-pie',
-				link: '/hybrid-admin/dashboard',
+				link: '/user-admin/dashboard',
 			},
 			{
 				id: 'dashboard.operations',
 				title: 'Operatiuni date incarcate',
 				type: 'basic',
 				icon: 'heroicons_outline:adjustments',
-				link: '/hybrid-admin/operations',
+				link: '/user-admin/operations',
 			},
 		],
 	},
@@ -164,7 +164,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
 		title: 'Utilitati',
 		subtitle: '',
 		type: 'group',
-		userType: 'hybrid-admin',
+		userType: 'user-admin',
 		icon: 'heroicons_outline:home',
 		children: [
 			{
@@ -172,7 +172,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
 				title: 'Incarcare fisiere',
 				type: 'basic',
 				icon: 'heroicons_outline:cloud',
-				link: '/hybrid-admin/filemanager',
+				link: '/user-admin/filemanager',
 			},
 		],
 	},
@@ -181,7 +181,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
 		title: 'Istoric',
 		subtitle: '',
 		type: 'group',
-		userType: 'hybrid-admin',
+		userType: 'user-admin',
 		icon: 'heroicons_outline:home',
 		children: [
 			{
@@ -189,7 +189,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
 				title: 'Istoric transferuri',
 				type: 'basic',
 				icon: 'heroicons_outline:switch-horizontal',
-				link: '/hybrid-admin/transfers',
+				link: '/user-admin/transfers',
 			},
 		],
 	},

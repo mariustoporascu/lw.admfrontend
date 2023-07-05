@@ -20,6 +20,7 @@ import { FuseAlertType } from '@fuse/components/alert';
 import { MatDrawer } from '@angular/material/sidenav';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
 	selector: 'user-operations',
@@ -59,6 +60,7 @@ export class UserOperationsComponent
 
 	@ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
 	drawerMode: 'side' | 'over';
+	userType: string;
 
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -70,6 +72,7 @@ export class UserOperationsComponent
 		private _userFunctDataService: UserFunctDataService,
 		private _utilsService: FuseUtilsService,
 		private _cdr: ChangeDetectorRef,
+		private _userService: UserService,
 		private _router: Router,
 		private _fuseMediaWatcherService: FuseMediaWatcherService
 	) {}
@@ -89,6 +92,12 @@ export class UserOperationsComponent
 			let dataStr = JSON.stringify(data).toLowerCase();
 			return dataStr.includes(filter);
 		};
+		// Get the user data
+		this._userService.user$.subscribe((user) => {
+			// Create the form
+			this.userType = user.type;
+			this._cdr.markForCheck();
+		});
 		// Get the data
 		this._userFunctDataService.operatiuniData$
 			.pipe(takeUntil(this._unsubscribeAll))
@@ -306,6 +315,7 @@ export class UserOperationsComponent
 					});
 			});
 	}
+
 	getDetaliiBusiness(data: any): string {
 		return this._utilsService.getDetaliiBusiness(data);
 	}

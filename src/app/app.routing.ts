@@ -130,15 +130,15 @@ export const appRoutes: Route[] = [
 	},
 	// Hybrid routes
 	{
-		path: 'hybrid-admin',
-		data: { userType: 'hybrid-admin' },
+		path: 'user-admin',
+		data: { userType: 'user-admin' },
 		canMatch: [AuthGuard, UserTypeGuard],
 		component: LayoutComponent,
 		children: [
 			{
 				path: 'dashboard',
 				loadChildren: () =>
-					import('app/modules/admin/hybrid/hybrid-dash/user-dash.module').then(
+					import('app/modules/user/user-dash/user-dash.module').then(
 						(m) => m.UserDashModule
 					),
 			},
@@ -146,30 +146,30 @@ export const appRoutes: Route[] = [
 				path: 'transfers',
 				loadChildren: () =>
 					import(
-						'app/modules/admin/hybrid/hybrid-transf-history/user-transf-history.module'
+						'app/modules/user/user-transf-history/user-transf-history.module'
 					).then((m) => m.UserTransfHistoryModule),
 			},
 			{
 				path: 'filemanager',
-				data: { baseRoute: '/hybrid-admin/filemanager' },
+				data: { baseRoute: '/user-admin/filemanager' },
 				loadChildren: () =>
-					import(
-						'app/modules/utilities/file-manager-hybrid/file-manager.module'
-					).then((m) => m.FileManagerModule),
+					import('app/modules/utilities/file-manager/file-manager.module').then(
+						(m) => m.FileManagerModule
+					),
 			},
 			{
 				path: 'settings',
 				loadChildren: () =>
-					import('app/modules/admin/hybrid/user-settings/settings.module').then(
+					import('app/modules/user/user-settings/settings.module').then(
 						(m) => m.SettingsModule
 					),
 			},
 			{
 				path: 'operations',
 				loadChildren: () =>
-					import(
-						'app/modules/admin/hybrid/hybrid-operations/user-operations.module'
-					).then((m) => m.UserOperationsModule),
+					import('app/modules/user/user-operations/user-operations.module').then(
+						(m) => m.UserOperationsModule
+					),
 			},
 		],
 	},
