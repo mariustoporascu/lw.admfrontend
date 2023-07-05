@@ -13,6 +13,12 @@
 	<!-- My current list of favorites -->
 	<div
 		class="flex flex-col mt-4 border-t border-b divide-y font-medium"
+		*ngIf="!favoritesResultSets || favoritesResultSets.length === 0"
+	>
+		Lista de favoriti este goala
+	</div>
+	<div
+		class="flex flex-col mt-4 border-t border-b divide-y font-medium"
 		*ngIf="favoritesResultSets && favoritesResultSets.length > 0"
 	>
 		<div

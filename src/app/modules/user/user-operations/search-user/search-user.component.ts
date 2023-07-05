@@ -34,6 +34,7 @@ export class SearchForUserComponent
 	@Input() minLength: number = 3;
 	resultSets: any[];
 	selectedForFavorite: boolean = false;
+	favoritesResultSets: any[];
 
 	/**
 	 * Constructor
@@ -55,6 +56,11 @@ export class SearchForUserComponent
 	 */
 	ngOnInit(): void {
 		this._userOperationsComponent.matDrawer.open();
+		// Get the UserFavoritesList
+		this._userFunctDataService.getFavoriteList().subscribe((favResultSets) => {
+			this.favoritesResultSets = favResultSets;
+			this._cdr.markForCheck();
+		});
 	}
 
 	ngAfterViewInit(): void {
@@ -121,13 +127,13 @@ export class SearchForUserComponent
 	closeDrawer(): Promise<MatDrawerToggleResult> {
 		return this._userOperationsComponent.matDrawer.close();
 	}
-	selectAndTransfer(conexId: string) {
+	selectAndTransfer(conexId: string, isFromFavorite: boolean = false) {
 		this._userOperationsComponent.sendRequestToServer(
 			this._userOperationsComponent.transferIds,
 			1,
 			conexId
 		);
-		if (this.selectedForFavorite) {
+		if (this.selectedForFavorite && !isFromFavorite) {
 			this._userFunctDataService.addFavorite(conexId).subscribe({
 				next: (result) => {
 					console.log('addFavorite', result);

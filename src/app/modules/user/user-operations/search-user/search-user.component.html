@@ -78,4 +78,38 @@
 			</div>
 		</div>
 	</div>
+	<!-- My current list of favorites -->
+	<div
+		class="flex flex-col mt-4 border-t border-b divide-y font-medium"
+		*ngIf="!favoritesResultSets || favoritesResultSets.length === 0"
+	>
+		Lista de favoriti este goala
+	</div>
+	<div
+		class="flex flex-col mt-4 border-t border-b divide-y font-medium"
+		*ngIf="favoritesResultSets && favoritesResultSets.length > 0"
+	>
+		<div class="flex items-center justify-between py-3">
+			<span class="text-black text-xl font-medium">Utilizatori Favoriti</span>
+		</div>
+		<div
+			class="flex items-center justify-between py-3"
+			*ngFor="let usr of favoritesResultSets"
+		>
+			<div>{{ usr.fullName }}</div>
+			<div>{{ usr.phoneNumber }}</div>
+			<div>{{ usr.email }}</div>
+			<div>
+				<button
+					mat-flat-button
+					[class.bg-green-300]="true"
+					[class.scale-75]="true"
+					title="Selecteaza"
+					(click)="selectAndTransfer(usr.conexId, true)"
+				>
+					<mat-icon [svgIcon]="'heroicons_outline:check'"></mat-icon>
+				</button>
+			</div>
+		</div>
+	</div>
 </div>

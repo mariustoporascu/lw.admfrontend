@@ -215,6 +215,7 @@
 													mat-icon-button
 													[class.bg-green-300]="true"
 													[class.scale-75]="true"
+													*ngIf="userType !== 'user-admin'"
 													(click)="makeWithdrawalRow(transaction)"
 													title="Retrage"
 												>
@@ -283,6 +284,7 @@
 											[class.bg-green-300]="true"
 											[class.scale-75]="true"
 											title="Retrage"
+											*ngIf="userType !== 'user-admin'"
 											(click)="makeWithdrawalSelected()"
 										>
 											<mat-icon

@@ -105,6 +105,15 @@ export class SettingsFavoritesComponent implements OnInit {
 					this.favoritesResultSets = favResultSets;
 					this._cdr.markForCheck();
 				});
+				const formValue = this.searchControl.value;
+				if (!formValue || formValue.length < this.minLength) {
+					this.resultSets = null;
+					return;
+				}
+				this._userFunctDataService.queryUsers(formValue).subscribe((resultSets) => {
+					this.resultSets = resultSets;
+					this._cdr.markForCheck();
+				});
 			});
 	}
 	deleteFavorite(conexId: string) {
