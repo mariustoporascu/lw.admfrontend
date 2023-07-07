@@ -115,7 +115,7 @@ export const appRoutes: Route[] = [
 			{
 				path: 'settings',
 				loadChildren: () =>
-					import('app/modules/admin/firma/user-settings/settings.module').then(
+					import('app/modules/admin/admin-settings/settings.module').then(
 						(m) => m.SettingsModule
 					),
 			},
@@ -183,8 +183,15 @@ export const appRoutes: Route[] = [
 			{
 				path: 'dashboard',
 				loadChildren: () =>
-					import('app/modules/landing/example/example.module').then(
-						(m) => m.ExampleModule
+					import('app/modules/admin/master/master-dash/master-dash.module').then(
+						(m) => m.MasterDashModule
+					),
+			},
+			{
+				path: 'settings',
+				loadChildren: () =>
+					import('app/modules/admin/admin-settings/settings.module').then(
+						(m) => m.SettingsModule
 					),
 			},
 		],

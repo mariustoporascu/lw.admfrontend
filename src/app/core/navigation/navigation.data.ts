@@ -193,4 +193,23 @@ export const defaultNavigation: FuseNavigationItem[] = [
 			},
 		],
 	},
+	// master-admin
+	// user
+	{
+		id: 'dashboard',
+		title: 'Dashboard',
+		subtitle: '',
+		type: 'group',
+		userType: 'master-admin',
+		icon: 'heroicons_outline:home',
+		children: [
+			{
+				id: 'dashboard.statistics',
+				title: 'Statistici',
+				type: 'basic',
+				icon: 'heroicons_outline:chart-pie',
+				link: '/master-admin/dashboard',
+			},
+		],
+	},
 ];
