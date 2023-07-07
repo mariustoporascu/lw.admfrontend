@@ -15,12 +15,12 @@
 		<form [formGroup]="securityForm" #securityNgForm="ngForm" class="w-200 mt-8">
 			<!-- Section -->
 			<div class="w-full">
-				<div class="text-xl">Adauga grup extern</div>
+				<div class="text-xl">Adauga punct de lucru</div>
 			</div>
 			<div class="grid sm:grid-cols-4 gap-6 w-full mt-8">
 				<div class="sm:col-span-4">
 					<mat-form-field class="w-full">
-						<mat-label>Numele grupului</mat-label>
+						<mat-label>Numele de identificare</mat-label>
 
 						<input id="name" matInput [formControlName]="'name'" />
 						<mat-error *ngIf="securityForm.get('name').hasError('required')">

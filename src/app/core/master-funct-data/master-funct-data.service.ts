@@ -7,7 +7,7 @@ import { backendUrl } from '../config/app.config';
 @Injectable({
 	providedIn: 'root',
 })
-export class HybridFunctDataService {
+export class MasterFunctDataService {
 	private _dashboardData: BehaviorSubject<any> = new BehaviorSubject(null);
 	private _operatiuniData: BehaviorSubject<Documente[] | null> =
 		new BehaviorSubject(null);
@@ -62,7 +62,7 @@ export class HybridFunctDataService {
 	 */
 	getDashboardData(): Observable<any> {
 		return this._httpClient
-			.get(`${this._backEndUrl}/hybrid/getDashboardData`)
+			.get(`${this._backEndUrl}/masteradmin/getDashboardData`)
 			.pipe(
 				tap((response: any) => {
 					this._dashboardData.next(response);
