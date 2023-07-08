@@ -228,4 +228,44 @@ export class ListExtUsersComponent implements OnInit, AfterViewInit, OnDestroy {
 		}
 		this._dialog.closeAll();
 	}
+	updateTransaction(row: Hybrid) {
+		this._firmaFunctDataService
+			.updateHybrid({
+				id: row.id,
+				name: row.name,
+			})
+			.subscribe({
+				next: () => {
+					this.alert = {
+						type: 'success',
+						message: 'Operatiunea a fost efectuata cu succes.',
+					};
+				},
+				error: (err) => {
+					if (err.error) {
+						// Set the alert
+						this.alert = {
+							type: 'error',
+							message: err.message,
+						};
+					} else {
+						this.alert = {
+							type: 'warning',
+							message: 'Eroare pe server. Echipa tehnica a fost notificata.',
+						};
+					}
+				},
+			})
+			.add(() => {
+				this._firmaFunctDataService
+					.getExternalUsers()
+					.subscribe()
+					.add(() => {
+						row.isEditMode = false;
+						this.showAlert = true;
+						this.selection.clear();
+						this._cdr.markForCheck();
+					});
+			});
+	}
 }

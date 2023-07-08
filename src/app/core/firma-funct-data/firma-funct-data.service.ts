@@ -88,7 +88,7 @@ export class FirmaFunctDataService {
 			);
 	}
 	deleteExternalGroups(body: {}): Observable<any> {
-		return this._httpClient.post(
+		return this._httpClient.delete(
 			`${this._backEndUrl}/FirmaDiscount/deleteHybrids`,
 			body
 		);
@@ -101,6 +101,18 @@ export class FirmaFunctDataService {
 		return this._httpClient.post(
 			`${this._backEndUrl}/FirmaDiscount/createHybrid`,
 			createHybridDTO
+		);
+	}
+	updateHybrid(updateHybridDTO: { name: string; id: string }): Observable<any> {
+		return this._httpClient.put(
+			`${this._backEndUrl}/FirmaDiscount/updateHybrid`,
+			{},
+			{
+				params: {
+					name: updateHybridDTO.name,
+					id: updateHybridDTO.id,
+				},
+			}
 		);
 	}
 	/**

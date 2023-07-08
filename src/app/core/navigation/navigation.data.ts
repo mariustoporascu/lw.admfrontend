@@ -212,4 +212,21 @@ export const defaultNavigation: FuseNavigationItem[] = [
 			},
 		],
 	},
+	{
+		id: 'administrative',
+		title: 'Administrativ',
+		subtitle: '',
+		type: 'group',
+		userType: 'master-admin',
+		icon: 'heroicons_outline:home',
+		children: [
+			{
+				id: 'administrative.firmeDiscount',
+				title: 'Firme inrolate',
+				type: 'basic',
+				icon: 'heroicons_outline:building-office-2',
+				link: '/master-admin/lista-firme-inrolate',
+			},
+		],
+	},
 ];
