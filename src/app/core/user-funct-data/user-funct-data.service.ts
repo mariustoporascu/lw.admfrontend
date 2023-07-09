@@ -131,8 +131,10 @@ export class UserFunctDataService {
 		);
 	}
 	addFavorite(favConexId: string): Observable<any> {
-		return this._httpClient.get(
-			`${this._backEndUrl}/regularuser/add-favorite-user?favConexId=${favConexId}`
+		return this._httpClient.put(
+			`${this._backEndUrl}/regularuser/add-favorite-user`,
+			{},
+			{ params: { favConexId } }
 		);
 	}
 	removeFavorite(favConexId: string): Observable<any> {

@@ -212,4 +212,28 @@ export const defaultNavigation: FuseNavigationItem[] = [
 			},
 		],
 	},
+	{
+		id: 'administrative',
+		title: 'Administrativ',
+		subtitle: '',
+		type: 'group',
+		userType: 'master-admin',
+		icon: 'heroicons_outline:home',
+		children: [
+			{
+				id: 'administrative.documentePlatforma',
+				title: 'Documente platforma',
+				type: 'basic',
+				icon: 'heroicons_outline:document-duplicate',
+				link: '/master-admin/documente-platforma',
+			},
+			{
+				id: 'administrative.documentePreApproval',
+				title: 'Documente la Pre Aprobari',
+				type: 'basic',
+				icon: 'heroicons_outline:document-text',
+				link: '/master-admin/documente-pre-approval',
+			},
+		],
+	},
 ];

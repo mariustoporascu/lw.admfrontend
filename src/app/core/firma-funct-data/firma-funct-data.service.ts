@@ -75,7 +75,7 @@ export class FirmaFunctDataService {
 
 	getExternalUsers(): Observable<Hybrid[]> {
 		return this._httpClient
-			.get<Hybrid[]>(`${this._backEndUrl}/FirmaDiscount/getFirmaHybrids`)
+			.get<Hybrid[]>(`${this._backEndUrl}/FirmaDiscount/getFirmaPuncteDeLucru`)
 			.pipe(
 				tap((response: any) => {
 					if (response) {
@@ -88,19 +88,34 @@ export class FirmaFunctDataService {
 			);
 	}
 	deleteExternalGroups(body: {}): Observable<any> {
-		return this._httpClient.post(
-			`${this._backEndUrl}/FirmaDiscount/deleteHybrids`,
+		return this._httpClient.delete(
+			`${this._backEndUrl}/FirmaDiscount/deletePuncteDeLucru`,
 			body
 		);
 	}
-	createHybrid(createHybridDTO: {
+	createHybrid(createPunctDeLucruDTO: {
 		name: string;
 		initialEmail: string;
 		initialPassword: string;
 	}): Observable<any> {
 		return this._httpClient.post(
-			`${this._backEndUrl}/FirmaDiscount/createHybrid`,
-			createHybridDTO
+			`${this._backEndUrl}/FirmaDiscount/createPunctDeLucru`,
+			createPunctDeLucruDTO
+		);
+	}
+	updateHybrid(updatePunctDeLucruDTO: {
+		name: string;
+		id: string;
+	}): Observable<any> {
+		return this._httpClient.put(
+			`${this._backEndUrl}/FirmaDiscount/updatePunctDeLucru`,
+			{},
+			{
+				params: {
+					name: updatePunctDeLucruDTO.name,
+					entityId: updatePunctDeLucruDTO.id,
+				},
+			}
 		);
 	}
 	/**

@@ -4,15 +4,11 @@ import {
 	Component,
 	OnDestroy,
 	OnInit,
-	ViewChild,
 	ViewEncapsulation,
 } from '@angular/core';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
 import { Subject, takeUntil } from 'rxjs';
-import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.service';
-import { ChartData } from 'chart.js';
 import { FuseUtilsService } from '@fuse/services/utils';
+import { MasterFunctDataService } from 'app/core/master-funct-data/master-funct-data.service';
 
 @Component({
 	selector: 'master-dashboard',
@@ -20,45 +16,15 @@ import { FuseUtilsService } from '@fuse/services/utils';
 	encapsulation: ViewEncapsulation.None,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MasterDashComponent implements OnInit, AfterViewInit, OnDestroy {
-	@ViewChild('recentTransactionsTable', { read: MatSort })
-	recentTransactionsTableMatSort: MatSort;
-
-	// Chart data
-	barChartData: ChartData<'bar'> = {
-		labels: [],
-		datasets: [
-			{
-				data: [],
-				label: 'Statistica puncte cumulate',
-				backgroundColor: '#94ff97',
-				borderColor: '#519154',
-			},
-		],
-	};
-
-	// History data
-	currMonthHistory: any;
-	lastMonthHistory: any;
-
-	// Table data
-	recentTransactionsDataSource: MatTableDataSource<any> =
-		new MatTableDataSource();
-	recentTransactionsTableColumns: string[] = [
-		'docNumber',
-		'extractedBusinessData',
-		'uploaded',
-		'total',
-		'discountValue',
-		'statusName',
-	];
+export class MasterDashComponent implements OnInit, OnDestroy {
+	serverData: any;
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
 
 	/**
 	 * Constructor
 	 */
 	constructor(
-		private _userFunctDataService: UserFunctDataService,
+		private _masterFunctDataService: MasterFunctDataService,
 		private _utilsService: FuseUtilsService
 	) {}
 
@@ -71,34 +37,11 @@ export class MasterDashComponent implements OnInit, AfterViewInit, OnDestroy {
 	 */
 	ngOnInit(): void {
 		// Get the data
-		this._userFunctDataService.dashboardData$
+		this._masterFunctDataService.dashboardData$
 			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe((data) => {
-				this.currMonthHistory = {
-					docs: data?.lastTwoMths?.countDocUpThisMth ?? 0,
-					received: data?.lastTwoMths?.countPtsRcvdThisMth ?? 0,
-					spent: data?.lastTwoMths?.countPtsSpentThisMonth ?? 0,
-				};
-				this.lastMonthHistory = {
-					docs: data?.lastTwoMths?.countDocUpLastMth ?? 0,
-					received: data?.lastTwoMths?.countPtsRcvdLastMth ?? 0,
-					spent: data?.lastTwoMths?.countPtsSpentLastMonth ?? 0,
-				};
-				(data?.monthlyAnalitics ?? ([] as any[])).forEach((item) => {
-					this.barChartData.labels.push(item.label);
-					this.barChartData.datasets[0].data.push(item.value);
-				});
-				// Store the table data
-				this.recentTransactionsDataSource.data = data?.latestDocs;
+				this.serverData = data;
 			});
-	}
-
-	/**
-	 * After view init
-	 */
-	ngAfterViewInit(): void {
-		// Make the data source sortable
-		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
 	}
 
 	/**

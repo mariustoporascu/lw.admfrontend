@@ -8,58 +8,71 @@ import {
 	ViewChild,
 	ViewEncapsulation,
 } from '@angular/core';
-import { Subject, catchError, of, switchMap, takeUntil } from 'rxjs';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Documente, Hybrid } from 'app/core/bkendmodels/models.types';
-import { FuseUtilsService } from '@fuse/services/utils';
-import { SelectionModel } from '@angular/cdk/collections';
-import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { Subject, catchError, of, switchMap, takeUntil } from 'rxjs';
+import { MatPaginator } from '@angular/material/paginator';
+import { FuseUtilsService } from '@fuse/services/utils';
+import { Documente } from 'app/core/bkendmodels/models.types';
+import { SelectionModel } from '@angular/cdk/collections';
 import { FuseAlertType } from '@fuse/components/alert';
+import { MatDrawer } from '@angular/material/sidenav';
+import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FirmaFunctDataService } from 'app/core/firma-funct-data/firma-funct-data.service';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
-	selector: 'list-ext-usrs',
-	templateUrl: './list-ext-usrs.component.html',
+	selector: 'master-firme',
+	templateUrl: './master-firme.component.html',
 	encapsulation: ViewEncapsulation.None,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ListExtUsersComponent implements OnInit, AfterViewInit, OnDestroy {
+export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 	@ViewChild('recentTransactionsTable', { read: MatSort })
 	recentTransactionsTableMatSort: MatSort;
 	@ViewChild('recentTransactionsTablePagination')
 	recentTransactionsTablePagination: MatPaginator;
 	@ViewChild('confirmDialogView', { static: true }) confirmDialogView: any;
-	isEditMode: boolean = false;
 
-	items: Hybrid[];
+	items: Documente[];
 	recentTransactionsDataSource: MatTableDataSource<any> =
 		new MatTableDataSource();
 	recentTransactionsTableColumns: string[] = [
 		'select',
-		'name',
-		'noSubAccounts',
-		'noDocsUploaded',
+		'docNumber',
+		'extractedBusinessData',
+		'uploaded',
+		'total',
+		'discountValue',
+		'userEmail',
 		'actions',
 	];
-	selection = new SelectionModel<Hybrid>(true, []);
+	selection = new SelectionModel<Documente>(true, []);
 
 	alert: { type: FuseAlertType; message: string } = {
 		type: 'success',
 		message: '',
 	};
 	showAlert: boolean = false;
+	transferIds: string[] = [];
+
+	@ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
+	drawerMode: 'side' | 'over';
+
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
 
 	/**
 	 * Constructor
 	 */
 	constructor(
+		private _activatedRoute: ActivatedRoute,
+		private _utilsService: FuseUtilsService,
 		private _firmaFunctDataService: FirmaFunctDataService,
 		private _cdr: ChangeDetectorRef,
-		private _dialog: MatDialog
+		private _router: Router,
+		private _dialog: MatDialog,
+		private _fuseMediaWatcherService: FuseMediaWatcherService
 	) {}
 
 	// -----------------------------------------------------------------------------------------------------
@@ -71,19 +84,30 @@ export class ListExtUsersComponent implements OnInit, AfterViewInit, OnDestroy {
 	 */
 	ngOnInit(): void {
 		this.recentTransactionsDataSource.filterPredicate = (
-			data: Hybrid,
+			data: Documente,
 			filter: string
 		) => {
 			let dataStr = JSON.stringify(data).toLowerCase();
 			return dataStr.includes(filter);
 		};
 		// Get the data
-		this._firmaFunctDataService.externalUsrsData$
+		this._firmaFunctDataService.docsData$
 			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe((data) => {
 				// Store the table data
 				this.recentTransactionsDataSource.data = data;
 				this.items = data;
+			});
+		// Subscribe to media query change
+		this._fuseMediaWatcherService
+			.onMediaQueryChange$('(min-width: 1440px)')
+			.pipe(takeUntil(this._unsubscribeAll))
+			.subscribe((state) => {
+				// Calculate the drawer mode
+				this.drawerMode = state.matches ? 'side' : 'over';
+
+				// Mark for check
+				this._cdr.markForCheck();
 			});
 	}
 
@@ -124,6 +148,17 @@ export class ListExtUsersComponent implements OnInit, AfterViewInit, OnDestroy {
 	// @ Private methods
 	// -----------------------------------------------------------------------------------------------------
 
+	getCurrentDate() {
+		return this._utilsService.getCurrentDate();
+	}
+
+	getCurrentMonth() {
+		return this._utilsService.getCurrentMonth();
+	}
+
+	getLastMonth() {
+		return this._utilsService.getLastMonth();
+	}
 	applyFilter(event: Event) {
 		const filterValue = (event.target as HTMLInputElement).value;
 		this.recentTransactionsDataSource.filter = filterValue.trim().toLowerCase();
@@ -132,7 +167,9 @@ export class ListExtUsersComponent implements OnInit, AfterViewInit, OnDestroy {
 			this.recentTransactionsDataSource.paginator.firstPage();
 		}
 	}
-
+	splitByCapitalLetters(str: string): string {
+		return this._utilsService.splitByCapitalLetters(str);
+	}
 	/** Whether the number of selected elements matches the total number of rows. */
 	isAllSelected() {
 		const numSelected = this.selection.selected.length;
@@ -151,7 +188,7 @@ export class ListExtUsersComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	/** The label for the checkbox on the passed row */
-	checkboxLabel(row?: Hybrid): string {
+	checkboxLabel(row?: Documente): string {
 		if (!row) {
 			return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
 		}
@@ -163,20 +200,54 @@ export class ListExtUsersComponent implements OnInit, AfterViewInit, OnDestroy {
 		return this.selection.selected.length;
 	}
 
-	deleteSelected() {
-		this.sendRequestToServer([...this.selection.selected.map((item) => item.id)]);
+	rejectSelected() {
+		this.sendRequestToServer(
+			[...this.selection.selected.map((item) => item.id)],
+			2
+		);
+	}
+	approveSelected() {
+		this.sendRequestToServer(
+			[...this.selection.selected.map((item) => item.id)],
+			1
+		);
 	}
 	// transfer guid
-	deleteRow(row: Hybrid) {
-		this.sendRequestToServer([row.id]);
+	rejectRow(row: Documente) {
+		this.sendRequestToServer([row.id], 2);
 	}
-
-	sendRequestToServer(groupsIds: string[]) {
+	approveRow(row: Documente) {
+		this.sendRequestToServer([row.id], 1);
+	}
+	countTotal() {
+		let total = 0;
+		this.selection.selected.forEach((item: any) => {
+			total += item.discountValue;
+		});
+		return total.toFixed(2);
+	}
+	datePicked(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
+		let startDate = new Date(dateRangeStart.value).getTime();
+		let tempEndDate = new Date(dateRangeEnd.value);
+		tempEndDate.setHours(23, 59, 59, 999);
+		let endDate = tempEndDate.getTime();
+		this.recentTransactionsDataSource.data = this.items.filter((item) => {
+			var currDate = new Date(item.uploaded).getTime();
+			return currDate >= startDate && currDate <= endDate;
+		});
+		this.selection.clear();
+		if (this.recentTransactionsDataSource.paginator) {
+			this.recentTransactionsDataSource.paginator.firstPage();
+		}
+	}
+	sendRequestToServer(documenteIds: string[], status: number) {
 		// Hide the alert
 		this.showAlert = false;
+
 		this._firmaFunctDataService
-			.deleteExternalGroups({
-				groupsIds,
+			.updateDocStatus({
+				documenteIds,
+				status,
 			})
 			.subscribe({
 				next: () => {
@@ -203,7 +274,7 @@ export class ListExtUsersComponent implements OnInit, AfterViewInit, OnDestroy {
 			})
 			.add(() => {
 				this._firmaFunctDataService
-					.getExternalUsers()
+					.getDocumentsWFP()
 					.subscribe()
 					.add(() => {
 						this.showAlert = true;
@@ -215,57 +286,17 @@ export class ListExtUsersComponent implements OnInit, AfterViewInit, OnDestroy {
 	closeDialog() {
 		this._dialog.closeAll();
 	}
-	openDialog(row?: Hybrid) {
+	openDialog(row?: Documente) {
 		this.dialogRow = row;
 		this._dialog.open(this.confirmDialogView);
 	}
-	dialogRow: Hybrid;
+	dialogRow: Documente;
 	confirmDialog() {
 		if (this.dialogRow) {
-			this.deleteRow(this.dialogRow);
+			this.rejectRow(this.dialogRow);
 		} else {
-			this.deleteSelected();
+			this.rejectSelected();
 		}
 		this._dialog.closeAll();
-	}
-	updateTransaction(row: Hybrid) {
-		this._firmaFunctDataService
-			.updateHybrid({
-				id: row.id,
-				name: row.name,
-			})
-			.subscribe({
-				next: () => {
-					this.alert = {
-						type: 'success',
-						message: 'Operatiunea a fost efectuata cu succes.',
-					};
-				},
-				error: (err) => {
-					if (err.error) {
-						// Set the alert
-						this.alert = {
-							type: 'error',
-							message: err.message,
-						};
-					} else {
-						this.alert = {
-							type: 'warning',
-							message: 'Eroare pe server. Echipa tehnica a fost notificata.',
-						};
-					}
-				},
-			})
-			.add(() => {
-				this._firmaFunctDataService
-					.getExternalUsers()
-					.subscribe()
-					.add(() => {
-						row.isEditMode = false;
-						this.showAlert = true;
-						this.selection.clear();
-						this._cdr.markForCheck();
-					});
-			});
 	}
 }

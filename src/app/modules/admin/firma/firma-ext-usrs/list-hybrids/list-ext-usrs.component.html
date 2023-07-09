@@ -139,7 +139,7 @@
 										[class.scale-75]="true"
 										title="Salveaza"
 										*ngIf="transaction.isEditMode"
-										(click)="transaction.isEditMode = false"
+										(click)="updateTransaction(transaction)"
 									>
 										<mat-icon
 											[svgIcon]="'heroicons_outline:check'"
@@ -222,11 +222,11 @@
 <ng-template #confirmDialogView>
 	<mat-dialog-content>
 		<h3 class="text-black text-lg">
-			Esti sigur ca vrei sa stergi grupurile de useri?
+			Esti sigur ca vrei sa stergi punctele de lucru?
 		</h3>
 		<p class="text-black text-md">
-			Grupurile de useri selectate vor fi sterse permanent. Aceasta actiune nu
-			poate fi anulata iar userii din grupurile selectate vor fi stersi.
+			Punctele de lucru selectate vor fi sterse permanent. Aceasta actiune nu poate
+			fi anulata iar userul din punctele de lucru selectate va fi sters.
 		</p>
 	</mat-dialog-content>
 	<mat-dialog-actions class="flex flex-auto justify-end">
