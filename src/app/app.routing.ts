@@ -188,6 +188,20 @@ export const appRoutes: Route[] = [
 					),
 			},
 			{
+				path: 'documente-platforma',
+				loadChildren: () =>
+					import(
+						'app/modules/admin/master/master-documente/master-documente.module'
+					).then((m) => m.MasterDocsModule),
+			},
+			{
+				path: 'documente-pre-approval',
+				loadChildren: () =>
+					import(
+						'app/modules/admin/master/master-documente-preapp/master-documente-preapp.module'
+					).then((m) => m.MasterDocsPreAppModule),
+			},
+			{
 				path: 'settings',
 				loadChildren: () =>
 					import('app/modules/admin/admin-settings/settings.module').then(

@@ -221,11 +221,18 @@ export const defaultNavigation: FuseNavigationItem[] = [
 		icon: 'heroicons_outline:home',
 		children: [
 			{
-				id: 'administrative.firmeDiscount',
-				title: 'Firme inrolate',
+				id: 'administrative.documentePlatforma',
+				title: 'Documente platforma',
 				type: 'basic',
-				icon: 'heroicons_outline:building-office-2',
-				link: '/master-admin/lista-firme-inrolate',
+				icon: 'heroicons_outline:document-duplicate',
+				link: '/master-admin/documente-platforma',
+			},
+			{
+				id: 'administrative.documentePreApproval',
+				title: 'Documente la Pre Aprobari',
+				type: 'basic',
+				icon: 'heroicons_outline:document-text',
+				link: '/master-admin/documente-pre-approval',
 			},
 		],
 	},

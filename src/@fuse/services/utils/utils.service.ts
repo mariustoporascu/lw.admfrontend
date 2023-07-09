@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { IsActiveMatchOptions } from '@angular/router';
+import { FirmaDiscount } from 'app/core/bkendmodels/models.types';
 
 @Injectable({
 	providedIn: 'root',
@@ -91,6 +92,9 @@ export class FuseUtilsService {
 			', ' +
 			data.ocrData?.adresaFirma?.value
 		);
+	}
+	getDetaliiFirmaDiscount(data: FirmaDiscount) {
+		return data.name + ', ' + data.cuiNumber;
 	}
 	getOptimalCombination(items: any[], targetValue: number): any[] {
 		let closestSum = Infinity;

@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { Documente, Tranzactii } from '../bkendmodels/models.types';
+import {
+	Documente,
+	FirmaDiscount,
+	Tranzactii,
+} from '../bkendmodels/models.types';
 import { backendUrl } from '../config/app.config';
 
 @Injectable({
@@ -9,11 +13,13 @@ import { backendUrl } from '../config/app.config';
 })
 export class MasterFunctDataService {
 	private _dashboardData: BehaviorSubject<any> = new BehaviorSubject(null);
-	private _operatiuniData: BehaviorSubject<Documente[] | null> =
+	private _firmeData: BehaviorSubject<FirmaDiscount[] | null> =
 		new BehaviorSubject(null);
-	private _transferData: BehaviorSubject<Tranzactii[] | null> =
+	private _firmaExtendedData: BehaviorSubject<FirmaDiscount | null> =
 		new BehaviorSubject(null);
-	private _withdrawData: BehaviorSubject<Tranzactii[] | null> =
+	private _documenteData: BehaviorSubject<Documente[] | null> =
+		new BehaviorSubject(null);
+	private _preApprovalDocsData: BehaviorSubject<Documente[] | null> =
 		new BehaviorSubject(null);
 	private _backEndUrl: string = backendUrl;
 	/**
@@ -35,22 +41,27 @@ export class MasterFunctDataService {
 	/**
 	 * Getter for approvedData
 	 */
-	get operatiuniData$(): Observable<any> {
-		return this._operatiuniData.asObservable();
+	get firmeData$(): Observable<any> {
+		return this._firmeData.asObservable();
 	}
-
+	/**
+	 * Getter for approvedData
+	 */
+	get firmaExtendedData$(): Observable<any> {
+		return this._firmaExtendedData.asObservable();
+	}
 	/**
 	 * Getter for transfer
 	 */
-	get transferData$(): Observable<any> {
-		return this._transferData.asObservable();
+	get documenteData$(): Observable<any> {
+		return this._documenteData.asObservable();
 	}
 
 	/**
 	 * Getter for withdraw
 	 */
-	get withdrawData$(): Observable<any> {
-		return this._withdrawData.asObservable();
+	get preApprovalDocsData$(): Observable<any> {
+		return this._preApprovalDocsData.asObservable();
 	}
 
 	// -----------------------------------------------------------------------------------------------------
@@ -73,45 +84,74 @@ export class MasterFunctDataService {
 	/**
 	 * Get approved
 	 */
-	getApprovedDocuments(): Observable<Documente[]> {
+	getAllDocuments(): Observable<Documente[]> {
 		return this._httpClient
-			.get<Documente[]>(`${this._backEndUrl}/hybrid/getAllDocumenteOperatii`)
+			.get<Documente[]>(`${this._backEndUrl}/masteradmin/getDocumente`)
 			.pipe(
 				tap((response: any) => {
-					this._operatiuniData.next(response ?? []);
+					this._documenteData.next(response ?? []);
 				})
 			);
 	}
-
 	/**
-	 * Get transfer
+	 * Get approved
 	 */
-	getTransferData(): Observable<Tranzactii[]> {
+	getPreApprovalDocuments(): Observable<Documente[]> {
 		return this._httpClient
-			.get<Documente[]>(`${this._backEndUrl}/hybrid/getAllTransfers`)
+			.get<Documente[]>(`${this._backEndUrl}/masteradmin/getDocumentePreApproval`)
 			.pipe(
 				tap((response: any) => {
-					this._transferData.next(response ?? []);
+					this._preApprovalDocsData.next(response ?? []);
 				})
 			);
 	}
-
+	/**
+	 * Get approved
+	 */
+	getAllFirme(): Observable<FirmaDiscount[]> {
+		return this._httpClient
+			.get<FirmaDiscount[]>(`${this._backEndUrl}/masteradmin/getFirme`)
+			.pipe(
+				tap((response: any) => {
+					this._firmeData.next(response ?? []);
+				})
+			);
+	}
+	/**
+	 * Get approved
+	 */
+	getFirmaExtended(id: string): Observable<FirmaDiscount> {
+		return this._httpClient
+			.get<FirmaDiscount>(
+				`${this._backEndUrl}/masteradmin/getFirmaExtendedDetails?firmaId=${id}`
+			)
+			.pipe(
+				tap((response: any) => {
+					this._firmaExtendedData.next(response ?? []);
+				})
+			);
+	}
 	/**
 	 * Make Tranzaction
 	 */
-	addTranzaction(body: {}): Observable<any> {
-		return this._httpClient.post(
-			`${this._backEndUrl}/hybrid/addTranzaction`,
-			body
+	updateDocStatus(documentId: string, status: number): Observable<any> {
+		return this._httpClient.put(
+			`${this._backEndUrl}/masteradmin/changeDocStatus`,
+			{},
+			{
+				params: {
+					documentId,
+					status,
+				},
+			}
 		);
 	}
-
 	/**
 	 * Query user
 	 */
 	queryUsers(query: string): Observable<any> {
 		return this._httpClient.get(
-			`${this._backEndUrl}/hybrid/query-users?query=${query}`
+			`${this._backEndUrl}/masteradmin/query-users?query=${query}`
 		);
 	}
 }
