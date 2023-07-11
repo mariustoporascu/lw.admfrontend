@@ -133,6 +133,20 @@ export class FileManagerListComponent
 	ngAfterViewInit(): void {
 		// Make the data source sortable
 		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
+		this.recentTransactionsDataSource.sortingDataAccessor = (item, property) => {
+			switch (property) {
+				case 'docType':
+					return item.fileInfo.isInvoice;
+				case 'fileName':
+					return item.fileInfo.fisiereDocumente.fileName;
+				case 'created':
+					return item.fileInfo.fisiereDocumente.created;
+				case 'status':
+					return item.fileInfo.status;
+				default:
+					return item[property];
+			}
+		};
 		this.recentTransactionsDataSource.paginator =
 			this.recentTransactionsTablePagination;
 	}
@@ -175,48 +189,7 @@ export class FileManagerListComponent
 	trackByFn(index: number, item: any): any {
 		return item.id || index;
 	}
-	customSort(sort: Sort) {
-		this._utilsService.logger('sort', sort.active, sort.direction, sort);
-		if (sort.direction === '') {
-			this.recentTransactionsDataSource.data =
-				this.recentTransactionsDataSource.data.sort((a, b) =>
-					this._utilsService.sortFunction(
-						a.fileInfo.fisiereDocumente.created,
-						b.fileInfo.fisiereDocumente.created,
-						'desc'
-					)
-				);
-			return;
-		}
-		const data = this.recentTransactionsDataSource.data.slice(); // Make a copy of the data array
-		const sortedData = data.sort((a, b) => {
-			if (sort.active === 'docType') {
-				return this._utilsService.sortFunction(
-					a.fileInfo.isInvoice,
-					b.fileInfo.isInvoice,
-					sort.direction
-				);
-			} else if (sort.active === 'fileName') {
-				return this._utilsService.sortFunction(
-					a.fileInfo.fisiereDocumente.fileName ?? '',
-					b.fileInfo.fisiereDocumente.fileName ?? '',
-					sort.direction
-				);
-			} else if (sort.active === 'created') {
-				return this._utilsService.sortFunction(
-					a.fileInfo.fisiereDocumente.created ?? '',
-					b.fileInfo.fisiereDocumente.created ?? '',
-					sort.direction
-				);
-			} else if (sort.active === 'status') {
-				// sort by int value
-				return sort.direction === 'asc'
-					? a.fileInfo.status - b.fileInfo.status
-					: b.fileInfo.status - a.fileInfo.status;
-			}
-		});
-		this.recentTransactionsDataSource.data = sortedData;
-	}
+
 	datePicked(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
 		let startDate = new Date(dateRangeStart.value).getTime();
 		let tempEndDate = new Date(dateRangeEnd.value);

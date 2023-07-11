@@ -2,7 +2,7 @@
 	<!-- Close button -->
 	<div class="flex items-center justify-end">
 		<a mat-icon-button [routerLink]="['../']">
-			<mat-icon [svgIcon]="'heroicons_outline:x'"></mat-icon>
+			<mat-icon [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
 		</a>
 	</div>
 	<!-- search user -->
@@ -17,7 +17,7 @@
 			<mat-label>Email sau numar de telefon</mat-label>
 			<mat-icon
 				class="icon-size-5"
-				[svgIcon]="'heroicons_solid:mail'"
+				[svgIcon]="'heroicons_solid:envelope'"
 				matPrefix
 			></mat-icon>
 			<mat-icon
@@ -52,8 +52,13 @@
 			</div>
 		</div>
 	</div>
-	<div class="row-span-2 mt-5" *ngIf="resultSets && resultSets.length > 0"></div>
-
+	<!-- My current list of favorites -->
+	<div
+		class="flex flex-col mt-4 border-t border-b divide-y font-medium"
+		*ngIf="!resultSets || resultSets.length === 0"
+	>
+		Nu sunt date din filtrare!
+	</div>
 	<div
 		class="flex flex-col mt-4 border-t border-b divide-y font-medium"
 		*ngIf="resultSets && resultSets.length > 0"
@@ -78,6 +83,7 @@
 			</div>
 		</div>
 	</div>
+
 	<!-- My current list of favorites -->
 	<div
 		class="flex flex-col mt-4 border-t border-b divide-y font-medium"

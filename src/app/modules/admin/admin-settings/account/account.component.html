@@ -53,13 +53,13 @@
 			<!-- Email -->
 			<div class="sm:col-span-2">
 				<mat-form-field class="w-full" [subscriptSizing]="'dynamic'">
-					<mat-label>Email</mat-label>
+					<mat-label>Email (read-only)</mat-label>
 					<mat-icon
 						class="icon-size-5"
-						[svgIcon]="'heroicons_solid:mail'"
+						[svgIcon]="'heroicons_solid:envelope'"
 						matPrefix
 					></mat-icon>
-					<input [formControlName]="'email'" class="bg-gray-200" readonly matInput />
+					<input [formControlName]="'email'" disabled readonly matInput />
 				</mat-form-field>
 			</div>
 			<!-- Phone -->

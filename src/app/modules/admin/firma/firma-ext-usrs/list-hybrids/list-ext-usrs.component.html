@@ -15,7 +15,7 @@
 					[routerLink]="'./add-ext-user'"
 				>
 					<mat-icon
-						[svgIcon]="'heroicons_outline:user-add'"
+						[svgIcon]="'heroicons_outline:user-plus'"
 						[class.text-black]="true"
 					></mat-icon
 				></a>
@@ -115,7 +115,9 @@
 						<ng-container matColumnDef="actions">
 							<th mat-header-cell *matHeaderCellDef>
 								<div class="flex flex-row justify-center">
-									<mat-icon [svgIcon]="'heroicons_outline:dots-horizontal'"></mat-icon>
+									<mat-icon
+										[svgIcon]="'heroicons_outline:ellipsis-horizontal'"
+									></mat-icon>
 								</div>
 							</th>
 							<td mat-cell *matCellDef="let transaction">
@@ -129,7 +131,7 @@
 										(click)="transaction.isEditMode = true"
 									>
 										<mat-icon
-											[svgIcon]="'heroicons_outline:pencil-alt'"
+											[svgIcon]="'heroicons_outline:pencil-square'"
 											[class.text-black]="true"
 										></mat-icon>
 									</button>

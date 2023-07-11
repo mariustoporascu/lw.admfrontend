@@ -202,6 +202,13 @@ export const appRoutes: Route[] = [
 					).then((m) => m.MasterDocsPreAppModule),
 			},
 			{
+				path: 'firme-platforma',
+				loadChildren: () =>
+					import('app/modules/admin/master/master-firme/master-firme.module').then(
+						(m) => m.MasterFirmeModule
+					),
+			},
+			{
 				path: 'settings',
 				loadChildren: () =>
 					import('app/modules/admin/admin-settings/settings.module').then(

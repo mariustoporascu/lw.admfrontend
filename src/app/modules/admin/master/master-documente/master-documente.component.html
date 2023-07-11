@@ -48,7 +48,6 @@
 									[dataSource]="recentTransactionsDataSource"
 									[trackBy]="trackByFn"
 									#recentTransactionsTable
-									(matSortChange)="customSort($event)"
 								>
 									<!-- Transaction ID -->
 									<ng-container matColumnDef="firmaInfo">
@@ -57,7 +56,7 @@
 										</th>
 										<td mat-cell *matCellDef="let transaction">
 											<div
-												class="w-30 truncate"
+												class="w-40 truncate"
 												[matTooltip]="getDetaliiFirmaDiscount(transaction.firmaDiscountId)"
 											>
 												{{ getDetaliiFirmaDiscount(transaction.firmaDiscountId) }}
@@ -193,7 +192,7 @@
 										<th mat-header-cell *matHeaderCellDef>
 											<div class="flex flex-row justify-center">
 												<mat-icon
-													[svgIcon]="'heroicons_outline:dots-horizontal'"
+													[svgIcon]="'heroicons_outline:ellipsis-horizontal'"
 												></mat-icon>
 											</div>
 										</th>

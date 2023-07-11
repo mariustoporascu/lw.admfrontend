@@ -86,7 +86,7 @@
 							(click)="refreshData()"
 							title="Reincarca datele"
 						>
-							<mat-icon [svgIcon]="'heroicons_outline:refresh'"></mat-icon>
+							<mat-icon [svgIcon]="'heroicons_outline:arrow-path'"></mat-icon>
 						</button>
 						<!-- Upload button -->
 						<button
@@ -95,7 +95,7 @@
 							(click)="fileInput.click()"
 							title="Incarca documente"
 						>
-							<mat-icon [svgIcon]="'heroicons_outline:document-add'"></mat-icon>
+							<mat-icon [svgIcon]="'heroicons_outline:document-plus'"></mat-icon>
 						</button>
 					</div>
 				</div>
@@ -196,7 +196,6 @@
 											matSort
 											[dataSource]="recentTransactionsDataSource"
 											[trackBy]="trackByFn"
-											(matSortChange)="customSort($event)"
 											#recentTransactionsTable
 										>
 											<!-- Transaction ID -->

@@ -4,17 +4,17 @@ import {
 	Resolve,
 	RouterStateSnapshot,
 } from '@angular/router';
-import { FirmaFunctDataService } from 'app/core/firma-funct-data/firma-funct-data.service';
+import { MasterFunctDataService } from 'app/core/master-funct-data/master-funct-data.service';
 import { forkJoin, Observable } from 'rxjs';
 
 @Injectable({
 	providedIn: 'root',
 })
-export class FirmaDocsWFPResolver implements Resolve<any> {
+export class MasterFirmeResolver implements Resolve<any> {
 	/**
 	 * Constructor
 	 */
-	constructor(private _firmaFunctDataService: FirmaFunctDataService) {}
+	constructor(private _masterFunctDataService: MasterFunctDataService) {}
 
 	// -----------------------------------------------------------------------------------------------------
 	// @ Public methods
@@ -30,6 +30,6 @@ export class FirmaDocsWFPResolver implements Resolve<any> {
 		route: ActivatedRouteSnapshot,
 		state: RouterStateSnapshot
 	): Observable<any> {
-		return this._firmaFunctDataService.getDocumentsWFP();
+		return this._masterFunctDataService.getAllFirme();
 	}
 }

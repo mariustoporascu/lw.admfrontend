@@ -124,6 +124,21 @@ export class MasterDocsComponent implements OnInit, AfterViewInit, OnDestroy {
 	ngAfterViewInit(): void {
 		// Make the data source sortable
 		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
+		this.recentTransactionsDataSource.sortingDataAccessor = (item, property) => {
+			switch (property) {
+				case 'firmaInfo':
+					return this.getDetaliiFirmaDiscount(item.firmaDiscountId);
+				case 'extractedBusinessData':
+					return item.ocrData?.adresaFirma?.value ?? '';
+				case 'total':
+					return item.ocrData?.total?.value ?? '';
+				case 'userEmail':
+					return item.conexiuniConturi?.profilCont?.email ?? '';
+				default:
+					return item[property];
+			}
+		};
+
 		this.recentTransactionsDataSource.paginator =
 			this.recentTransactionsTablePagination;
 	}
@@ -175,47 +190,6 @@ export class MasterDocsComponent implements OnInit, AfterViewInit, OnDestroy {
 		}
 	}
 
-	customSort(sort: Sort) {
-		this._utilsService.logger('sort', sort.active, sort.direction, sort);
-		if (
-			sort.active === 'firmaInfo' ||
-			sort.active === 'extractedBusinessData' ||
-			sort.active === 'userEmail'
-		) {
-			if (sort.direction === '') {
-				this.recentTransactionsDataSource.data =
-					this.recentTransactionsDataSource.data.sort((a, b) =>
-						this._utilsService.sortFunction(a.uploaded, b.uploaded, 'asc')
-					);
-				return;
-			}
-			const data = this.recentTransactionsDataSource.data.slice(); // Make a copy of the data array
-			const sortedData = data.sort((a, b) => {
-				if (sort.active === 'firmaInfo') {
-					return this._utilsService.sortFunction(
-						this.getDetaliiFirmaDiscount(a.firmaDiscountId),
-						this.getDetaliiFirmaDiscount(b.firmaDiscountId),
-						sort.direction
-					);
-				} else if (sort.active === 'extractedBusinessData') {
-					return this._utilsService.sortFunction(
-						a.ocrData?.adresaFirma?.value ?? '',
-						b.ocrData?.adresaFirma?.value ?? '',
-						sort.direction
-					);
-				} else if (sort.active === 'userEmail') {
-					return this._utilsService.sortFunction(
-						a.conexiuniConturi?.profilCont?.email ?? '',
-						b.conexiuniConturi?.profilCont?.email ?? '',
-						sort.direction
-					);
-				}
-			});
-			this.recentTransactionsDataSource.data = sortedData;
-			return;
-		}
-		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
-	}
 	splitByCapitalLetters(str: string): string {
 		return this._utilsService.splitByCapitalLetters(str);
 	}
