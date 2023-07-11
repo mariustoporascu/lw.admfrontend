@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { FuseAlertType } from '@fuse/components/alert';
+import { FuseUtilsService } from '@fuse/services/utils';
 import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.service';
 
 @Component({
@@ -33,7 +34,8 @@ export class SettingsFavoritesComponent implements OnInit {
 	 */
 	constructor(
 		private _userFunctDataService: UserFunctDataService,
-		private _cdr: ChangeDetectorRef
+		private _cdr: ChangeDetectorRef,
+		private _utilsService: FuseUtilsService
 	) {}
 
 	// -----------------------------------------------------------------------------------------------------
@@ -93,10 +95,10 @@ export class SettingsFavoritesComponent implements OnInit {
 			.addFavorite(conexId)
 			.subscribe({
 				next: (result) => {
-					console.log('addFavorite', result);
+					this._utilsService.logger('Favorite added', result);
 				},
 				error: (err) => {
-					console.log('addFavorite', err);
+					this._utilsService.logger('Favorite add failed', err);
 				},
 			})
 			.add(() => {
@@ -121,10 +123,10 @@ export class SettingsFavoritesComponent implements OnInit {
 			.removeFavorite(conexId)
 			.subscribe({
 				next: (result) => {
-					console.log('deleteFavorite', result);
+					this._utilsService.logger('Favorite deleted', result);
 				},
 				error: (err) => {
-					console.log('deleteFavorite', err);
+					this._utilsService.logger('Favorite delete failed', err);
 				},
 			})
 			.add(() => {

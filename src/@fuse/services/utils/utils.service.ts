@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { IsActiveMatchOptions } from '@angular/router';
 import { FirmaDiscount } from 'app/core/bkendmodels/models.types';
+import { environment } from 'environments/environment';
 
 @Injectable({
 	providedIn: 'root',
@@ -93,8 +94,16 @@ export class FuseUtilsService {
 			data.ocrData?.adresaFirma?.value
 		);
 	}
+	sortFunction(a: any, b: any, direction: string) {
+		if (direction === 'asc') return a.localeCompare(b) * 1;
+		return a.localeCompare(b) * -1;
+	}
 	getDetaliiFirmaDiscount(data: FirmaDiscount) {
 		return data.name + ', ' + data.cuiNumber;
+	}
+	logger(info: string, ...args: any[]) {
+		if (environment.production) return;
+		console.log(info, args);
 	}
 	getOptimalCombination(items: any[], targetValue: number): any[] {
 		let closestSum = Infinity;

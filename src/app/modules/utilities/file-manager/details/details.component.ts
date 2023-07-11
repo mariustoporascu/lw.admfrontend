@@ -14,7 +14,7 @@ import { Subject, catchError, of, switchMap, takeUntil } from 'rxjs';
 import { FileManagerService } from '../../../../core/filemanager/file-manager.service';
 import { Item } from '../../../../core/filemanager/file-manager.types';
 import { FileManagerListComponent } from '../list/list.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FileManagerComponent } from '../file-manager.component';
 import { FuseUtilsService } from '@fuse/services/utils';
 import { MatDialog } from '@angular/material/dialog';
@@ -45,6 +45,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 	 */
 	constructor(
 		private _activatedRoute: ActivatedRoute,
+		private _router: Router,
 		private _cdr: ChangeDetectorRef,
 		private _fileManagerListComponent: FileManagerListComponent,
 		private _fileManagerComponent: FileManagerComponent,
@@ -177,6 +178,10 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 								type: 'success',
 								message: 'Codul a fost extras cu succes din imagine.',
 							};
+							this._fileManagerListComponent.refreshData();
+							this._router.navigate(['../../'], {
+								relativeTo: this._activatedRoute,
+							});
 							setTimeout(() => {
 								this.closeCamera();
 							}, 1000);
