@@ -18,6 +18,7 @@ import { MatAutocomplete } from '@angular/material/autocomplete';
 import { Subject, debounceTime, filter, map, takeUntil } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { SelectionModel } from '@angular/cdk/collections';
+import { FuseUtilsService } from '@fuse/services/utils';
 
 @Component({
 	selector: 'search-user',
@@ -44,7 +45,8 @@ export class SearchForUserComponent
 		private _userFunctDataService: UserFunctDataService,
 		private _router: Router,
 		private _cdr: ChangeDetectorRef,
-		private _activatedRoute: ActivatedRoute
+		private _activatedRoute: ActivatedRoute,
+		private _utilsService: FuseUtilsService
 	) {}
 
 	// -----------------------------------------------------------------------------------------------------
@@ -136,10 +138,10 @@ export class SearchForUserComponent
 		if (this.selectedForFavorite && !isFromFavorite) {
 			this._userFunctDataService.addFavorite(conexId).subscribe({
 				next: (result) => {
-					console.log('addFavorite', result);
+					this._utilsService.logger('addFavorite', result);
 				},
 				error: (err) => {
-					console.log('addFavorite', err);
+					this._utilsService.logger('addFavorite', err);
 				},
 			});
 		}
@@ -150,6 +152,6 @@ export class SearchForUserComponent
 	}
 	toggleSelectedForFavorite() {
 		this.selectedForFavorite = !this.selectedForFavorite;
-		console.log('toggleSelectedForFavorite', this.selectedForFavorite);
+		this._utilsService.logger('selectedForFavorite', this.selectedForFavorite);
 	}
 }

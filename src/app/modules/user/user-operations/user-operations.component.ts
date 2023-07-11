@@ -8,7 +8,7 @@ import {
 	ViewChild,
 	ViewEncapsulation,
 } from '@angular/core';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subject, catchError, of, switchMap, takeUntil, tap } from 'rxjs';
 import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.service';
@@ -195,10 +195,42 @@ export class UserOperationsComponent
 	/** Whether the number of selected elements matches the total number of rows. */
 	isAllSelected() {
 		const numSelected = this.selection.selected.length;
-		const numRows = this.recentTransactionsDataSource.data.length;
+		const numRows = this.recentTransactionsDataSource.data.filter(
+			(item) => item.status === 1
+		).length;
 		return numSelected === numRows;
 	}
-
+	customSort(sort: Sort) {
+		this._utilsService.logger('sort', sort.active, sort.direction, sort);
+		if (sort.active === 'docNumber' || sort.active === 'extractedBusinessData') {
+			if (sort.direction === '') {
+				this.recentTransactionsDataSource.data =
+					this.recentTransactionsDataSource.data.sort((a, b) =>
+						this._utilsService.sortFunction(a.uploaded, b.uploaded, 'asc')
+					);
+				return;
+			}
+			const data = this.recentTransactionsDataSource.data.slice(); // Make a copy of the data array
+			const sortedData = data.sort((a, b) => {
+				if (sort.active === 'docNumber') {
+					return this._utilsService.sortFunction(
+						a.ocrData?.docNumber?.value ?? '',
+						b.ocrData?.docNumber?.value ?? '',
+						sort.direction
+					);
+				} else if (sort.active === 'extractedBusinessData') {
+					return this._utilsService.sortFunction(
+						this.getDetaliiBusiness(a),
+						this.getDetaliiBusiness(b),
+						sort.direction
+					);
+				}
+			});
+			this.recentTransactionsDataSource.data = sortedData;
+			return;
+		}
+		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
+	}
 	/** Selects all rows if they are not all selected; otherwise clear selection. */
 	toggleAllRows() {
 		if (
@@ -210,7 +242,11 @@ export class UserOperationsComponent
 			return;
 		}
 
-		this.selection.select(...this.recentTransactionsDataSource.filteredData);
+		this.selection.select(
+			...this.recentTransactionsDataSource.filteredData.filter(
+				(item) => item.status === 1
+			)
+		);
 	}
 
 	/** Select by filtering rows with sum of discount value */

@@ -47,6 +47,7 @@
 									matSort
 									[dataSource]="recentTransactionsDataSource"
 									[trackBy]="trackByFn"
+									(matSortChange)="customSort($event)"
 									#recentTransactionsTable
 								>
 									<!-- Transaction ID -->

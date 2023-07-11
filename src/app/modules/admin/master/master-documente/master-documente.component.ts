@@ -8,7 +8,7 @@ import {
 	ViewChild,
 	ViewEncapsulation,
 } from '@angular/core';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subject, catchError, of, switchMap, takeUntil } from 'rxjs';
 import { MatPaginator } from '@angular/material/paginator';
@@ -45,6 +45,7 @@ export class MasterDocsComponent implements OnInit, AfterViewInit, OnDestroy {
 		'total',
 		'discountValue',
 		'userEmail',
+		'status',
 		'actions',
 	];
 	selection = new SelectionModel<Documente>(true, []);
@@ -85,7 +86,10 @@ export class MasterDocsComponent implements OnInit, AfterViewInit, OnDestroy {
 			data: Documente,
 			filter: string
 		) => {
-			let dataStr = JSON.stringify(data).toLowerCase();
+			let firmaStr = JSON.stringify(
+				this.firme.find((item) => item.id === data.firmaDiscountId)
+			).toLowerCase();
+			let dataStr = JSON.stringify(data).toLowerCase() + firmaStr;
 			return dataStr.includes(filter);
 		};
 		// Get the data
@@ -169,6 +173,48 @@ export class MasterDocsComponent implements OnInit, AfterViewInit, OnDestroy {
 		if (this.recentTransactionsDataSource.paginator) {
 			this.recentTransactionsDataSource.paginator.firstPage();
 		}
+	}
+
+	customSort(sort: Sort) {
+		this._utilsService.logger('sort', sort.active, sort.direction, sort);
+		if (
+			sort.active === 'firmaInfo' ||
+			sort.active === 'extractedBusinessData' ||
+			sort.active === 'userEmail'
+		) {
+			if (sort.direction === '') {
+				this.recentTransactionsDataSource.data =
+					this.recentTransactionsDataSource.data.sort((a, b) =>
+						this._utilsService.sortFunction(a.uploaded, b.uploaded, 'asc')
+					);
+				return;
+			}
+			const data = this.recentTransactionsDataSource.data.slice(); // Make a copy of the data array
+			const sortedData = data.sort((a, b) => {
+				if (sort.active === 'firmaInfo') {
+					return this._utilsService.sortFunction(
+						this.getDetaliiFirmaDiscount(a.firmaDiscountId),
+						this.getDetaliiFirmaDiscount(b.firmaDiscountId),
+						sort.direction
+					);
+				} else if (sort.active === 'extractedBusinessData') {
+					return this._utilsService.sortFunction(
+						a.ocrData?.adresaFirma?.value ?? '',
+						b.ocrData?.adresaFirma?.value ?? '',
+						sort.direction
+					);
+				} else if (sort.active === 'userEmail') {
+					return this._utilsService.sortFunction(
+						a.conexiuniConturi?.profilCont?.email ?? '',
+						b.conexiuniConturi?.profilCont?.email ?? '',
+						sort.direction
+					);
+				}
+			});
+			this.recentTransactionsDataSource.data = sortedData;
+			return;
+		}
+		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
 	}
 	splitByCapitalLetters(str: string): string {
 		return this._utilsService.splitByCapitalLetters(str);

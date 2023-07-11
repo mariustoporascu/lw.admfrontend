@@ -59,6 +59,7 @@
 									matSort
 									[dataSource]="recentTransactionsDataSource"
 									[trackBy]="trackByFn"
+									(matSortChange)="customSort($event)"
 									#recentTransactionsTable
 								>
 									<!-- Checkbox Column -->
@@ -78,6 +79,7 @@
 												(change)="$event ? selection.toggle(row) : null"
 												[checked]="selection.isSelected(row)"
 												[aria-label]="checkboxLabel(row)"
+												*ngIf="row.status === 1"
 											>
 											</mat-checkbox>
 										</td>
@@ -172,7 +174,7 @@
 													'bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50':
 														transaction.status === 2,
 													'bg-orange-200 text-orange-800 dark:bg-orange-600 dark:text-orange-50':
-														transaction.status === 3,
+														[3, 8].includes(transaction.status),
 													'bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50':
 														transaction.status === 1
 												}"
