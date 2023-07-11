@@ -59,7 +59,6 @@
 									matSort
 									[dataSource]="recentTransactionsDataSource"
 									[trackBy]="trackByFn"
-									(matSortChange)="customSort($event)"
 									#recentTransactionsTable
 								>
 									<!-- Checkbox Column -->
@@ -190,7 +189,7 @@
 										<th mat-header-cell *matHeaderCellDef>
 											<div class="flex flex-row justify-center">
 												<mat-icon
-													[svgIcon]="'heroicons_outline:dots-horizontal'"
+													[svgIcon]="'heroicons_outline:ellipsis-horizontal'"
 												></mat-icon>
 											</div>
 										</th>
@@ -208,7 +207,7 @@
 													title="Transfera"
 												>
 													<mat-icon
-														[svgIcon]="'heroicons_outline:switch-horizontal'"
+														[svgIcon]="'heroicons_outline:arrows-right-left'"
 														[class.text-black]="true"
 													></mat-icon>
 												</button>
@@ -222,7 +221,7 @@
 													title="Retrage"
 												>
 													<mat-icon
-														[svgIcon]="'heroicons_outline:cash'"
+														[svgIcon]="'heroicons_outline:banknotes'"
 														[class.text-black]="true"
 													></mat-icon>
 												</button>
@@ -277,7 +276,7 @@
 											(click)="makeTransferSelected()"
 										>
 											<mat-icon
-												[svgIcon]="'heroicons_outline:switch-horizontal'"
+												[svgIcon]="'heroicons_outline:arrows-right-left'"
 												[class.text-black]="true"
 											></mat-icon>
 										</button>
@@ -290,7 +289,7 @@
 											(click)="makeWithdrawalSelected()"
 										>
 											<mat-icon
-												[svgIcon]="'heroicons_outline:cash'"
+												[svgIcon]="'heroicons_outline:banknotes'"
 												[class.text-black]="true"
 											></mat-icon>
 										</button>

@@ -125,6 +125,18 @@ export class UserOperationsComponent
 	ngAfterViewInit(): void {
 		// Make the data source sortable
 		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
+		this.recentTransactionsDataSource.sortingDataAccessor = (item, property) => {
+			switch (property) {
+				case 'docNumber':
+					return item.ocrData?.docNumber?.value ?? '';
+				case 'extractedBusinessData':
+					return item.ocrData?.adresaFirma?.value ?? '';
+				case 'total':
+					return item.ocrData?.total?.value ?? '';
+				default:
+					return item[property];
+			}
+		};
 		this.recentTransactionsDataSource.paginator =
 			this.recentTransactionsTablePagination;
 	}
@@ -200,37 +212,7 @@ export class UserOperationsComponent
 		).length;
 		return numSelected === numRows;
 	}
-	customSort(sort: Sort) {
-		this._utilsService.logger('sort', sort.active, sort.direction, sort);
-		if (sort.active === 'docNumber' || sort.active === 'extractedBusinessData') {
-			if (sort.direction === '') {
-				this.recentTransactionsDataSource.data =
-					this.recentTransactionsDataSource.data.sort((a, b) =>
-						this._utilsService.sortFunction(a.uploaded, b.uploaded, 'asc')
-					);
-				return;
-			}
-			const data = this.recentTransactionsDataSource.data.slice(); // Make a copy of the data array
-			const sortedData = data.sort((a, b) => {
-				if (sort.active === 'docNumber') {
-					return this._utilsService.sortFunction(
-						a.ocrData?.docNumber?.value ?? '',
-						b.ocrData?.docNumber?.value ?? '',
-						sort.direction
-					);
-				} else if (sort.active === 'extractedBusinessData') {
-					return this._utilsService.sortFunction(
-						this.getDetaliiBusiness(a),
-						this.getDetaliiBusiness(b),
-						sort.direction
-					);
-				}
-			});
-			this.recentTransactionsDataSource.data = sortedData;
-			return;
-		}
-		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
-	}
+
 	/** Selects all rows if they are not all selected; otherwise clear selection. */
 	toggleAllRows() {
 		if (
@@ -253,6 +235,20 @@ export class UserOperationsComponent
 	selectByDiscountValue(event: Event) {
 		this.selection.clear();
 		const filterValue = (event.target as HTMLInputElement).value;
+		if (
+			filterValue >
+			this.recentTransactionsDataSource.data.reduce(
+				(acc, item) => acc + item.discountValue,
+				0
+			)
+		) {
+			this.selection.select(
+				...this.recentTransactionsDataSource.filteredData.filter(
+					(item) => item.status === 1
+				)
+			);
+			return;
+		}
 		this.selection.select(
 			...this._utilsService.getOptimalCombination(
 				this.recentTransactionsDataSource.data.filter((item) => item.status === 1),

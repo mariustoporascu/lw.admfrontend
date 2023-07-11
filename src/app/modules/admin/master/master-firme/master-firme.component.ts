@@ -13,14 +13,13 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Subject, catchError, of, switchMap, takeUntil } from 'rxjs';
 import { MatPaginator } from '@angular/material/paginator';
 import { FuseUtilsService } from '@fuse/services/utils';
-import { Documente } from 'app/core/bkendmodels/models.types';
-import { SelectionModel } from '@angular/cdk/collections';
+import { FirmaDiscount } from 'app/core/bkendmodels/models.types';
 import { FuseAlertType } from '@fuse/components/alert';
 import { MatDrawer } from '@angular/material/sidenav';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FirmaFunctDataService } from 'app/core/firma-funct-data/firma-funct-data.service';
 import { MatDialog } from '@angular/material/dialog';
+import { MasterFunctDataService } from 'app/core/master-funct-data/master-funct-data.service';
 
 @Component({
 	selector: 'master-firme',
@@ -28,34 +27,32 @@ import { MatDialog } from '@angular/material/dialog';
 	encapsulation: ViewEncapsulation.None,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 	@ViewChild('recentTransactionsTable', { read: MatSort })
 	recentTransactionsTableMatSort: MatSort;
 	@ViewChild('recentTransactionsTablePagination')
 	recentTransactionsTablePagination: MatPaginator;
 	@ViewChild('confirmDialogView', { static: true }) confirmDialogView: any;
 
-	items: Documente[];
+	items: FirmaDiscount[];
 	recentTransactionsDataSource: MatTableDataSource<any> =
 		new MatTableDataSource();
 	recentTransactionsTableColumns: string[] = [
-		'select',
-		'docNumber',
-		'extractedBusinessData',
-		'uploaded',
-		'total',
-		'discountValue',
-		'userEmail',
+		'name',
+		'cuiNumber',
+		'discountPercent',
+		'contactPerson',
+		'contactPhone',
+		'contactEmail',
+		'contractActiv',
 		'actions',
 	];
-	selection = new SelectionModel<Documente>(true, []);
 
 	alert: { type: FuseAlertType; message: string } = {
 		type: 'success',
 		message: '',
 	};
 	showAlert: boolean = false;
-	transferIds: string[] = [];
 
 	@ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
 	drawerMode: 'side' | 'over';
@@ -68,7 +65,7 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 	constructor(
 		private _activatedRoute: ActivatedRoute,
 		private _utilsService: FuseUtilsService,
-		private _firmaFunctDataService: FirmaFunctDataService,
+		private _masterFunctDataService: MasterFunctDataService,
 		private _cdr: ChangeDetectorRef,
 		private _router: Router,
 		private _dialog: MatDialog,
@@ -84,14 +81,14 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 	 */
 	ngOnInit(): void {
 		this.recentTransactionsDataSource.filterPredicate = (
-			data: Documente,
+			data: FirmaDiscount,
 			filter: string
 		) => {
 			let dataStr = JSON.stringify(data).toLowerCase();
 			return dataStr.includes(filter);
 		};
 		// Get the data
-		this._firmaFunctDataService.docsData$
+		this._masterFunctDataService.firmeData$
 			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe((data) => {
 				// Store the table data
@@ -162,7 +159,6 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 	applyFilter(event: Event) {
 		const filterValue = (event.target as HTMLInputElement).value;
 		this.recentTransactionsDataSource.filter = filterValue.trim().toLowerCase();
-		this.selection.clear();
 		if (this.recentTransactionsDataSource.paginator) {
 			this.recentTransactionsDataSource.paginator.firstPage();
 		}
@@ -170,133 +166,30 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 	splitByCapitalLetters(str: string): string {
 		return this._utilsService.splitByCapitalLetters(str);
 	}
-	/** Whether the number of selected elements matches the total number of rows. */
-	isAllSelected() {
-		const numSelected = this.selection.selected.length;
-		const numRows = this.recentTransactionsDataSource.data.length;
-		return numSelected === numRows;
-	}
 
-	/** Selects all rows if they are not all selected; otherwise clear selection. */
-	toggleAllRows() {
-		if (this.isAllSelected()) {
-			this.selection.clear();
-			return;
-		}
-
-		this.selection.select(...this.recentTransactionsDataSource.filteredData);
-	}
-
-	/** The label for the checkbox on the passed row */
-	checkboxLabel(row?: Documente): string {
-		if (!row) {
-			return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
-		}
-		return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${
-			this.recentTransactionsDataSource.data.indexOf(row) + 1
-		}`;
-	}
-	countSelected() {
-		return this.selection.selected.length;
-	}
-
-	rejectSelected() {
-		this.sendRequestToServer(
-			[...this.selection.selected.map((item) => item.id)],
-			2
-		);
-	}
-	approveSelected() {
-		this.sendRequestToServer(
-			[...this.selection.selected.map((item) => item.id)],
-			1
-		);
-	}
 	// transfer guid
-	rejectRow(row: Documente) {
-		this.sendRequestToServer([row.id], 2);
+	rejectRow(row: FirmaDiscount) {
+		this.sendRequestToServer(row.id, 2);
 	}
-	approveRow(row: Documente) {
-		this.sendRequestToServer([row.id], 1);
+	approveRow(row: FirmaDiscount) {
+		this.sendRequestToServer(row.id, 1);
 	}
-	countTotal() {
-		let total = 0;
-		this.selection.selected.forEach((item: any) => {
-			total += item.discountValue;
-		});
-		return total.toFixed(2);
-	}
-	datePicked(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
-		let startDate = new Date(dateRangeStart.value).getTime();
-		let tempEndDate = new Date(dateRangeEnd.value);
-		tempEndDate.setHours(23, 59, 59, 999);
-		let endDate = tempEndDate.getTime();
-		this.recentTransactionsDataSource.data = this.items.filter((item) => {
-			var currDate = new Date(item.uploaded).getTime();
-			return currDate >= startDate && currDate <= endDate;
-		});
-		this.selection.clear();
-		if (this.recentTransactionsDataSource.paginator) {
-			this.recentTransactionsDataSource.paginator.firstPage();
-		}
-	}
-	sendRequestToServer(documenteIds: string[], status: number) {
+
+	sendRequestToServer(firmaId: string, status: number) {
 		// Hide the alert
 		this.showAlert = false;
-
-		this._firmaFunctDataService
-			.updateDocStatus({
-				documenteIds,
-				status,
-			})
-			.subscribe({
-				next: () => {
-					this.alert = {
-						type: 'success',
-						message: 'Operatiunea a fost efectuata cu succes.',
-					};
-				},
-				error: (err) => {
-					if (err.error) {
-						const error = err.message;
-						// Set the alert
-						this.alert = {
-							type: 'error',
-							message: `${error.succes} operatiuni cu succes, ${error.failed} esuate.`,
-						};
-					} else {
-						this.alert = {
-							type: 'warning',
-							message: 'Eroare pe server. Echipa tehnica a fost notificata.',
-						};
-					}
-				},
-			})
-			.add(() => {
-				this._firmaFunctDataService
-					.getDocumentsWFP()
-					.subscribe()
-					.add(() => {
-						this.showAlert = true;
-						this.selection.clear();
-						this._cdr.markForCheck();
-					});
-			});
+		this._utilsService.logger('firmaId', firmaId);
 	}
 	closeDialog() {
 		this._dialog.closeAll();
 	}
-	openDialog(row?: Documente) {
+	openDialog(row?: FirmaDiscount) {
 		this.dialogRow = row;
 		this._dialog.open(this.confirmDialogView);
 	}
-	dialogRow: Documente;
+	dialogRow: FirmaDiscount;
 	confirmDialog() {
-		if (this.dialogRow) {
-			this.rejectRow(this.dialogRow);
-		} else {
-			this.rejectSelected();
-		}
+		this.rejectRow(this.dialogRow);
 		this._dialog.closeAll();
 	}
 }

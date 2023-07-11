@@ -2,7 +2,7 @@
 	<!-- Close button -->
 	<div class="flex items-center justify-end">
 		<a mat-icon-button [routerLink]="['../../']">
-			<mat-icon [svgIcon]="'heroicons_outline:x'"></mat-icon>
+			<mat-icon [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
 		</a>
 	</div>
 
@@ -158,7 +158,7 @@
 			title="Descarca fisier"
 			*ngIf="item.fileInfo.status !== 6"
 		>
-			<mat-icon [svgIcon]="'heroicons_outline:document-download'"></mat-icon>
+			<mat-icon [svgIcon]="'heroicons_outline:document-arrow-down'"></mat-icon>
 		</button>
 
 		<button
@@ -170,7 +170,7 @@
 			*ngIf="item.fileInfo.status === 7"
 		>
 			<mat-icon [svgIcon]="'heroicons_outline:camera'"></mat-icon>
-			<mat-icon [svgIcon]="'heroicons_outline:qrcode'"></mat-icon>
+			<mat-icon [svgIcon]="'heroicons_outline:qr-code'"></mat-icon>
 		</button>
 		<button
 			class="flex-auto"

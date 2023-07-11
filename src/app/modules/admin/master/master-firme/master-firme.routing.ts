@@ -1,22 +1,13 @@
 import { Route } from '@angular/router';
-import { FirmaDocsWFPResolver } from './master-firme.resolvers';
-import { FirmaDocsWFPComponent } from './master-firme.component';
-import { ViewDocumentComponent } from './view-firma-details/view-document.component';
-import { CanDeactivateViewDocumentComponent } from './master-firme.guards';
+import { MasterFirmeResolver } from './master-firme.resolvers';
+import { MasterFirmeComponent } from './master-firme.component';
 
-export const firmaDocsWFPRoutes: Route[] = [
+export const masterFirmeRoutes: Route[] = [
 	{
 		path: '',
-		component: FirmaDocsWFPComponent,
+		component: MasterFirmeComponent,
 		resolve: {
-			serverData: FirmaDocsWFPResolver,
+			serverData: MasterFirmeResolver,
 		},
-		children: [
-			{
-				path: 'view-document/:id',
-				component: ViewDocumentComponent,
-				canDeactivate: [CanDeactivateViewDocumentComponent],
-			},
-		],
 	},
 ];

@@ -47,7 +47,6 @@
 									matSort
 									[dataSource]="recentTransactionsDataSource"
 									[trackBy]="trackByFn"
-									(matSortChange)="customSort($event)"
 									#recentTransactionsTable
 								>
 									<!-- Transaction ID -->
@@ -146,7 +145,7 @@
 										<th mat-header-cell *matHeaderCellDef>
 											<div class="flex flex-row justify-center">
 												<mat-icon
-													[svgIcon]="'heroicons_outline:dots-horizontal'"
+													[svgIcon]="'heroicons_outline:ellipsis-horizontal'"
 												></mat-icon>
 											</div>
 										</th>

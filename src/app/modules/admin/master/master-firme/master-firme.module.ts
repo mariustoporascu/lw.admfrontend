@@ -14,19 +14,18 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FuseAlertModule } from '@fuse/components/alert';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { firmaDocsWFPRoutes } from './master-firme.routing';
-import { FirmaDocsWFPComponent } from './master-firme.component';
+import { masterFirmeRoutes } from './master-firme.routing';
+import { MasterFirmeComponent } from './master-firme.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { ViewDocumentComponent } from './view-firma-details/view-document.component';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
-	declarations: [FirmaDocsWFPComponent, ViewDocumentComponent],
+	declarations: [MasterFirmeComponent],
 	imports: [
-		RouterModule.forChild(firmaDocsWFPRoutes),
+		RouterModule.forChild(masterFirmeRoutes),
 		FuseAlertModule,
 		MatButtonModule,
 		MatDividerModule,
@@ -48,4 +47,4 @@ import { MatDialogModule } from '@angular/material/dialog';
 		SharedModule,
 	],
 })
-export class FirmaDocsWFPModule {}
+export class MasterFirmeModule {}
