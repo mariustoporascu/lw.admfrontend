@@ -1,0 +1,78 @@
+<div class="flex flex-col flex-auto p-6 md:p-8">
+	<!-- Close button -->
+	<div class="flex items-center justify-end">
+		<a mat-icon-button [routerLink]="['../../']">
+			<mat-icon [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+		</a>
+	</div>
+	<!-- Information -->
+	<div class="text-lg font-medium mt-2">Informatii detaliate</div>
+	<div class="flex flex-col mt-4 border-t border-b divide-y font-medium">
+		<div class="flex items-center justify-between py-3">
+			<div class="text-secondary">Nume</div>
+			<div>
+				{{ document?.name }}
+			</div>
+		</div>
+		<div class="flex items-center justify-between py-3">
+			<div class="text-secondary">Cui</div>
+			<div>
+				{{ document?.cuiNumber }}
+			</div>
+		</div>
+		<div class="flex items-center justify-between py-3">
+			<div class="text-secondary">Nr Reg Com</div>
+			<div>
+				{{ document?.nrRegCom }}
+			</div>
+		</div>
+		<div class="flex items-center justify-between py-3">
+			<div class="text-secondary">Adresa</div>
+			<div>
+				{{ document?.address }}
+			</div>
+		</div>
+		<div class="flex items-center justify-between py-3">
+			<div class="text-secondary">Nume banca</div>
+			<div>
+				{{ document?.bankName }}
+			</div>
+		</div>
+		<div class="flex items-center justify-between py-3">
+			<div class="text-secondary">Cont bancar</div>
+			<div>
+				{{ document?.bankAccount }}
+			</div>
+		</div>
+		<div class="flex items-center justify-between py-3">
+			<div class="text-secondary">Nume contact</div>
+			<div>
+				{{ document?.mainContactName }}
+			</div>
+		</div>
+		<div class="flex items-center justify-between py-3">
+			<div class="text-secondary">Email contact</div>
+			<div>
+				{{ document?.mainContactEmail }}
+			</div>
+		</div>
+		<div class="flex items-center justify-between py-3">
+			<div class="text-secondary">Telefon contact</div>
+			<div>
+				{{ document?.mainContactPhone }}
+			</div>
+		</div>
+		<div class="flex items-center justify-between py-3">
+			<div class="text-secondary">Procent de discount</div>
+			<div>
+				{{ document?.discountPercent }}
+			</div>
+		</div>
+		<div class="flex items-center justify-between py-3">
+			<div class="text-secondary">Total discount acordat</div>
+			<div>
+				{{ document?.totalGivenDiscount }}
+			</div>
+		</div>
+	</div>
+</div>

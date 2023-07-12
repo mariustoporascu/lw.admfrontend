@@ -146,6 +146,17 @@ export class MasterFunctDataService {
 			}
 		);
 	}
+	updateFirmaStatus(firmaId: string): Observable<any> {
+		return this._httpClient.put(
+			`${this._backEndUrl}/masteradmin/updateFirmaStatus`,
+			{},
+			{
+				params: {
+					firmaId,
+				},
+			}
+		);
+	}
 	/**
 	 * Query user
 	 */

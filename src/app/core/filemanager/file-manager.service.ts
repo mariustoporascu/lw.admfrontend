@@ -223,4 +223,9 @@ export class FileManagerService {
 			{ responseType: 'arraybuffer' }
 		);
 	}
+	deleteFile(fisierId: string, documentId: string): Observable<any> {
+		return this._httpClient.delete(
+			`${this._dataProcUrl}/filemanager/deleteDocument?fisierId=${fisierId}&documentId=${documentId}`
+		);
+	}
 }
