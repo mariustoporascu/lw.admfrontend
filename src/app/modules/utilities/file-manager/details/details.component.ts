@@ -232,6 +232,36 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 				});
 			});
 	}
+	deleteFile(): void {
+		this._fileManagerListComponent.showAlert = false;
+		this._fileManagerListComponent.componentMarkForCheck();
+		this._fileManagerService
+			.deleteFile(this.item.fileInfo.fisiereDocumente.id, this.documentId)
+			.subscribe({
+				next: (response) => {
+					this._utilsService.logger('document delete success', response);
+					this._fileManagerListComponent.showAlert = true;
+					// Set the alert
+					this._fileManagerListComponent.alert = {
+						type: 'success',
+						message: `Documentul a fost sters.`,
+					};
+				},
+				error: (err) => {
+					this._utilsService.logger('document delete error', err);
+					this._fileManagerListComponent.showAlert = true;
+					// Set the alert
+					this._fileManagerListComponent.alert = {
+						type: 'error',
+						message: `Stergerea documentului a intampinat o eroare, echipa tehnica a fost notificata.`,
+					};
+				},
+			})
+			.add(() => {
+				this._fileManagerListComponent.refreshData();
+				this._cdr.markForCheck();
+			});
+	}
 	downloadFile(): void {
 		this._fileManagerListComponent.showAlert = false;
 		this._fileManagerService

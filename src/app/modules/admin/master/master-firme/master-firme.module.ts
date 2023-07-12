@@ -21,9 +21,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { MatDialogModule } from '@angular/material/dialog';
+import { ViewDetailsComponent } from './view-details/view-details.component';
 
 @NgModule({
-	declarations: [MasterFirmeComponent],
+	declarations: [MasterFirmeComponent, ViewDetailsComponent],
 	imports: [
 		RouterModule.forChild(masterFirmeRoutes),
 		FuseAlertModule,

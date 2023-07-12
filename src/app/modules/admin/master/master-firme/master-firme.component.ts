@@ -41,10 +41,10 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 		'name',
 		'cuiNumber',
 		'discountPercent',
-		'contactPerson',
-		'contactPhone',
-		'contactEmail',
-		'contractActiv',
+		'mainContactName',
+		'mainContactEmail',
+		'mainContactPhone',
+		'isActive',
 		'actions',
 	];
 
@@ -169,16 +169,44 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	// transfer guid
 	rejectRow(row: FirmaDiscount) {
-		this.sendRequestToServer(row.id, 2);
+		this.sendRequestToServer(row.id);
 	}
 	approveRow(row: FirmaDiscount) {
-		this.sendRequestToServer(row.id, 1);
+		this.sendRequestToServer(row.id);
 	}
 
-	sendRequestToServer(firmaId: string, status: number) {
+	sendRequestToServer(firmaId: string) {
 		// Hide the alert
 		this.showAlert = false;
 		this._utilsService.logger('firmaId', firmaId);
+		this._masterFunctDataService
+			.updateFirmaStatus(firmaId)
+			.subscribe({
+				next: (data) => {
+					this._utilsService.logger('updateFirmaStatus', data);
+					this.alert = {
+						type: 'success',
+						message: 'Statusul firmei a fost modificat cu succes',
+					};
+					this.showAlert = true;
+				},
+				error: (err) => {
+					this._utilsService.logger('updateFirmaStatus', err);
+					this.alert = {
+						type: 'error',
+						message: 'A intervenit o eroare la modificarea statusului firmei',
+					};
+					this.showAlert = true;
+				},
+			})
+			.add(() => {
+				this._masterFunctDataService
+					.getAllFirme()
+					.subscribe()
+					.add(() => {
+						this._cdr.markForCheck();
+					});
+			});
 	}
 	closeDialog() {
 		this._dialog.closeAll();

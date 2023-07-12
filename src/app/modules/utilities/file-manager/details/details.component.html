@@ -177,6 +177,7 @@
 			mat-flat-button
 			[class.bg-red-600]="true"
 			title="Sterge fisier"
+			(click)="deleteFile()"
 			*ngIf="item.fileInfo.status === 6"
 		>
 			<mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>

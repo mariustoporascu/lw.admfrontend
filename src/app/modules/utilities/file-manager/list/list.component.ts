@@ -278,4 +278,7 @@ export class FileManagerListComponent
 			JSON.stringify(item).toLowerCase().includes(filterValue.trim().toLowerCase())
 		);
 	}
+	componentMarkForCheck(): void {
+		this._changeDetectorRef.markForCheck();
+	}
 }
