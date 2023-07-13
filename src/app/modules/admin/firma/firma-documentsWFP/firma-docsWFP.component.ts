@@ -55,6 +55,7 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 		message: '',
 	};
 	showAlert: boolean = false;
+	disabled = false;
 	transferIds: string[] = [];
 
 	@ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
@@ -117,6 +118,20 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 	ngAfterViewInit(): void {
 		// Make the data source sortable
 		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
+		this.recentTransactionsDataSource.sortingDataAccessor = (item, property) => {
+			switch (property) {
+				case 'docNumber':
+					return item.ocrData?.docNumber?.value ?? '';
+				case 'extractedBusinessData':
+					return item.ocrData?.adresaFirma?.value ?? '';
+				case 'total':
+					return item.ocrData?.total?.value ?? '';
+				case 'userEmail':
+					return item.conexiuniConturi?.profilCont?.email ?? '';
+				default:
+					return item[property];
+			}
+		};
 		this.recentTransactionsDataSource.paginator =
 			this.recentTransactionsTablePagination;
 	}
@@ -224,7 +239,7 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 		this.selection.selected.forEach((item: any) => {
 			total += item.discountValue;
 		});
-		return total;
+		return total.toFixed(2);
 	}
 	datePicked(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
 		let startDate = new Date(dateRangeStart.value).getTime();
@@ -243,7 +258,7 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 	sendRequestToServer(documenteIds: string[], status: number) {
 		// Hide the alert
 		this.showAlert = false;
-
+		this.disabled = true;
 		this._firmaFunctDataService
 			.updateDocStatus({
 				documenteIds,
@@ -278,7 +293,13 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 					.subscribe()
 					.add(() => {
 						this.showAlert = true;
-						this.selection.clear();
+						this.disabled = false;
+						if (this.dialogRow) {
+							this.dialogRow = null;
+						} else {
+							this.selection.clear();
+						}
+						this.closeDialog();
 						this._cdr.markForCheck();
 					});
 			});
@@ -288,7 +309,9 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 	openDialog(row?: Documente) {
 		this.dialogRow = row;
-		this._dialog.open(this.confirmDialogView);
+		this._dialog.open(this.confirmDialogView, {
+			disableClose: true,
+		});
 	}
 	dialogRow: Documente;
 	confirmDialog() {
@@ -297,6 +320,5 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 		} else {
 			this.rejectSelected();
 		}
-		this._dialog.closeAll();
 	}
 }

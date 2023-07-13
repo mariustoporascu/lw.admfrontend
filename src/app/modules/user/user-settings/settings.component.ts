@@ -67,6 +67,12 @@ export class SettingsComponent implements OnInit, OnDestroy {
 				title: 'Notificari si alerte',
 				description: 'Setari pentru notificari si alerte',
 			},
+			{
+				id: 'favorites',
+				icon: 'heroicons_outline:heart',
+				title: 'Useri favoriti',
+				description: 'Lista cu userii favoriti pentru transferuri rapide',
+			},
 		];
 
 		// Subscribe to media changes

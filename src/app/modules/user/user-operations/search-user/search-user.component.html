@@ -2,10 +2,10 @@
 	<!-- Close button -->
 	<div class="flex items-center justify-end">
 		<a mat-icon-button [routerLink]="['../']">
-			<mat-icon [svgIcon]="'heroicons_outline:x'"></mat-icon>
+			<mat-icon [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
 		</a>
 	</div>
-	<!-- Close button -->
+	<!-- search user -->
 	<div class="flex items-center justify-center mt-5">
 		<span class="text-black text-lg font-medium"
 			>Cauta utilizator pentru transfer</span
@@ -17,7 +17,7 @@
 			<mat-label>Email sau numar de telefon</mat-label>
 			<mat-icon
 				class="icon-size-5"
-				[svgIcon]="'heroicons_solid:mail'"
+				[svgIcon]="'heroicons_solid:envelope'"
 				matPrefix
 			></mat-icon>
 			<mat-icon
@@ -34,10 +34,30 @@
 			/>
 		</mat-form-field>
 	</div>
-	<div class="sm:col-span-4 mt-5">
-		<span class="text-black text-md font-medium"
-			>Utilizatori gasiti: {{ resultSets?.length || 0 }}</span
-		>
+	<div class="flex flex-col mt-5">
+		<div class="flex items-center justify-between">
+			<span class="text-black text-xl font-medium"
+				>Utilizatori gasiti: {{ resultSets?.length || 0 }}</span
+			>
+			<div class="flex flex-col items-center mr-2">
+				<span class="text-black text-md font-medium"
+					>Salveaza userul selectat la favorite?</span
+				>
+				<mat-checkbox
+					(click)="$event.stopPropagation()"
+					(change)="$event ? toggleSelectedForFavorite() : null"
+					[checked]="selectedForFavorite"
+				>
+				</mat-checkbox>
+			</div>
+		</div>
+	</div>
+	<!-- My current list of favorites -->
+	<div
+		class="flex flex-col mt-4 border-t border-b divide-y font-medium"
+		*ngIf="!resultSets || resultSets.length === 0"
+	>
+		Nu sunt date din filtrare!
 	</div>
 	<div
 		class="flex flex-col mt-4 border-t border-b divide-y font-medium"
@@ -49,13 +69,51 @@
 		>
 			<div>{{ usr.fullName }}</div>
 			<div>{{ usr.phoneNumber }}</div>
+			<div>{{ usr.email }}</div>
 			<div>
 				<button
 					mat-flat-button
 					[class.bg-green-300]="true"
 					[class.scale-75]="true"
 					title="Selecteaza"
+					[disabled]="getDisabled()"
 					(click)="selectAndTransfer(usr.conexId)"
+				>
+					<mat-icon [svgIcon]="'heroicons_outline:check'"></mat-icon>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- My current list of favorites -->
+	<div
+		class="flex flex-col mt-4 border-t border-b divide-y font-medium"
+		*ngIf="!favoritesResultSets || favoritesResultSets.length === 0"
+	>
+		Lista de favoriti este goala
+	</div>
+	<div
+		class="flex flex-col mt-4 border-t border-b divide-y font-medium"
+		*ngIf="favoritesResultSets && favoritesResultSets.length > 0"
+	>
+		<div class="flex items-center justify-between py-3">
+			<span class="text-black text-xl font-medium">Utilizatori Favoriti</span>
+		</div>
+		<div
+			class="flex items-center justify-between py-3"
+			*ngFor="let usr of favoritesResultSets"
+		>
+			<div>{{ usr.fullName }}</div>
+			<div>{{ usr.phoneNumber }}</div>
+			<div>{{ usr.email }}</div>
+			<div>
+				<button
+					mat-flat-button
+					[class.bg-green-300]="true"
+					[class.scale-75]="true"
+					title="Selecteaza"
+					[disabled]="getDisabled()"
+					(click)="selectAndTransfer(usr.conexId, true)"
 				>
 					<mat-icon [svgIcon]="'heroicons_outline:check'"></mat-icon>
 				</button>

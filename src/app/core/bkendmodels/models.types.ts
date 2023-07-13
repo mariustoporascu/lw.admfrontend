@@ -21,6 +21,7 @@ export interface Documente {
 	firmaDiscountId?: string;
 	conexId?: string;
 	nextConexId?: string;
+	firmaDiscount?: FirmaDiscount;
 	fisiereDocumente?: FisiereDocumente;
 	conexiuniConturi?: ConexiuniConturi;
 	nextConexiuniConturi?: ConexiuniConturi;

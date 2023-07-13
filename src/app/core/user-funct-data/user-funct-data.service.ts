@@ -15,6 +15,9 @@ export class UserFunctDataService {
 		new BehaviorSubject(null);
 	private _withdrawData: BehaviorSubject<Tranzactii[] | null> =
 		new BehaviorSubject(null);
+	private _favoritesData: BehaviorSubject<any[] | null> = new BehaviorSubject(
+		null
+	);
 	private _backEndUrl: string = backendUrl;
 	/**
 	 * Constructor
@@ -125,6 +128,23 @@ export class UserFunctDataService {
 	queryUsers(query: string): Observable<any> {
 		return this._httpClient.get(
 			`${this._backEndUrl}/regularuser/query-users?query=${query}`
+		);
+	}
+	addFavorite(favConexId: string): Observable<any> {
+		return this._httpClient.put(
+			`${this._backEndUrl}/regularuser/add-favorite-user`,
+			{},
+			{ params: { favConexId } }
+		);
+	}
+	removeFavorite(favConexId: string): Observable<any> {
+		return this._httpClient.delete(
+			`${this._backEndUrl}/regularuser/remove-favorite-user?favConexId=${favConexId}`
+		);
+	}
+	getFavoriteList(): Observable<any> {
+		return this._httpClient.get(
+			`${this._backEndUrl}/regularuser/get-favorite-users`
 		);
 	}
 }

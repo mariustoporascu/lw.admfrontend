@@ -1,0 +1,150 @@
+<div class="flex flex-col flex-auto w-full">
+	<div class="flex flex-wrap w-full max-w-screen-xl mx-auto p-6 md:p-8">
+		<div
+			class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full min-w-0"
+		>
+			<!-- Summary -->
+			<div
+				class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden"
+			>
+				<div class="flex items-start justify-between">
+					<div class="text-lg font-medium tracking-tight leading-6 truncate">
+						Firme active
+					</div>
+				</div>
+				<div class="flex flex-col items-center mt-2">
+					<div
+						class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-blue-500"
+					>
+						{{ serverData?.firmeActiveCount }}
+					</div>
+				</div>
+			</div>
+			<!-- Overdue -->
+			<div
+				class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden"
+			>
+				<div class="flex items-start justify-between">
+					<div class="text-lg font-medium tracking-tight leading-6 truncate">
+						Firme inactive
+					</div>
+				</div>
+				<div class="flex flex-col items-center mt-2">
+					<div
+						class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-red-500"
+					>
+						{{ serverData?.firmeInactiveCount }}
+					</div>
+				</div>
+			</div>
+			<!-- Issues -->
+			<div
+				class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden"
+			>
+				<div class="flex items-start justify-between">
+					<div class="text-lg font-medium tracking-tight leading-6 truncate">
+						Useri platforma
+					</div>
+				</div>
+				<div class="flex flex-col items-center mt-2">
+					<div
+						class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-amber-500"
+					>
+						{{ serverData?.useriCount }}
+					</div>
+				</div>
+			</div>
+			<!-- Features -->
+			<div
+				class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden"
+			>
+				<div class="flex items-start justify-between">
+					<div class="text-lg font-medium tracking-tight leading-6 truncate">
+						Documente validate
+					</div>
+				</div>
+				<div class="flex flex-col items-center mt-2">
+					<div
+						class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-green-500"
+					>
+						{{ serverData?.documenteCount }}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="flex flex-wrap w-full max-w-screen-xl mx-auto p-6 md:p-8">
+		<div
+			class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full min-w-0"
+		>
+			<!-- Summary -->
+			<div
+				class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden"
+			>
+				<div class="flex items-start justify-between">
+					<div class="text-lg font-medium tracking-tight leading-6 truncate">
+						Puncte acordate
+					</div>
+				</div>
+				<div class="flex flex-col items-center mt-2">
+					<div
+						class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-lime-500"
+					>
+						{{ serverData?.puncteAcordateCount }}
+					</div>
+				</div>
+			</div>
+			<!-- Overdue -->
+			<div
+				class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden"
+			>
+				<div class="flex items-start justify-between">
+					<div class="text-lg font-medium tracking-tight leading-6 truncate">
+						Puncte retrase
+					</div>
+				</div>
+				<div class="flex flex-col items-center mt-2">
+					<div
+						class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-orange-500"
+					>
+						{{ serverData?.puncteRetraseCount }}
+					</div>
+				</div>
+			</div>
+			<!-- Issues -->
+			<div
+				class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden"
+			>
+				<div class="flex items-start justify-between">
+					<div class="text-lg font-medium tracking-tight leading-6 truncate">
+						Puncte facturate
+					</div>
+				</div>
+				<div class="flex flex-col items-center mt-2">
+					<div
+						class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-purple-500"
+					>
+						{{ serverData?.puncteFacturateCount }}
+					</div>
+				</div>
+			</div>
+			<!-- Features -->
+			<div
+				class="flex flex-col flex-auto p-6 bg-card shadow rounded-2xl overflow-hidden"
+			>
+				<div class="flex items-start justify-between">
+					<div class="text-lg font-medium tracking-tight leading-6 truncate">
+						Documente respinse
+					</div>
+				</div>
+				<div class="flex flex-col items-center mt-2">
+					<div
+						class="text-7xl sm:text-8xl font-bold tracking-tight leading-none text-red-500"
+					>
+						{{ serverData?.documenteRespinse }}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

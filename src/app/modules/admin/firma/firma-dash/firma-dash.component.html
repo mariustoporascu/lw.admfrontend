@@ -197,7 +197,7 @@
 							<th mat-header-cell mat-sort-header *matHeaderCellDef>
 								Valoare discount
 							</th>
-							<td mat-cell *matCellDef="let transaction">
+							<td mat-cell *matCellDef="let transaction" class="text-center">
 								<span class="pr-6 font-medium whitespace-nowrap">
 									{{ transaction.discountValue | currency : "LWP " }}
 								</span>
@@ -214,7 +214,7 @@
 										'bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-50':
 											transaction.status === 2,
 										'bg-orange-200 text-orange-800 dark:bg-orange-600 dark:text-orange-50':
-											transaction.status === 3,
+											[3, 8].includes(transaction.status),
 										'bg-green-200 text-green-800 dark:bg-green-600 dark:text-green-50':
 											transaction.status === 1
 									}"
