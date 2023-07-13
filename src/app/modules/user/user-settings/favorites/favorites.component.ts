@@ -24,6 +24,7 @@ export class SettingsFavoritesComponent implements OnInit {
 		message: '',
 	};
 	showAlert: boolean = false;
+	disabled: boolean = false;
 	searchControl: UntypedFormControl = new UntypedFormControl();
 	debounce: number = 200;
 	minLength: number = 3;
@@ -91,6 +92,7 @@ export class SettingsFavoritesComponent implements OnInit {
 		}
 	}
 	addNewFavorite(conexId: string) {
+		this.disabled = true;
 		this._userFunctDataService
 			.addFavorite(conexId)
 			.subscribe({
@@ -103,22 +105,32 @@ export class SettingsFavoritesComponent implements OnInit {
 			})
 			.add(() => {
 				// Get the UserFavoritesList
-				this._userFunctDataService.getFavoriteList().subscribe((favResultSets) => {
-					this.favoritesResultSets = favResultSets;
-					this._cdr.markForCheck();
-				});
+				this._userFunctDataService
+					.getFavoriteList()
+					.subscribe((favResultSets) => {
+						this.favoritesResultSets = favResultSets;
+					})
+					.add(() => {
+						this.disabled = false;
+						this._cdr.markForCheck();
+					});
 				const formValue = this.searchControl.value;
 				if (!formValue || formValue.length < this.minLength) {
 					this.resultSets = null;
-					return;
+				} else {
+					this._userFunctDataService
+						.queryUsers(formValue)
+						.subscribe((resultSets) => {
+							this.resultSets = resultSets;
+						})
+						.add(() => {
+							this._cdr.markForCheck();
+						});
 				}
-				this._userFunctDataService.queryUsers(formValue).subscribe((resultSets) => {
-					this.resultSets = resultSets;
-					this._cdr.markForCheck();
-				});
 			});
 	}
 	deleteFavorite(conexId: string) {
+		this.disabled = true;
 		this._userFunctDataService
 			.removeFavorite(conexId)
 			.subscribe({
@@ -131,10 +143,15 @@ export class SettingsFavoritesComponent implements OnInit {
 			})
 			.add(() => {
 				// Get the UserFavoritesList
-				this._userFunctDataService.getFavoriteList().subscribe((favResultSets) => {
-					this.favoritesResultSets = favResultSets;
-					this._cdr.markForCheck();
-				});
+				this._userFunctDataService
+					.getFavoriteList()
+					.subscribe((favResultSets) => {
+						this.favoritesResultSets = favResultSets;
+					})
+					.add(() => {
+						this.disabled = false;
+						this._cdr.markForCheck();
+					});
 			});
 	}
 }

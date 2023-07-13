@@ -83,6 +83,7 @@
 						<button
 							mat-flat-button
 							[class.bg-blue-300]="true"
+							[disabled]="disabled"
 							(click)="refreshData()"
 							title="Reincarca datele"
 						>
@@ -92,6 +93,7 @@
 						<button
 							mat-flat-button
 							[color]="'primary'"
+							[disabled]="disabled"
 							(click)="fileInput.click()"
 							title="Incarca documente"
 						>

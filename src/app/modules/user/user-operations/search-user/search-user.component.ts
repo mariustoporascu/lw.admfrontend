@@ -149,9 +149,13 @@ export class SearchForUserComponent
 		this._router.navigate(['../'], {
 			relativeTo: this._activatedRoute,
 		});
+		this._cdr.markForCheck();
 	}
 	toggleSelectedForFavorite() {
 		this.selectedForFavorite = !this.selectedForFavorite;
 		this._utilsService.logger('selectedForFavorite', this.selectedForFavorite);
+	}
+	getDisabled(): boolean {
+		return this._userOperationsComponent.disabled;
 	}
 }

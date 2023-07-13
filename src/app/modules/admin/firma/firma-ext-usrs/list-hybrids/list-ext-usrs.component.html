@@ -90,7 +90,12 @@
 
 						<!-- Bussines Details -->
 						<ng-container matColumnDef="noSubAccounts">
-							<th mat-header-cell mat-sort-header *matHeaderCellDef>
+							<th
+								mat-header-cell
+								mat-sort-header
+								*matHeaderCellDef
+								class="text-center"
+							>
 								Are cont creat?
 							</th>
 							<td mat-cell *matCellDef="let transaction" class="text-center">
@@ -101,7 +106,12 @@
 						</ng-container>
 						<!-- Bussines Details -->
 						<ng-container matColumnDef="noDocsUploaded">
-							<th mat-header-cell mat-sort-header *matHeaderCellDef>
+							<th
+								mat-header-cell
+								mat-sort-header
+								*matHeaderCellDef
+								class="text-center"
+							>
 								Numar documente incarcate pe punctul de lucru
 							</th>
 							<td mat-cell *matCellDef="let transaction" class="text-center">
@@ -128,6 +138,7 @@
 										[class.scale-75]="true"
 										title="Modifica grup"
 										*ngIf="!transaction.isEditMode"
+										[disabled]="disabled"
 										(click)="transaction.isEditMode = true"
 									>
 										<mat-icon
@@ -141,6 +152,7 @@
 										[class.scale-75]="true"
 										title="Salveaza"
 										*ngIf="transaction.isEditMode"
+										[disabled]="disabled"
 										(click)="updateTransaction(transaction)"
 									>
 										<mat-icon
@@ -153,6 +165,7 @@
 										mat-icon-button
 										[class.bg-red-300]="true"
 										[class.scale-75]="true"
+										[disabled]="disabled"
 										(click)="openDialog(transaction)"
 										title="Sterge"
 									>
@@ -191,6 +204,7 @@
 								[class.bg-red-300]="true"
 								[class.scale-75]="true"
 								title="Sterge grupuri"
+								[disabled]="disabled"
 								(click)="openDialog()"
 							>
 								<mat-icon
@@ -232,10 +246,20 @@
 		</p>
 	</mat-dialog-content>
 	<mat-dialog-actions class="flex flex-auto justify-end">
-		<button mat-icon-button (click)="confirmDialog()" [class.bg-red-400]="true">
+		<button
+			mat-icon-button
+			(click)="confirmDialog()"
+			[disabled]="disabled"
+			[class.bg-red-400]="true"
+		>
 			<span class="text-md">Da</span>
 		</button>
-		<button mat-icon-button (click)="closeDialog()" [class.bg-green-400]="true">
+		<button
+			mat-icon-button
+			(click)="closeDialog()"
+			[disabled]="disabled"
+			[class.bg-green-400]="true"
+		>
 			<span class="text-md">Nu</span>
 		</button>
 	</mat-dialog-actions>

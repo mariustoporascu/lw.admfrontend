@@ -43,6 +43,7 @@ export class FileManagerListComponent
 		message: '',
 	};
 	showAlert: boolean = false;
+	disabled: boolean = false;
 	recentTransactionsDataSource: MatTableDataSource<any> =
 		new MatTableDataSource();
 	recentTransactionsTableColumns: string[] = [
@@ -175,8 +176,10 @@ export class FileManagerListComponent
 	}
 	refreshData() {
 		this.showAlert = false;
+		this.disabled = true;
 		this._fileManagerService.getFiles().subscribe((res) => {
 			this._fileManagerService.setItems(this.firmaDiscountId);
+			this.disabled = false;
 			this._changeDetectorRef.markForCheck();
 		});
 	}
@@ -222,6 +225,7 @@ export class FileManagerListComponent
 			formData.append('firmaDiscountId', this.firmaDiscountId);
 			// Hide the alert
 			this.showAlert = false;
+			this.disabled = true;
 			this._fileManagerService
 				.uploadFiles(formData)
 
@@ -255,6 +259,7 @@ export class FileManagerListComponent
 						.subscribe()
 						.add(() => {
 							this.showAlert = true;
+							this.disabled = false;
 							this._fileManagerService.setItems(this.firmaDiscountId);
 							this._changeDetectorRef.markForCheck();
 						});

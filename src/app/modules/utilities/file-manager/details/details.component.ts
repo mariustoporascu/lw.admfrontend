@@ -129,7 +129,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 			this.videoElement.nativeElement.srcObject = stream;
 			this.videoElement.nativeElement.play();
 		} catch (err) {
-			console.error('Error opening camera:', err);
+			this._utilsService.logger('Error opening camera:', err);
 		}
 	}
 
@@ -212,28 +212,10 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 				});
 		}, 'image/png');
 	}
-	sendForApproval(): void {
-		this._fileManagerListComponent.showAlert = false;
-		this._fileManagerService
-			.sendForApproval(this.documentId)
-			.subscribe((resp) => {
-				this._fileManagerService.getFiles().subscribe((res) => {
-					this._fileManagerService.setItems(
-						this._fileManagerListComponent.firmaDiscountId
-					);
-					this._fileManagerListComponent.showAlert = true;
-					// Set the alert
-					this._fileManagerListComponent.alert = {
-						type: 'success',
-						message: `Fisierul a fost trimis la aprobat.`,
-					};
-					this.closeDrawer();
-					this._cdr.markForCheck();
-				});
-			});
-	}
+
 	deleteFile(): void {
 		this._fileManagerListComponent.showAlert = false;
+		this.disabled = true;
 		this._fileManagerListComponent.componentMarkForCheck();
 		this._fileManagerService
 			.deleteFile(this.item.fileInfo.fisiereDocumente.id, this.documentId)
@@ -259,11 +241,13 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 			})
 			.add(() => {
 				this._fileManagerListComponent.refreshData();
+				this.disabled = false;
 				this._cdr.markForCheck();
 			});
 	}
 	downloadFile(): void {
 		this._fileManagerListComponent.showAlert = false;
+		this.disabled = true;
 		this._fileManagerService
 			.downloadFile(this.item.fileInfo.fisiereDocumente.identifier)
 			.subscribe({
@@ -272,7 +256,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 						this._fileManagerListComponent.showAlert = true;
 						// Set the alert
 						this._fileManagerListComponent.alert = {
-							type: 'warning',
+							type: 'error',
 							message: `Fisierul nu a putut fi descarcat.`,
 						};
 						return;
@@ -289,16 +273,20 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 				},
 				error: (error) => {
 					// Handle any other errors here.
-					console.error('An error occurred while downloading the file', error);
+					this._utilsService.logger(
+						'An error occurred while downloading the file',
+						error
+					);
 					this._fileManagerListComponent.showAlert = true;
 					// Set the alert
 					this._fileManagerListComponent.alert = {
-						type: 'error',
+						type: 'warning',
 						message: `Eroare pe server. Echipa tehnica a fost notificata.`,
 					};
 				},
 			})
 			.add(() => {
+				this.disabled = false;
 				this._cdr.markForCheck();
 			});
 	}

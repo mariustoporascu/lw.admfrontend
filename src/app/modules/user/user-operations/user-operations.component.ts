@@ -56,6 +56,7 @@ export class UserOperationsComponent
 		message: '',
 	};
 	showAlert: boolean = false;
+	disabled: boolean = false;
 	transferIds: string[] = [];
 
 	@ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
@@ -306,7 +307,7 @@ export class UserOperationsComponent
 	) {
 		// Hide the alert
 		this.showAlert = false;
-
+		this.disabled = true;
 		this._userFunctDataService
 			.addTranzaction({
 				documenteIds,
@@ -341,6 +342,7 @@ export class UserOperationsComponent
 					.getApprovedDocuments()
 					.subscribe()
 					.add(() => {
+						this.disabled = false;
 						this.showAlert = true;
 						this.selection.clear();
 						this._cdr.markForCheck();

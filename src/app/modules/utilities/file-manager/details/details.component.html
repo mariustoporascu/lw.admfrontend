@@ -156,6 +156,7 @@
 			[class.bg-blue-600]="true"
 			(click)="downloadFile()"
 			title="Descarca fisier"
+			[disabled]="disabled"
 			*ngIf="item.fileInfo.status !== 6"
 		>
 			<mat-icon [svgIcon]="'heroicons_outline:document-arrow-down'"></mat-icon>
@@ -166,6 +167,7 @@
 			mat-flat-button
 			[color]="'primary'"
 			title="Scanare QR/Bar Code"
+			[disabled]="disabled"
 			(click)="openCamera()"
 			*ngIf="item.fileInfo.status === 7"
 		>
@@ -177,6 +179,7 @@
 			mat-flat-button
 			[class.bg-red-600]="true"
 			title="Sterge fisier"
+			[disabled]="disabled"
 			(click)="deleteFile()"
 			*ngIf="item.fileInfo.status === 6"
 		>

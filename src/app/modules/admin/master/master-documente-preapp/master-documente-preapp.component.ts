@@ -57,7 +57,7 @@ export class MasterDocsPreAppComponent
 		message: '',
 	};
 	showAlert: boolean = false;
-
+	disabled: boolean = false;
 	@ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
 	drawerMode: 'side' | 'over';
 
@@ -217,7 +217,7 @@ export class MasterDocsPreAppComponent
 	sendRequestToServer(documentId: string, status: number) {
 		// Hide the alert
 		this.showAlert = false;
-
+		this.disabled = true;
 		this._masterFunctDataService
 			.updateDocStatus(documentId, status)
 			.subscribe({
@@ -249,6 +249,11 @@ export class MasterDocsPreAppComponent
 					.add(() => {
 						this._router.navigate(['./'], { relativeTo: this._activatedRoute });
 						this.showAlert = true;
+						this.disabled = false;
+						if (this.dialogRow) {
+							this.dialogRow = null;
+							this.closeDialog();
+						}
 						this._cdr.markForCheck();
 					});
 			});
@@ -258,12 +263,13 @@ export class MasterDocsPreAppComponent
 	}
 	openDialog(row?: Documente) {
 		this.dialogRow = row;
-		this._dialog.open(this.confirmDialogView);
+		this._dialog.open(this.confirmDialogView, {
+			disableClose: true,
+		});
 	}
 	dialogRow: Documente;
 	confirmDialog() {
 		this.rejectRow(this.dialogRow);
-		this._dialog.closeAll();
 	}
 	getDetaliiFirmaDiscount(firmaDiscountId: string) {
 		return this._utilsService.getDetaliiFirmaDiscount(

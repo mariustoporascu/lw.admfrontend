@@ -157,6 +157,7 @@
 													[class.bg-green-300]="true"
 													[class.scale-75]="true"
 													(click)="approveRow(transaction)"
+													[disabled]="disabled"
 													title="Pre-Aproba"
 												>
 													<mat-icon
@@ -169,6 +170,7 @@
 													mat-icon-button
 													[class.bg-red-300]="true"
 													[class.scale-75]="true"
+													[disabled]="disabled"
 													(click)="openDialog(transaction)"
 													title="Respinge"
 												>
@@ -241,10 +243,20 @@
 		<h3 class="text-black text-lg">Esti sigur ca vrei sa respingi documentul?</h3>
 	</mat-dialog-content>
 	<mat-dialog-actions class="flex flex-auto justify-end">
-		<button mat-icon-button (click)="confirmDialog()" [class.bg-red-400]="true">
+		<button
+			mat-icon-button
+			(click)="confirmDialog()"
+			[disabled]="disabled"
+			[class.bg-red-400]="true"
+		>
 			<span class="text-md">Da</span>
 		</button>
-		<button mat-icon-button (click)="closeDialog()" [class.bg-green-400]="true">
+		<button
+			mat-icon-button
+			(click)="closeDialog()"
+			[disabled]="disabled"
+			[class.bg-green-400]="true"
+		>
 			<span class="text-md">Nu</span>
 		</button>
 	</mat-dialog-actions>
