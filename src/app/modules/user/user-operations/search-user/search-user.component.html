@@ -76,6 +76,7 @@
 					[class.bg-green-300]="true"
 					[class.scale-75]="true"
 					title="Selecteaza"
+					[disabled]="getDisabled()"
 					(click)="selectAndTransfer(usr.conexId)"
 				>
 					<mat-icon [svgIcon]="'heroicons_outline:check'"></mat-icon>
@@ -111,6 +112,7 @@
 					[class.bg-green-300]="true"
 					[class.scale-75]="true"
 					title="Selecteaza"
+					[disabled]="getDisabled()"
 					(click)="selectAndTransfer(usr.conexId, true)"
 				>
 					<mat-icon [svgIcon]="'heroicons_outline:check'"></mat-icon>

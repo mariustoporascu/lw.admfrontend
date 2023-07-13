@@ -34,6 +34,7 @@
 					[class.bg-orange-300]="true"
 					[class.scale-75]="true"
 					title="Sterge"
+					[disabled]="disabled"
 					(click)="deleteFavorite(usr.conexId)"
 				>
 					<mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
@@ -94,6 +95,7 @@
 					[class.bg-green-300]="true"
 					[class.scale-75]="true"
 					title="Selecteaza"
+					[disabled]="disabled"
 					(click)="addNewFavorite(usr.conexId)"
 				>
 					<mat-icon [svgIcon]="'heroicons_outline:check'"></mat-icon>

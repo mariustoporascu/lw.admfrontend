@@ -53,7 +53,7 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 		message: '',
 	};
 	showAlert: boolean = false;
-
+	disabled: boolean = false;
 	@ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
 	drawerMode: 'side' | 'over';
 
@@ -178,6 +178,7 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 	sendRequestToServer(firmaId: string) {
 		// Hide the alert
 		this.showAlert = false;
+		this.disabled = true;
 		this._utilsService.logger('firmaId', firmaId);
 		this._masterFunctDataService
 			.updateFirmaStatus(firmaId)
@@ -204,6 +205,11 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 					.getAllFirme()
 					.subscribe()
 					.add(() => {
+						this.disabled = false;
+						if (this.dialogRow) {
+							this.dialogRow = null;
+							this.closeDialog();
+						}
 						this._cdr.markForCheck();
 					});
 			});
@@ -213,11 +219,12 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 	openDialog(row?: FirmaDiscount) {
 		this.dialogRow = row;
-		this._dialog.open(this.confirmDialogView);
+		this._dialog.open(this.confirmDialogView, {
+			disableClose: true,
+		});
 	}
 	dialogRow: FirmaDiscount;
 	confirmDialog() {
 		this.rejectRow(this.dialogRow);
-		this._dialog.closeAll();
 	}
 }

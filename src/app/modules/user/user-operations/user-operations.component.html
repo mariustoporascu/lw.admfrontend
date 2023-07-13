@@ -205,6 +205,7 @@
 													[class.scale-75]="true"
 													(click)="makeTransferRow(transaction)"
 													title="Transfera"
+													[disabled]="disabled"
 												>
 													<mat-icon
 														[svgIcon]="'heroicons_outline:arrows-right-left'"
@@ -219,6 +220,7 @@
 													*ngIf="userType !== 'user-admin'"
 													(click)="makeWithdrawalRow(transaction)"
 													title="Retrage"
+													[disabled]="disabled"
 												>
 													<mat-icon
 														[svgIcon]="'heroicons_outline:banknotes'"
@@ -273,6 +275,7 @@
 											[class.bg-orange-300]="true"
 											[class.scale-75]="true"
 											title="Transfera"
+											[disabled]="disabled"
 											(click)="makeTransferSelected()"
 										>
 											<mat-icon
@@ -285,6 +288,7 @@
 											[class.bg-green-300]="true"
 											[class.scale-75]="true"
 											title="Retrage"
+											[disabled]="disabled"
 											*ngIf="userType !== 'user-admin'"
 											(click)="makeWithdrawalSelected()"
 										>

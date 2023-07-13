@@ -51,6 +51,7 @@ export class ListExtUsersComponent implements OnInit, AfterViewInit, OnDestroy {
 		message: '',
 	};
 	showAlert: boolean = false;
+	disabled: boolean = false;
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
 
 	/**
@@ -174,6 +175,7 @@ export class ListExtUsersComponent implements OnInit, AfterViewInit, OnDestroy {
 	sendRequestToServer(groupsIds: string[]) {
 		// Hide the alert
 		this.showAlert = false;
+		this.disabled = true;
 		this._firmaFunctDataService
 			.deleteExternalGroups({
 				groupsIds,
@@ -207,7 +209,13 @@ export class ListExtUsersComponent implements OnInit, AfterViewInit, OnDestroy {
 					.subscribe()
 					.add(() => {
 						this.showAlert = true;
-						this.selection.clear();
+						this.disabled = false;
+						if (this.dialogRow) {
+							this.dialogRow = null;
+						} else {
+							this.selection.clear();
+						}
+						this.closeDialog();
 						this._cdr.markForCheck();
 					});
 			});
@@ -217,7 +225,9 @@ export class ListExtUsersComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 	openDialog(row?: Hybrid) {
 		this.dialogRow = row;
-		this._dialog.open(this.confirmDialogView);
+		this._dialog.open(this.confirmDialogView, {
+			disableClose: true,
+		});
 	}
 	dialogRow: Hybrid;
 	confirmDialog() {
@@ -226,9 +236,10 @@ export class ListExtUsersComponent implements OnInit, AfterViewInit, OnDestroy {
 		} else {
 			this.deleteSelected();
 		}
-		this._dialog.closeAll();
 	}
 	updateTransaction(row: Hybrid) {
+		this.showAlert = false;
+		this.disabled = true;
 		this._firmaFunctDataService
 			.updateHybrid({
 				id: row.id,
@@ -263,7 +274,7 @@ export class ListExtUsersComponent implements OnInit, AfterViewInit, OnDestroy {
 					.add(() => {
 						row.isEditMode = false;
 						this.showAlert = true;
-						this.selection.clear();
+						this.disabled = false;
 						this._cdr.markForCheck();
 					});
 			});

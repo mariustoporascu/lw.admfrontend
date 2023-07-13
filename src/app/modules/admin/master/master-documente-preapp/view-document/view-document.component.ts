@@ -96,7 +96,10 @@ export class ViewDocumentComponent implements OnInit, OnDestroy {
 			},
 			error: (error) => {
 				// Handle any other errors here.
-				console.error('An error occurred while downloading the file', error);
+				this._utilsService.logger(
+					'An error occurred while downloading the file',
+					error
+				);
 			},
 		});
 	}
