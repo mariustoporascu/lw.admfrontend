@@ -99,6 +99,18 @@ export class UserDashComponent implements OnInit, AfterViewInit, OnDestroy {
 	ngAfterViewInit(): void {
 		// Make the data source sortable
 		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
+		this.recentTransactionsDataSource.sortingDataAccessor = (item, property) => {
+			switch (property) {
+				case 'docNumber':
+					return item.ocrData?.docNumber?.value ?? '';
+				case 'extractedBusinessData':
+					return item.ocrData?.adresaFirma?.value ?? '';
+				case 'total':
+					return item.ocrData?.total?.value ?? '';
+				default:
+					return item[property];
+			}
+		};
 	}
 
 	/**

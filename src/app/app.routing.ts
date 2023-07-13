@@ -115,12 +115,12 @@ export const appRoutes: Route[] = [
 			{
 				path: 'settings',
 				loadChildren: () =>
-					import('app/modules/admin/firma/user-settings/settings.module').then(
+					import('app/modules/admin/admin-settings/settings.module').then(
 						(m) => m.SettingsModule
 					),
 			},
 			{
-				path: 'externalusrs',
+				path: 'pointsofsale',
 				loadChildren: () =>
 					import(
 						'app/modules/admin/firma/firma-ext-usrs/firma-ext-usrs.module'
@@ -130,15 +130,15 @@ export const appRoutes: Route[] = [
 	},
 	// Hybrid routes
 	{
-		path: 'hybrid-admin',
-		data: { userType: 'hybrid-admin' },
+		path: 'user-admin',
+		data: { userType: 'user-admin' },
 		canMatch: [AuthGuard, UserTypeGuard],
 		component: LayoutComponent,
 		children: [
 			{
 				path: 'dashboard',
 				loadChildren: () =>
-					import('app/modules/admin/hybrid/hybrid-dash/user-dash.module').then(
+					import('app/modules/user/user-dash/user-dash.module').then(
 						(m) => m.UserDashModule
 					),
 			},
@@ -146,43 +146,29 @@ export const appRoutes: Route[] = [
 				path: 'transfers',
 				loadChildren: () =>
 					import(
-						'app/modules/admin/hybrid/hybrid-transf-history/user-transf-history.module'
+						'app/modules/user/user-transf-history/user-transf-history.module'
 					).then((m) => m.UserTransfHistoryModule),
 			},
 			{
 				path: 'filemanager',
-				data: { baseRoute: '/hybrid-admin/filemanager' },
+				data: { baseRoute: '/user-admin/filemanager' },
 				loadChildren: () =>
-					import(
-						'app/modules/utilities/file-manager-hybrid/file-manager.module'
-					).then((m) => m.FileManagerModule),
+					import('app/modules/utilities/file-manager/file-manager.module').then(
+						(m) => m.FileManagerModule
+					),
 			},
 			{
 				path: 'settings',
 				loadChildren: () =>
-					import('app/modules/admin/hybrid/user-settings/settings.module').then(
+					import('app/modules/user/user-settings/settings.module').then(
 						(m) => m.SettingsModule
 					),
 			},
 			{
 				path: 'operations',
 				loadChildren: () =>
-					import(
-						'app/modules/admin/hybrid/hybrid-operations/user-operations.module'
-					).then((m) => m.UserOperationsModule),
-			},
-			{
-				path: 'internalusrs',
-				loadChildren: () =>
-					import('app/modules/landing/example/example.module').then(
-						(m) => m.ExampleModule
-					),
-			},
-			{
-				path: 'externalusrs',
-				loadChildren: () =>
-					import('app/modules/landing/example/example.module').then(
-						(m) => m.ExampleModule
+					import('app/modules/user/user-operations/user-operations.module').then(
+						(m) => m.UserOperationsModule
 					),
 			},
 		],
@@ -197,8 +183,36 @@ export const appRoutes: Route[] = [
 			{
 				path: 'dashboard',
 				loadChildren: () =>
-					import('app/modules/landing/example/example.module').then(
-						(m) => m.ExampleModule
+					import('app/modules/admin/master/master-dash/master-dash.module').then(
+						(m) => m.MasterDashModule
+					),
+			},
+			{
+				path: 'documente-platforma',
+				loadChildren: () =>
+					import(
+						'app/modules/admin/master/master-documente/master-documente.module'
+					).then((m) => m.MasterDocsModule),
+			},
+			{
+				path: 'documente-pre-approval',
+				loadChildren: () =>
+					import(
+						'app/modules/admin/master/master-documente-preapp/master-documente-preapp.module'
+					).then((m) => m.MasterDocsPreAppModule),
+			},
+			{
+				path: 'firme-platforma',
+				loadChildren: () =>
+					import('app/modules/admin/master/master-firme/master-firme.module').then(
+						(m) => m.MasterFirmeModule
+					),
+			},
+			{
+				path: 'settings',
+				loadChildren: () =>
+					import('app/modules/admin/admin-settings/settings.module').then(
+						(m) => m.SettingsModule
 					),
 			},
 		],

@@ -1,4 +1,5 @@
 import {
+	AfterViewInit,
 	ChangeDetectionStrategy,
 	ChangeDetectorRef,
 	Component,
@@ -10,7 +11,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDrawer } from '@angular/material/sidenav';
-import { Subject, catchError, of, switchMap, takeUntil } from 'rxjs';
+import { Subject, catchError, filter, of, switchMap, takeUntil } from 'rxjs';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { FileManagerService } from '../../../../core/filemanager/file-manager.service';
 import { Item, Items } from '../../../../core/filemanager/file-manager.types';
@@ -18,7 +19,7 @@ import { FileManagerComponent } from '../file-manager.component';
 import { MatDialog } from '@angular/material/dialog';
 import { FuseAlertType } from '@fuse/components/alert';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { FuseUtilsService } from '@fuse/services/utils';
 
@@ -28,7 +29,9 @@ import { FuseUtilsService } from '@fuse/services/utils';
 	encapsulation: ViewEncapsulation.None,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FileManagerListComponent implements OnInit, OnDestroy {
+export class FileManagerListComponent
+	implements OnInit, AfterViewInit, OnDestroy
+{
 	@ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
 	@ViewChild('recentTransactionsTable', { read: MatSort })
 	recentTransactionsTableMatSort: MatSort;
@@ -40,13 +43,12 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 		message: '',
 	};
 	showAlert: boolean = false;
+	disabled: boolean = false;
 	recentTransactionsDataSource: MatTableDataSource<any> =
 		new MatTableDataSource();
 	recentTransactionsTableColumns: string[] = [
-		'docNumber',
 		'docType',
 		'fileName',
-		'fileExtension',
 		'created',
 		'status',
 	];
@@ -55,6 +57,7 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 	drawerMode: 'side' | 'over';
 	selectedItem: Item;
 	items: Items;
+	folders: Item[];
 	isFolderPath: boolean = false;
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
 	baseRoute: string = 'filemanager';
@@ -97,6 +100,7 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 			takeUntil(this._unsubscribeAll)
 		).subscribe((items: Items) => {
 			this.items = items;
+			this.folders = items.folders;
 			this.recentTransactionsDataSource.data = items.files;
 			// Mark for check
 			this._changeDetectorRef.markForCheck();
@@ -124,7 +128,29 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 			});
 		this.checkIfFolder();
 	}
-
+	/**
+	 * After view init
+	 */
+	ngAfterViewInit(): void {
+		// Make the data source sortable
+		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
+		this.recentTransactionsDataSource.sortingDataAccessor = (item, property) => {
+			switch (property) {
+				case 'docType':
+					return item.fileInfo.isInvoice;
+				case 'fileName':
+					return item.fileInfo.fisiereDocumente.fileName;
+				case 'created':
+					return item.fileInfo.fisiereDocumente.created;
+				case 'status':
+					return item.fileInfo.status;
+				default:
+					return item[property];
+			}
+		};
+		this.recentTransactionsDataSource.paginator =
+			this.recentTransactionsTablePagination;
+	}
 	/**
 	 * On destroy
 	 */
@@ -150,8 +176,10 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 	}
 	refreshData() {
 		this.showAlert = false;
+		this.disabled = true;
 		this._fileManagerService.getFiles().subscribe((res) => {
 			this._fileManagerService.setItems(this.firmaDiscountId);
+			this.disabled = false;
 			this._changeDetectorRef.markForCheck();
 		});
 	}
@@ -197,6 +225,7 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 			formData.append('firmaDiscountId', this.firmaDiscountId);
 			// Hide the alert
 			this.showAlert = false;
+			this.disabled = true;
 			this._fileManagerService
 				.uploadFiles(formData)
 
@@ -224,11 +253,13 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 					},
 				})
 				.add(() => {
+					(event.target as HTMLInputElement).value = '';
 					this._fileManagerService
 						.getFiles()
 						.subscribe()
 						.add(() => {
 							this.showAlert = true;
+							this.disabled = false;
 							this._fileManagerService.setItems(this.firmaDiscountId);
 							this._changeDetectorRef.markForCheck();
 						});
@@ -245,5 +276,14 @@ export class FileManagerListComponent implements OnInit, OnDestroy {
 		if (this.recentTransactionsDataSource.paginator) {
 			this.recentTransactionsDataSource.paginator.firstPage();
 		}
+	}
+	applyFolderFilter(event: Event) {
+		const filterValue = (event.target as HTMLInputElement).value;
+		this.folders = this.items.folders.filter((item) =>
+			JSON.stringify(item).toLowerCase().includes(filterValue.trim().toLowerCase())
+		);
+	}
+	componentMarkForCheck(): void {
+		this._changeDetectorRef.markForCheck();
 	}
 }

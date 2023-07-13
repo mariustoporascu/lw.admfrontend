@@ -14,7 +14,7 @@ import { Subject, catchError, of, switchMap, takeUntil } from 'rxjs';
 import { FileManagerService } from '../../../../core/filemanager/file-manager.service';
 import { Item } from '../../../../core/filemanager/file-manager.types';
 import { FileManagerListComponent } from '../list/list.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FileManagerComponent } from '../file-manager.component';
 import { FuseUtilsService } from '@fuse/services/utils';
 import { MatDialog } from '@angular/material/dialog';
@@ -45,6 +45,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 	 */
 	constructor(
 		private _activatedRoute: ActivatedRoute,
+		private _router: Router,
 		private _cdr: ChangeDetectorRef,
 		private _fileManagerListComponent: FileManagerListComponent,
 		private _fileManagerComponent: FileManagerComponent,
@@ -128,7 +129,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 			this.videoElement.nativeElement.srcObject = stream;
 			this.videoElement.nativeElement.play();
 		} catch (err) {
-			console.error('Error opening camera:', err);
+			this._utilsService.logger('Error opening camera:', err);
 		}
 	}
 
@@ -177,6 +178,10 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 								type: 'success',
 								message: 'Codul a fost extras cu succes din imagine.',
 							};
+							this._fileManagerListComponent.refreshData();
+							this._router.navigate(['../../'], {
+								relativeTo: this._activatedRoute,
+							});
 							setTimeout(() => {
 								this.closeCamera();
 							}, 1000);
@@ -207,28 +212,42 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 				});
 		}, 'image/png');
 	}
-	sendForApproval(): void {
+
+	deleteFile(): void {
 		this._fileManagerListComponent.showAlert = false;
+		this.disabled = true;
+		this._fileManagerListComponent.componentMarkForCheck();
 		this._fileManagerService
-			.sendForApproval(this.documentId)
-			.subscribe((resp) => {
-				this._fileManagerService.getFiles().subscribe((res) => {
-					this._fileManagerService.setItems(
-						this._fileManagerListComponent.firmaDiscountId
-					);
+			.deleteFile(this.item.fileInfo.fisiereDocumente.id, this.documentId)
+			.subscribe({
+				next: (response) => {
+					this._utilsService.logger('document delete success', response);
 					this._fileManagerListComponent.showAlert = true;
 					// Set the alert
 					this._fileManagerListComponent.alert = {
 						type: 'success',
-						message: `Fisierul a fost trimis la aprobat.`,
+						message: `Documentul a fost sters.`,
 					};
-					this.closeDrawer();
-					this._cdr.markForCheck();
-				});
+				},
+				error: (err) => {
+					this._utilsService.logger('document delete error', err);
+					this._fileManagerListComponent.showAlert = true;
+					// Set the alert
+					this._fileManagerListComponent.alert = {
+						type: 'error',
+						message: `Stergerea documentului a intampinat o eroare, echipa tehnica a fost notificata.`,
+					};
+				},
+			})
+			.add(() => {
+				this._fileManagerListComponent.refreshData();
+				this.disabled = false;
+				this._cdr.markForCheck();
 			});
 	}
 	downloadFile(): void {
 		this._fileManagerListComponent.showAlert = false;
+		this.disabled = true;
 		this._fileManagerService
 			.downloadFile(this.item.fileInfo.fisiereDocumente.identifier)
 			.subscribe({
@@ -237,7 +256,7 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 						this._fileManagerListComponent.showAlert = true;
 						// Set the alert
 						this._fileManagerListComponent.alert = {
-							type: 'warning',
+							type: 'error',
 							message: `Fisierul nu a putut fi descarcat.`,
 						};
 						return;
@@ -247,23 +266,27 @@ export class FileManagerDetailsComponent implements OnInit, OnDestroy {
 					const url = window.URL.createObjectURL(blob);
 					const link = document.createElement('a');
 					link.href = url;
-					link.download = this.item.fileInfo.fisiereDocumente.fileName; // provide the filename here
+					link.download = this.item.fileInfo.fisiereDocumente.fileName + '.pdf'; // provide the filename here
 					document.body.appendChild(link);
 					link.click();
 					document.body.removeChild(link);
 				},
 				error: (error) => {
 					// Handle any other errors here.
-					console.error('An error occurred while downloading the file', error);
+					this._utilsService.logger(
+						'An error occurred while downloading the file',
+						error
+					);
 					this._fileManagerListComponent.showAlert = true;
 					// Set the alert
 					this._fileManagerListComponent.alert = {
-						type: 'error',
+						type: 'warning',
 						message: `Eroare pe server. Echipa tehnica a fost notificata.`,
 					};
 				},
 			})
 			.add(() => {
+				this.disabled = false;
 				this._cdr.markForCheck();
 			});
 	}

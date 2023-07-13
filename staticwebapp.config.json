@@ -1,0 +1,39 @@
+{
+    "root": "/build",
+    "routes": [
+      {
+        "route": "/*",
+        "serve": "/index.html",
+        "statusCode": 200
+      }
+    ],
+    "navigationFallback": {
+      "rewrite": "/index.html",
+      "exclude": [
+        "/_framework/*",
+        "/_bin/*",
+        "/_content/*",
+        "/*.css",
+        "/*.js",
+        "/*.json",
+        "/*.ico",
+        "/*.png",
+        "/*.jpg",
+        "/*.jpeg",
+        "/*.webp",
+        "/*.svg",
+        "/*.woff",
+        "/*.woff2",
+        "/*.ttf"
+      ]
+    },
+    "mimeTypes": {
+      ".json": "application/json"
+    },
+    "responseOverrides": {
+      "404": {
+        "rewrite": "/index.html",
+        "statusCode": 200
+      }
+    }
+  }

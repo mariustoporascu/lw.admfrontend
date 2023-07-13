@@ -209,18 +209,16 @@ export class FileManagerService {
 				})
 			);
 	}
-	/**
-	 * send for approval
-	 */
-	sendForApproval(documentId: string): Observable<any> {
-		return this._httpClient.get(
-			`${this._backEndUrl}/regularuser/sendForApproval?documentId=${documentId}`
-		);
-	}
+
 	downloadFile(identifier: string): Observable<ArrayBuffer> {
 		return this._httpClient.get(
 			`${this._dataProcUrl}/filemanager/getFileStream?identifier=${identifier}`,
 			{ responseType: 'arraybuffer' }
+		);
+	}
+	deleteFile(fisierId: string, documentId: string): Observable<any> {
+		return this._httpClient.delete(
+			`${this._dataProcUrl}/filemanager/deleteDocument?fisierId=${fisierId}&documentId=${documentId}`
 		);
 	}
 }

@@ -80,6 +80,14 @@ export class UserTransfHistoryComponent
 	ngAfterViewInit(): void {
 		// Make the data source sortable
 		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
+		this.recentTransactionsDataSource.sortingDataAccessor = (item, property) => {
+			switch (property) {
+				case 'latestOwner':
+					return item.documente?.nextConexiuniConturi?.profilCont?.email ?? '';
+				default:
+					return item[property];
+			}
+		};
 		this.recentTransactionsDataSource.paginator =
 			this.recentTransactionsTablePagination;
 	}

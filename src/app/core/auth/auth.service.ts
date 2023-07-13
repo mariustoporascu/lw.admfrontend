@@ -61,8 +61,14 @@ export class AuthService {
 	 * @param email
 	 */
 	forgotPassword(email: string): Observable<any> {
-		return this._httpClient.get(
-			`${this._backEndUrl}/auth/password-reset-token?email=${email}`
+		return this._httpClient.put(
+			`${this._backEndUrl}/auth/password-reset-token`,
+			{},
+			{
+				params: {
+					email: email,
+				},
+			}
 		);
 	}
 
@@ -127,8 +133,14 @@ export class AuthService {
 	 * Resend confirmation Email
 	 */
 	resendConfirmationEmail(email: string): Observable<any> {
-		return this._httpClient.get(
-			`${this._backEndUrl}/auth/resend-confirmation-email?email=${email}`
+		return this._httpClient.put(
+			`${this._backEndUrl}/auth/resend-confirmation-email`,
+			{},
+			{
+				params: {
+					email: email,
+				},
+			}
 		);
 	}
 
@@ -174,8 +186,14 @@ export class AuthService {
 	signOut(): Observable<any> {
 		if (this.refreshTokenId) {
 			this._httpClient
-				.get(
-					`${this._backEndUrl}/auth/logout?refreshTokenId=${this.refreshTokenId}`
+				.put(
+					`${this._backEndUrl}/auth/logout`,
+					{},
+					{
+						params: {
+							refreshTokenId: this.refreshToken,
+						},
+					}
 				)
 				.subscribe()
 				.unsubscribe();

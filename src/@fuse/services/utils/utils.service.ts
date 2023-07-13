@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import { IsActiveMatchOptions } from '@angular/router';
+import { FirmaDiscount } from 'app/core/bkendmodels/models.types';
+import { environment } from 'environments/environment';
 
 @Injectable({
 	providedIn: 'root',
 })
 export class FuseUtilsService {
+	private deviation: number = 10;
 	/**
 	 * Constructor
 	 */
@@ -90,5 +93,54 @@ export class FuseUtilsService {
 			', ' +
 			data.ocrData?.adresaFirma?.value
 		);
+	}
+	sortFunction(a: any, b: any, direction: string) {
+		if (direction === 'asc') return a.localeCompare(b) * 1;
+		return a.localeCompare(b) * -1;
+	}
+	getDetaliiFirmaDiscount(data: FirmaDiscount) {
+		return data.name + ', ' + data.cuiNumber;
+	}
+	logger(info: string, ...args: any[]) {
+		if (environment.production) return;
+		console.log(info, args);
+	}
+	getOptimalCombination(items: any[], targetValue: number): any[] {
+		let closestSum = Infinity;
+		let closestCombination: any[] = [];
+
+		// Generate all combinations
+		const powerSet = this.generatePowerSet(items);
+
+		// For each combination calculate the sum
+		for (let combination of powerSet) {
+			const sum = combination.reduce(
+				(total, item) => total + item.discountValue,
+				0
+			);
+
+			// Check if it's within deviation and closer to target than previous combinations
+			if (
+				Math.abs(targetValue - sum) < Math.abs(targetValue - closestSum) &&
+				Math.abs(sum - targetValue) <= this.deviation
+			) {
+				closestSum = sum;
+				closestCombination = combination;
+			}
+		}
+
+		return closestCombination;
+	}
+
+	private generatePowerSet(array: any[]): any[][] {
+		const powerSet = [[]];
+
+		for (let element of array) {
+			for (let i = 0, length = powerSet.length; i < length; i++) {
+				powerSet.push([...powerSet[i], element]);
+			}
+		}
+
+		return powerSet;
 	}
 }

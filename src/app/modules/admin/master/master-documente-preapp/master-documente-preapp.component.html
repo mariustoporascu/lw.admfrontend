@@ -1,0 +1,263 @@
+<div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden">
+	<mat-drawer-container class="flex-auto h-full bg-card dark:bg-transparent">
+		<!-- Drawer -->
+		<mat-drawer
+			class="w-full sm:w-200 dark:bg-gray-900"
+			[mode]="drawerMode"
+			[opened]="false"
+			[position]="'end'"
+			[disableClose]="true"
+			#matDrawer
+		>
+			<router-outlet></router-outlet>
+		</mat-drawer>
+		<mat-drawer-content class="flex flex-col bg-gray-100 dark:bg-transparent">
+			<div class="flex flex-col flex-auto w-full">
+				<div class="flex flex-wrap w-full max-w-screen-xl mx-auto p-6 md:p-8">
+					<!-- Title and action buttons -->
+					<div class="flex items-center justify-between w-full">
+						<div>
+							<h2 class="text-3xl font-semibold tracking-tight leading-8">
+								Documente in asteptare de pre aprobare
+							</h2>
+							<div class="font-medium tracking-tight text-secondary">
+								Situatia contului tau la {{ getCurrentDate() }}
+							</div>
+						</div>
+					</div>
+
+					<div class="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full mt-8">
+						<!-- Recent transactions table -->
+						<div
+							class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden"
+						>
+							<mat-form-field class="ml-10 mr-10 mt-5">
+								<mat-label>Filtrare</mat-label>
+								<input
+									matInput
+									(keyup)="applyFilter($event)"
+									placeholder="Filtrare dupa toate coloanele..."
+									#input
+								/>
+							</mat-form-field>
+							<div class="overflow-x-auto mx-6">
+								<table
+									class="w-full bg-transparent"
+									mat-table
+									matSort
+									[dataSource]="recentTransactionsDataSource"
+									[trackBy]="trackByFn"
+									#recentTransactionsTable
+								>
+									<!-- Transaction ID -->
+									<ng-container matColumnDef="firmaInfo">
+										<th mat-header-cell mat-sort-header *matHeaderCellDef>
+											Detalii firma discount
+										</th>
+										<td mat-cell *matCellDef="let transaction">
+											<div
+												class="w-30 truncate"
+												[matTooltip]="getDetaliiFirmaDiscount(transaction.firmaDiscountId)"
+											>
+												{{ getDetaliiFirmaDiscount(transaction.firmaDiscountId) }}
+											</div>
+										</td>
+									</ng-container>
+
+									<!-- Bussines Details -->
+									<ng-container matColumnDef="extractedBusinessData">
+										<th mat-header-cell mat-sort-header *matHeaderCellDef>
+											Punct de lucru
+										</th>
+										<td mat-cell *matCellDef="let transaction">
+											<div
+												class="w-50 truncate"
+												[matTooltip]="transaction.ocrData?.adresaFirma?.value"
+											>
+												{{ transaction.ocrData?.adresaFirma?.value }}
+											</div>
+										</td>
+									</ng-container>
+
+									<!-- Date -->
+									<ng-container matColumnDef="uploaded">
+										<th mat-header-cell *matHeaderCellDef>
+											<div class="flex flex-row">
+												<div mat-sort-header class="flex">Data</div>
+												<mat-datepicker-toggle
+													matIconSuffix
+													[for]="picker"
+												></mat-datepicker-toggle>
+												<mat-date-range-picker #picker></mat-date-range-picker>
+												<mat-date-range-input [rangePicker]="picker" class="hidden">
+													<input matStartDate placeholder="Start date" #dateStart />
+													<input
+														matEndDate
+														placeholder="End date"
+														#dateEnd
+														(dateChange)="datePicked(dateStart, dateEnd)"
+													/>
+												</mat-date-range-input>
+											</div>
+										</th>
+										<td mat-cell *matCellDef="let transaction">
+											<span class="pr-6 whitespace-nowrap">
+												{{ transaction.uploaded | date : "dd MMM y" : "" : "ro" }}
+											</span>
+										</td>
+									</ng-container>
+
+									<!-- Amount -->
+									<ng-container matColumnDef="total">
+										<th mat-header-cell mat-sort-header *matHeaderCellDef>Total</th>
+										<td mat-cell *matCellDef="let transaction">
+											<span class="pr-6 font-medium whitespace-nowrap">
+												{{ transaction.ocrData?.total?.value | currency : "RON " }}
+											</span>
+										</td>
+									</ng-container>
+
+									<!-- Discount Amount -->
+									<ng-container matColumnDef="discountValue">
+										<th mat-header-cell mat-sort-header *matHeaderCellDef>
+											Valoare discount
+										</th>
+										<td mat-cell *matCellDef="let transaction" class="text-center">
+											<span class="pr-6 font-medium whitespace-nowrap">
+												{{ transaction.discountValue | currency : "LWP " }}
+											</span>
+										</td>
+									</ng-container>
+
+									<!-- User Details -->
+									<ng-container matColumnDef="userEmail">
+										<th mat-header-cell mat-sort-header *matHeaderCellDef>
+											Detalii user
+										</th>
+										<td mat-cell *matCellDef="let transaction">
+											<span class="pr-6 whitespace-wrap">
+												{{ transaction.conexiuniConturi?.profilCont?.email ?? "N/A" }}
+											</span>
+										</td>
+									</ng-container>
+									<!-- Status -->
+									<ng-container matColumnDef="actions">
+										<th mat-header-cell *matHeaderCellDef>
+											<div class="flex flex-row justify-center">
+												<mat-icon
+													[svgIcon]="'heroicons_outline:ellipsis-horizontal'"
+												></mat-icon>
+											</div>
+										</th>
+										<td mat-cell *matCellDef="let transaction">
+											<div class="flex flex-row justify-center">
+												<!-- Accept -->
+												<button
+													mat-icon-button
+													[class.bg-green-300]="true"
+													[class.scale-75]="true"
+													(click)="approveRow(transaction)"
+													[disabled]="disabled"
+													title="Pre-Aproba"
+												>
+													<mat-icon
+														[svgIcon]="'heroicons_outline:check-circle'"
+														[class.text-black]="true"
+													></mat-icon>
+												</button>
+												<!-- Reject button -->
+												<button
+													mat-icon-button
+													[class.bg-red-300]="true"
+													[class.scale-75]="true"
+													[disabled]="disabled"
+													(click)="openDialog(transaction)"
+													title="Respinge"
+												>
+													<mat-icon
+														[svgIcon]="'heroicons_outline:x-circle'"
+														[class.text-black]="true"
+													></mat-icon>
+												</button>
+												<a
+													mat-icon-button
+													[class.bg-purple-300]="true"
+													title="Vezi documentul"
+													[routerLink]="[
+														'./view-document/',
+														transaction.fisiereDocumente?.identifier
+													]"
+													[class.scale-75]="true"
+												>
+													<mat-icon
+														[svgIcon]="'heroicons_outline:eye'"
+														[class.text-black]="true"
+													></mat-icon>
+												</a>
+											</div>
+										</td>
+									</ng-container>
+
+									<tr
+										mat-header-row
+										*matHeaderRowDef="recentTransactionsTableColumns"
+									></tr>
+									<tr
+										mat-row
+										*matRowDef="let row; columns: recentTransactionsTableColumns"
+									></tr>
+									<tr class="mat-row" *matNoDataRow>
+										<td class="mat-cell" colspan="4">
+											Nu am gasit date din filtrarea dupa "{{ input.value }}"
+										</td>
+									</tr>
+								</table>
+								<div class="flex flex-row justify-between items-center">
+									<mat-paginator
+										#recentTransactionsTablePagination
+										[pageSizeOptions]="[5, 10, 25, 100]"
+										aria-label="Select page"
+									></mat-paginator>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Alert -->
+					<fuse-alert
+						class="ml-8 mt-8 mr-8"
+						*ngIf="showAlert"
+						[appearance]="'outline'"
+						[showIcon]="false"
+						[type]="alert.type"
+						[dismissible]="true"
+					>
+						{{ alert.message }}
+					</fuse-alert>
+				</div>
+			</div>
+		</mat-drawer-content>
+	</mat-drawer-container>
+</div>
+<ng-template #confirmDialogView>
+	<mat-dialog-content>
+		<h3 class="text-black text-lg">Esti sigur ca vrei sa respingi documentul?</h3>
+	</mat-dialog-content>
+	<mat-dialog-actions class="flex flex-auto justify-end">
+		<button
+			mat-icon-button
+			(click)="confirmDialog()"
+			[disabled]="disabled"
+			[class.bg-red-400]="true"
+		>
+			<span class="text-md">Da</span>
+		</button>
+		<button
+			mat-icon-button
+			(click)="closeDialog()"
+			[disabled]="disabled"
+			[class.bg-green-400]="true"
+		>
+			<span class="text-md">Nu</span>
+		</button>
+	</mat-dialog-actions>
+</ng-template>

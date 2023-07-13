@@ -8,7 +8,7 @@ import {
 	ViewChild,
 	ViewEncapsulation,
 } from '@angular/core';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subject, catchError, of, switchMap, takeUntil, tap } from 'rxjs';
 import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.service';
@@ -20,6 +20,7 @@ import { FuseAlertType } from '@fuse/components/alert';
 import { MatDrawer } from '@angular/material/sidenav';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
 	selector: 'user-operations',
@@ -55,10 +56,12 @@ export class UserOperationsComponent
 		message: '',
 	};
 	showAlert: boolean = false;
+	disabled: boolean = false;
 	transferIds: string[] = [];
 
 	@ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
 	drawerMode: 'side' | 'over';
+	userType: string;
 
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -70,6 +73,7 @@ export class UserOperationsComponent
 		private _userFunctDataService: UserFunctDataService,
 		private _utilsService: FuseUtilsService,
 		private _cdr: ChangeDetectorRef,
+		private _userService: UserService,
 		private _router: Router,
 		private _fuseMediaWatcherService: FuseMediaWatcherService
 	) {}
@@ -89,6 +93,12 @@ export class UserOperationsComponent
 			let dataStr = JSON.stringify(data).toLowerCase();
 			return dataStr.includes(filter);
 		};
+		// Get the user data
+		this._userService.user$.subscribe((user) => {
+			// Create the form
+			this.userType = user.type;
+			this._cdr.markForCheck();
+		});
 		// Get the data
 		this._userFunctDataService.operatiuniData$
 			.pipe(takeUntil(this._unsubscribeAll))
@@ -116,6 +126,18 @@ export class UserOperationsComponent
 	ngAfterViewInit(): void {
 		// Make the data source sortable
 		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
+		this.recentTransactionsDataSource.sortingDataAccessor = (item, property) => {
+			switch (property) {
+				case 'docNumber':
+					return item.ocrData?.docNumber?.value ?? '';
+				case 'extractedBusinessData':
+					return item.ocrData?.adresaFirma?.value ?? '';
+				case 'total':
+					return item.ocrData?.total?.value ?? '';
+				default:
+					return item[property];
+			}
+		};
 		this.recentTransactionsDataSource.paginator =
 			this.recentTransactionsTablePagination;
 	}
@@ -175,7 +197,7 @@ export class UserOperationsComponent
 	applyFilter(event: Event) {
 		const filterValue = (event.target as HTMLInputElement).value;
 		this.recentTransactionsDataSource.filter = filterValue.trim().toLowerCase();
-		this.selection.clear();
+		// this.selection.clear();
 		if (this.recentTransactionsDataSource.paginator) {
 			this.recentTransactionsDataSource.paginator.firstPage();
 		}
@@ -186,20 +208,55 @@ export class UserOperationsComponent
 	/** Whether the number of selected elements matches the total number of rows. */
 	isAllSelected() {
 		const numSelected = this.selection.selected.length;
-		const numRows = this.recentTransactionsDataSource.data.length;
+		const numRows = this.recentTransactionsDataSource.data.filter(
+			(item) => item.status === 1
+		).length;
 		return numSelected === numRows;
 	}
 
 	/** Selects all rows if they are not all selected; otherwise clear selection. */
 	toggleAllRows() {
-		if (this.isAllSelected()) {
+		if (
+			this.isAllSelected() ||
+			(this.selection.selected.length > 0 &&
+				this.recentTransactionsDataSource.filteredData.length === 0)
+		) {
 			this.selection.clear();
 			return;
 		}
 
-		this.selection.select(...this.recentTransactionsDataSource.filteredData);
+		this.selection.select(
+			...this.recentTransactionsDataSource.filteredData.filter(
+				(item) => item.status === 1
+			)
+		);
 	}
 
+	/** Select by filtering rows with sum of discount value */
+	selectByDiscountValue(event: Event) {
+		this.selection.clear();
+		const filterValue = (event.target as HTMLInputElement).value;
+		if (
+			filterValue >
+			this.recentTransactionsDataSource.data.reduce(
+				(acc, item) => acc + item.discountValue,
+				0
+			)
+		) {
+			this.selection.select(
+				...this.recentTransactionsDataSource.filteredData.filter(
+					(item) => item.status === 1
+				)
+			);
+			return;
+		}
+		this.selection.select(
+			...this._utilsService.getOptimalCombination(
+				this.recentTransactionsDataSource.data.filter((item) => item.status === 1),
+				parseInt(filterValue)
+			)
+		);
+	}
 	/** The label for the checkbox on the passed row */
 	checkboxLabel(row?: Documente): string {
 		if (!row) {
@@ -217,7 +274,7 @@ export class UserOperationsComponent
 		this.selection.selected.forEach((item: any) => {
 			total += item.discountValue;
 		});
-		return total;
+		return total.toFixed(2);
 	}
 	// transfer guid 3a242ee5-111b-48e9-8b7d-d7592ddb23ba
 	makeTransferSelected() {
@@ -250,7 +307,7 @@ export class UserOperationsComponent
 	) {
 		// Hide the alert
 		this.showAlert = false;
-
+		this.disabled = true;
 		this._userFunctDataService
 			.addTranzaction({
 				documenteIds,
@@ -285,12 +342,14 @@ export class UserOperationsComponent
 					.getApprovedDocuments()
 					.subscribe()
 					.add(() => {
+						this.disabled = false;
 						this.showAlert = true;
 						this.selection.clear();
 						this._cdr.markForCheck();
 					});
 			});
 	}
+
 	getDetaliiBusiness(data: any): string {
 		return this._utilsService.getDetaliiBusiness(data);
 	}

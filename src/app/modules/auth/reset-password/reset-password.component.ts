@@ -10,6 +10,7 @@ import { FuseValidators } from '@fuse/validators';
 import { FuseAlertType } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
 import { ActivatedRoute } from '@angular/router';
+import { FuseUtilsService } from '@fuse/services/utils';
 
 @Component({
 	selector: 'auth-reset-password',
@@ -35,7 +36,8 @@ export class AuthResetPasswordComponent implements OnInit {
 	constructor(
 		private route: ActivatedRoute,
 		private _authService: AuthService,
-		private _formBuilder: UntypedFormBuilder
+		private _formBuilder: UntypedFormBuilder,
+		private _utilsService: FuseUtilsService
 	) {}
 
 	// -----------------------------------------------------------------------------------------------------
@@ -110,7 +112,7 @@ export class AuthResetPasswordComponent implements OnInit {
 					};
 				},
 				error: (err) => {
-					console.log(err);
+					this._utilsService.logger('register error', err);
 					this.resetPasswordForm.get('email').setValue(this._email);
 					if (err.error) {
 						this.alert = {
