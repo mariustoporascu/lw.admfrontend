@@ -146,13 +146,14 @@ export class MasterFunctDataService {
 			}
 		);
 	}
-	updateFirmaStatus(firmaId: string): Observable<any> {
+	updateFirmaStatus(firmaId: string, isSecondary: boolean): Observable<any> {
 		return this._httpClient.put(
 			`${this._backEndUrl}/masteradmin/updateFirmaStatus`,
 			{},
 			{
 				params: {
 					firmaId,
+					isSecondary,
 				},
 			}
 		);

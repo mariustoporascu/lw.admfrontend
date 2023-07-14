@@ -41,6 +41,7 @@ export interface FirmaDiscount {
 	discountPercent: number;
 	totalGivenDiscount: number;
 	isActive: boolean;
+	isActiveSecondary: boolean;
 	conexiuniConturi?: ConexiuniConturi[];
 	documente?: Documente[];
 }

@@ -49,7 +49,7 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 		'actions',
 	];
 	selection = new SelectionModel<Documente>(true, []);
-
+	userCheckboxChecked: boolean = false;
 	alert: { type: FuseAlertType; message: string } = {
 		type: 'success',
 		message: '',
@@ -174,6 +174,20 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 	getLastMonth() {
 		return this._utilsService.getLastMonth();
 	}
+	toggleUserCheckbox() {
+		this.userCheckboxChecked = !this.userCheckboxChecked;
+		if (this.userCheckboxChecked) {
+			this.recentTransactionsDataSource.data = this.items.filter((item) => {
+				return item.conexiuniConturi?.hybridId;
+			});
+		} else {
+			this.recentTransactionsDataSource.data = this.items;
+		}
+		this.selection.clear();
+		if (this.recentTransactionsDataSource.paginator) {
+			this.recentTransactionsDataSource.paginator.firstPage();
+		}
+	}
 	applyFilter(event: Event) {
 		const filterValue = (event.target as HTMLInputElement).value;
 		this.recentTransactionsDataSource.filter = filterValue.trim().toLowerCase();
@@ -247,6 +261,9 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 		tempEndDate.setHours(23, 59, 59, 999);
 		let endDate = tempEndDate.getTime();
 		this.recentTransactionsDataSource.data = this.items.filter((item) => {
+			if (this.userCheckboxChecked && !item.conexiuniConturi?.hybridId) {
+				return false;
+			}
 			var currDate = new Date(item.uploaded).getTime();
 			return currDate >= startDate && currDate <= endDate;
 		});

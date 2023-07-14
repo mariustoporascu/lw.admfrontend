@@ -152,8 +152,16 @@
 
 									<!-- User Details -->
 									<ng-container matColumnDef="userEmail">
-										<th mat-header-cell mat-sort-header *matHeaderCellDef>
-											Detalii user
+										<th mat-header-cell *matHeaderCellDef>
+											<div class="flex flex-row">
+												<div mat-sort-header class="flex">Detalii user</div>
+												<mat-checkbox
+													(change)="$event ? toggleUserCheckbox() : null"
+													[checked]="userCheckboxChecked"
+													[aria-label]="checkboxLabel()"
+												>
+												</mat-checkbox>
+											</div>
 										</th>
 										<td mat-cell *matCellDef="let transaction">
 											<span class="pr-6 whitespace-wrap">

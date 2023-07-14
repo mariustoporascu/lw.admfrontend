@@ -45,6 +45,7 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 		'mainContactEmail',
 		'mainContactPhone',
 		'isActive',
+		'isActiveSecondary',
 		'actions',
 	];
 
@@ -168,20 +169,20 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	// transfer guid
-	rejectRow(row: FirmaDiscount) {
-		this.sendRequestToServer(row.id);
+	rejectRow(row: FirmaDiscount, isSecondary: boolean = false) {
+		this.sendRequestToServer(row.id, isSecondary);
 	}
-	approveRow(row: FirmaDiscount) {
-		this.sendRequestToServer(row.id);
+	approveRow(row: FirmaDiscount, isSecondary: boolean = false) {
+		this.sendRequestToServer(row.id, isSecondary);
 	}
 
-	sendRequestToServer(firmaId: string) {
+	sendRequestToServer(firmaId: string, isSecondary: boolean) {
 		// Hide the alert
 		this.showAlert = false;
 		this.disabled = true;
 		this._utilsService.logger('firmaId', firmaId);
 		this._masterFunctDataService
-			.updateFirmaStatus(firmaId)
+			.updateFirmaStatus(firmaId, isSecondary)
 			.subscribe({
 				next: (data) => {
 					this._utilsService.logger('updateFirmaStatus', data);
@@ -217,14 +218,16 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 	closeDialog() {
 		this._dialog.closeAll();
 	}
-	openDialog(row?: FirmaDiscount) {
+	openDialog(row?: FirmaDiscount, isSecondary: boolean = false) {
 		this.dialogRow = row;
+		this.isSecondary = isSecondary;
 		this._dialog.open(this.confirmDialogView, {
 			disableClose: true,
 		});
 	}
 	dialogRow: FirmaDiscount;
+	isSecondary: boolean = false;
 	confirmDialog() {
-		this.rejectRow(this.dialogRow);
+		this.rejectRow(this.dialogRow, this.isSecondary);
 	}
 }
