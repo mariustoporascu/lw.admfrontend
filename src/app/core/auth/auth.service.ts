@@ -195,8 +195,7 @@ export class AuthService {
 						},
 					}
 				)
-				.subscribe()
-				.unsubscribe();
+				.subscribe();
 		}
 		// Remove the access token from the local storage
 		localStorage.removeItem('accessToken');

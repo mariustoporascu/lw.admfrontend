@@ -132,6 +132,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
 				icon: 'heroicons_outline:document-duplicate',
 				link: '/firma-admin/docsapproval',
 			},
+			{
+				id: 'utilities.alldocuments',
+				title: 'Toate documentele',
+				type: 'basic',
+				icon: 'heroicons_outline:clipboard-document-list',
+				link: '/firma-admin/alldocuments',
+			},
 		],
 	},
 	// user-admin
