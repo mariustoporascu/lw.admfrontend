@@ -65,7 +65,21 @@ export class FirmaFunctDataService {
 	 */
 	getDocumentsWFP(): Observable<Documente[]> {
 		return this._httpClient
-			.get<Documente[]>(`${this._backEndUrl}/FirmaDiscount/getAllDocumenteWFP`)
+			.get<Documente[]>(
+				`${this._backEndUrl}/FirmaDiscount/getAllDocumentsForApproval`
+			)
+			.pipe(
+				tap((response: any) => {
+					this._docsData.next(response ?? []);
+				})
+			);
+	}
+	/**
+	 * Get approved
+	 */
+	getAllDocuments(): Observable<Documente[]> {
+		return this._httpClient
+			.get<Documente[]>(`${this._backEndUrl}/FirmaDiscount/getAllDocuments`)
 			.pipe(
 				tap((response: any) => {
 					this._docsData.next(response ?? []);

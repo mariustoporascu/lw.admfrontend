@@ -106,6 +106,13 @@ export const appRoutes: Route[] = [
 					).then((m) => m.FirmaDocsWFPModule),
 			},
 			{
+				path: 'alldocuments',
+				loadChildren: () =>
+					import('app/modules/admin/firma/firma-alldocs/firma-alldocs.module').then(
+						(m) => m.FirmaAllDocsModule
+					),
+			},
+			{
 				path: 'internalusrs',
 				loadChildren: () =>
 					import('app/modules/landing/example/example.module').then(
