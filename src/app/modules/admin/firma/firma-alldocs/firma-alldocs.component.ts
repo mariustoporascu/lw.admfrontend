@@ -23,23 +23,21 @@ import { FirmaFunctDataService } from 'app/core/firma-funct-data/firma-funct-dat
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
-	selector: 'firma-docsWFP',
-	templateUrl: './firma-docsWFP.component.html',
+	selector: 'firma-alldocs',
+	templateUrl: './firma-alldocs.component.html',
 	encapsulation: ViewEncapsulation.None,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
+export class FirmaAllDocsComponent implements OnInit, AfterViewInit, OnDestroy {
 	@ViewChild('recentTransactionsTable', { read: MatSort })
 	recentTransactionsTableMatSort: MatSort;
 	@ViewChild('recentTransactionsTablePagination')
 	recentTransactionsTablePagination: MatPaginator;
-	@ViewChild('confirmDialogView', { static: true }) confirmDialogView: any;
 
 	items: Documente[];
 	recentTransactionsDataSource: MatTableDataSource<any> =
 		new MatTableDataSource();
 	recentTransactionsTableColumns: string[] = [
-		'select',
 		'docNumber',
 		'extractedBusinessData',
 		'uploaded',
@@ -48,15 +46,12 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 		'userEmail',
 		'actions',
 	];
-	selection = new SelectionModel<Documente>(true, []);
 	userCheckboxChecked: boolean = false;
 	alert: { type: FuseAlertType; message: string } = {
 		type: 'success',
 		message: '',
 	};
 	showAlert: boolean = false;
-	disabled = false;
-	transferIds: string[] = [];
 
 	@ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
 	drawerMode: 'side' | 'over';
@@ -72,7 +67,6 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 		private _firmaFunctDataService: FirmaFunctDataService,
 		private _cdr: ChangeDetectorRef,
 		private _router: Router,
-		private _dialog: MatDialog,
 		private _fuseMediaWatcherService: FuseMediaWatcherService
 	) {}
 
@@ -183,7 +177,6 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 		} else {
 			this.recentTransactionsDataSource.data = this.items;
 		}
-		this.selection.clear();
 		if (this.recentTransactionsDataSource.paginator) {
 			this.recentTransactionsDataSource.paginator.firstPage();
 		}
@@ -191,7 +184,6 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 	applyFilter(event: Event) {
 		const filterValue = (event.target as HTMLInputElement).value;
 		this.recentTransactionsDataSource.filter = filterValue.trim().toLowerCase();
-		this.selection.clear();
 		if (this.recentTransactionsDataSource.paginator) {
 			this.recentTransactionsDataSource.paginator.firstPage();
 		}
@@ -199,62 +191,7 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 	splitByCapitalLetters(str: string): string {
 		return this._utilsService.splitByCapitalLetters(str);
 	}
-	/** Whether the number of selected elements matches the total number of rows. */
-	isAllSelected() {
-		const numSelected = this.selection.selected.length;
-		const numRows = this.recentTransactionsDataSource.data.length;
-		return numSelected === numRows;
-	}
 
-	/** Selects all rows if they are not all selected; otherwise clear selection. */
-	toggleAllRows() {
-		if (this.isAllSelected()) {
-			this.selection.clear();
-			return;
-		}
-
-		this.selection.select(...this.recentTransactionsDataSource.filteredData);
-	}
-
-	/** The label for the checkbox on the passed row */
-	checkboxLabel(row?: Documente): string {
-		if (!row) {
-			return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
-		}
-		return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${
-			this.recentTransactionsDataSource.data.indexOf(row) + 1
-		}`;
-	}
-	countSelected() {
-		return this.selection.selected.length;
-	}
-
-	rejectSelected() {
-		this.sendRequestToServer(
-			[...this.selection.selected.map((item) => item.id)],
-			2
-		);
-	}
-	approveSelected() {
-		this.sendRequestToServer(
-			[...this.selection.selected.map((item) => item.id)],
-			1
-		);
-	}
-	// transfer guid
-	rejectRow(row: Documente) {
-		this.sendRequestToServer([row.id], 2);
-	}
-	approveRow(row: Documente) {
-		this.sendRequestToServer([row.id], 1);
-	}
-	countTotal() {
-		let total = 0;
-		this.selection.selected.forEach((item: any) => {
-			total += item.discountValue;
-		});
-		return total.toFixed(2);
-	}
 	datePicked(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
 		let startDate = new Date(dateRangeStart.value).getTime();
 		let tempEndDate = new Date(dateRangeEnd.value);
@@ -267,75 +204,8 @@ export class FirmaDocsWFPComponent implements OnInit, AfterViewInit, OnDestroy {
 			var currDate = new Date(item.uploaded).getTime();
 			return currDate >= startDate && currDate <= endDate;
 		});
-		this.selection.clear();
 		if (this.recentTransactionsDataSource.paginator) {
 			this.recentTransactionsDataSource.paginator.firstPage();
-		}
-	}
-	sendRequestToServer(documenteIds: string[], status: number) {
-		// Hide the alert
-		this.showAlert = false;
-		this.disabled = true;
-		this._firmaFunctDataService
-			.updateDocStatus({
-				documenteIds,
-				status,
-			})
-			.subscribe({
-				next: () => {
-					this.alert = {
-						type: 'success',
-						message: 'Operatiunea a fost efectuata cu succes.',
-					};
-				},
-				error: (err) => {
-					if (err.error) {
-						const error = err.message;
-						// Set the alert
-						this.alert = {
-							type: 'error',
-							message: `${error.succes} operatiuni cu succes, ${error.failed} esuate.`,
-						};
-					} else {
-						this.alert = {
-							type: 'warning',
-							message: 'Eroare pe server. Echipa tehnica a fost notificata.',
-						};
-					}
-				},
-			})
-			.add(() => {
-				this._firmaFunctDataService
-					.getDocumentsWFP()
-					.subscribe()
-					.add(() => {
-						this.showAlert = true;
-						this.disabled = false;
-						if (this.dialogRow) {
-							this.dialogRow = null;
-						} else {
-							this.selection.clear();
-						}
-						this.closeDialog();
-						this._cdr.markForCheck();
-					});
-			});
-	}
-	closeDialog() {
-		this._dialog.closeAll();
-	}
-	openDialog(row?: Documente) {
-		this.dialogRow = row;
-		this._dialog.open(this.confirmDialogView, {
-			disableClose: true,
-		});
-	}
-	dialogRow: Documente;
-	confirmDialog() {
-		if (this.dialogRow) {
-			this.rejectRow(this.dialogRow);
-		} else {
-			this.rejectSelected();
 		}
 	}
 }

@@ -30,7 +30,7 @@ export class UserDashComponent implements OnInit, AfterViewInit, OnDestroy {
 		datasets: [
 			{
 				data: [],
-				label: 'Statistica puncte cumulate',
+				label: 'Statistica puncte acumulate',
 				backgroundColor: '#94ff97',
 				borderColor: '#519154',
 			},

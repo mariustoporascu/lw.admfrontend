@@ -47,6 +47,8 @@
 									matSort
 									[dataSource]="recentTransactionsDataSource"
 									[trackBy]="trackByFn"
+									matSortActive="uploaded"
+									matSortDirection="desc"
 									#recentTransactionsTable
 								>
 									<!-- Transaction ID -->
@@ -152,8 +154,8 @@
 													[svgIcon]="'heroicons_solid:information-circle'"
 												></mat-icon>
 												<mat-icon
-													[class.text-red-600]="[2, 6].includes(transaction.status)"
-													*ngIf="[2, 6].includes(transaction.status)"
+													[class.text-red-600]="[2, 6, 9].includes(transaction.status)"
+													*ngIf="[2, 6, 9].includes(transaction.status)"
 													class="icon-size-5"
 													[svgIcon]="'heroicons_solid:x-circle'"
 												></mat-icon>
@@ -177,7 +179,7 @@
 												></mat-icon>
 												<div
 													[class.text-gray-600]="transaction.status === 0"
-													[class.text-red-600]="[2, 6].includes(transaction.status)"
+													[class.text-red-600]="[2, 6, 9].includes(transaction.status)"
 													[class.text-green-600]="transaction.status === 1"
 													[class.text-blue-600]="[3, 4].includes(transaction.status)"
 													[class.text-purple-600]="[7, 8].includes(transaction.status)"
