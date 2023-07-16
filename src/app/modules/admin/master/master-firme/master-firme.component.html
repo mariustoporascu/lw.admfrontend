@@ -52,7 +52,7 @@
 									<ng-container matColumnDef="name">
 										<th mat-header-cell mat-sort-header *matHeaderCellDef>Nume firma</th>
 										<td mat-cell *matCellDef="let transaction">
-											<div class="w-40 truncate" [matTooltip]="transaction.name">
+											<div class="w-30 truncate" [matTooltip]="transaction.name">
 												{{ transaction.name }}
 											</div>
 										</td>
@@ -60,7 +60,7 @@
 									<ng-container matColumnDef="cuiNumber">
 										<th mat-header-cell mat-sort-header *matHeaderCellDef>Cui firma</th>
 										<td mat-cell *matCellDef="let transaction">
-											<div class="w-40 truncate" [matTooltip]="transaction.cuiNumber">
+											<div class="w-30 truncate" [matTooltip]="transaction.cuiNumber">
 												{{ transaction.cuiNumber }}
 											</div>
 										</td>
@@ -71,7 +71,7 @@
 										</th>
 										<td mat-cell *matCellDef="let transaction">
 											<div
-												class="w-40 truncate"
+												class="w-30 truncate"
 												[matTooltip]="transaction.mainContactName"
 											>
 												{{ transaction.mainContactName }}
@@ -84,7 +84,7 @@
 										</th>
 										<td mat-cell *matCellDef="let transaction">
 											<div
-												class="w-40 truncate"
+												class="w-30 truncate"
 												[matTooltip]="transaction.mainContactEmail"
 											>
 												{{ transaction.mainContactEmail }}
@@ -97,7 +97,7 @@
 										</th>
 										<td mat-cell *matCellDef="let transaction">
 											<div
-												class="w-40 truncate"
+												class="w-30 truncate"
 												[matTooltip]="transaction.mainContactPhone"
 											>
 												{{ transaction.mainContactPhone }}
@@ -126,7 +126,17 @@
 											</span>
 										</td>
 									</ng-container>
-
+									<!-- Discount Amount -->
+									<ng-container matColumnDef="isActiveSecondary">
+										<th mat-header-cell mat-sort-header *matHeaderCellDef>
+											Activ pentru useri?
+										</th>
+										<td mat-cell *matCellDef="let transaction" class="text-center">
+											<span class="pr-6 font-medium whitespace-nowrap">
+												{{ transaction.isActiveSecondary ? "Da" : "Nu" }}
+											</span>
+										</td>
+									</ng-container>
 									<!-- Status -->
 									<ng-container matColumnDef="actions">
 										<th mat-header-cell *matHeaderCellDef>
@@ -146,7 +156,7 @@
 													[class.scale-75]="true"
 													(click)="approveRow(transaction)"
 													[disabled]="disabled"
-													title="Activeaza firma"
+													title="Activeaza contract firma"
 												>
 													<mat-icon
 														[svgIcon]="'heroicons_outline:play-circle'"
@@ -161,13 +171,14 @@
 													[class.scale-75]="true"
 													(click)="openDialog(transaction)"
 													[disabled]="disabled"
-													title="Dezactiveaza firma"
+													title="Dezactiveaza contract firma"
 												>
 													<mat-icon
 														[svgIcon]="'heroicons_outline:stop-circle'"
 														[class.text-black]="true"
 													></mat-icon>
 												</button>
+
 												<a
 													mat-icon-button
 													[class.bg-purple-300]="true"
@@ -180,6 +191,36 @@
 														[class.text-black]="true"
 													></mat-icon>
 												</a>
+												<!-- Accept -->
+												<button
+													*ngIf="transaction.isActiveSecondary === false"
+													mat-icon-button
+													[class.bg-blue-300]="true"
+													[class.scale-75]="true"
+													(click)="approveRow(transaction, true)"
+													[disabled]="disabled"
+													title="Activeaza pentru useri"
+												>
+													<mat-icon
+														[svgIcon]="'heroicons_outline:play-circle'"
+														[class.text-black]="true"
+													></mat-icon>
+												</button>
+												<!-- Reject button -->
+												<button
+													*ngIf="transaction.isActiveSecondary === true"
+													mat-icon-button
+													[class.bg-orange-300]="true"
+													[class.scale-75]="true"
+													(click)="openDialog(transaction, true)"
+													[disabled]="disabled"
+													title="Dezactiveaza pentru useri"
+												>
+													<mat-icon
+														[svgIcon]="'heroicons_outline:stop-circle'"
+														[class.text-black]="true"
+													></mat-icon>
+												</button>
 											</div>
 										</td>
 									</ng-container>

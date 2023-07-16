@@ -8,44 +8,44 @@ import {
 	ViewChild,
 	ViewEncapsulation,
 } from '@angular/core';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Subject, catchError, of, switchMap, takeUntil } from 'rxjs';
+import { Subject, catchError, of, switchMap, takeUntil, tap } from 'rxjs';
+import { UserFunctDataService } from 'app/core/user-funct-data/user-funct-data.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { FuseUtilsService } from '@fuse/services/utils';
-import { FirmaDiscount } from 'app/core/bkendmodels/models.types';
+import { Documente } from 'app/core/bkendmodels/models.types';
+import { SelectionModel } from '@angular/cdk/collections';
 import { FuseAlertType } from '@fuse/components/alert';
 import { MatDrawer } from '@angular/material/sidenav';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { MasterFunctDataService } from 'app/core/master-funct-data/master-funct-data.service';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
-	selector: 'master-firme',
-	templateUrl: './master-firme.component.html',
+	selector: 'user-documents',
+	templateUrl: './user-documents.component.html',
 	encapsulation: ViewEncapsulation.None,
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
+export class UserOperationsComponent
+	implements OnInit, AfterViewInit, OnDestroy
+{
 	@ViewChild('recentTransactionsTable', { read: MatSort })
 	recentTransactionsTableMatSort: MatSort;
 	@ViewChild('recentTransactionsTablePagination')
 	recentTransactionsTablePagination: MatPaginator;
-	@ViewChild('confirmDialogView', { static: true }) confirmDialogView: any;
+	items: Documente[];
 
-	items: FirmaDiscount[];
 	recentTransactionsDataSource: MatTableDataSource<any> =
 		new MatTableDataSource();
 	recentTransactionsTableColumns: string[] = [
-		'name',
-		'cuiNumber',
-		'discountPercent',
-		'mainContactName',
-		'mainContactEmail',
-		'mainContactPhone',
-		'isActive',
-		'isActiveSecondary',
+		'docNumber',
+		'extractedBusinessData',
+		'uploaded',
+		'total',
+		'discountValue',
+		'statusName',
 		'actions',
 	];
 
@@ -55,8 +55,10 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 	};
 	showAlert: boolean = false;
 	disabled: boolean = false;
+
 	@ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
 	drawerMode: 'side' | 'over';
+	userType: string;
 
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -65,11 +67,11 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 	 */
 	constructor(
 		private _activatedRoute: ActivatedRoute,
+		private _userFunctDataService: UserFunctDataService,
 		private _utilsService: FuseUtilsService,
-		private _masterFunctDataService: MasterFunctDataService,
 		private _cdr: ChangeDetectorRef,
+		private _userService: UserService,
 		private _router: Router,
-		private _dialog: MatDialog,
 		private _fuseMediaWatcherService: FuseMediaWatcherService
 	) {}
 
@@ -82,14 +84,20 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 	 */
 	ngOnInit(): void {
 		this.recentTransactionsDataSource.filterPredicate = (
-			data: FirmaDiscount,
+			data: Documente,
 			filter: string
 		) => {
 			let dataStr = JSON.stringify(data).toLowerCase();
 			return dataStr.includes(filter);
 		};
+		// Get the user data
+		this._userService.user$.subscribe((user) => {
+			// Create the form
+			this.userType = user.type;
+			this._cdr.markForCheck();
+		});
 		// Get the data
-		this._masterFunctDataService.firmeData$
+		this._userFunctDataService.documentsData$
 			.pipe(takeUntil(this._unsubscribeAll))
 			.subscribe((data) => {
 				// Store the table data
@@ -115,6 +123,18 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 	ngAfterViewInit(): void {
 		// Make the data source sortable
 		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
+		this.recentTransactionsDataSource.sortingDataAccessor = (item, property) => {
+			switch (property) {
+				case 'docNumber':
+					return item.ocrData?.docNumber?.value ?? '';
+				case 'extractedBusinessData':
+					return item.ocrData?.adresaFirma?.value ?? '';
+				case 'total':
+					return item.ocrData?.total?.value ?? '';
+				default:
+					return item[property];
+			}
+		};
 		this.recentTransactionsDataSource.paginator =
 			this.recentTransactionsTablePagination;
 	}
@@ -141,7 +161,20 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 	trackByFn(index: number, item: any): any {
 		return item.id || index;
 	}
+	datePicked(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
+		let startDate = new Date(dateRangeStart.value).getTime();
+		let tempEndDate = new Date(dateRangeEnd.value);
+		tempEndDate.setHours(23, 59, 59, 999);
+		let endDate = tempEndDate.getTime();
+		this.recentTransactionsDataSource.data = this.items.filter((item) => {
+			var currDate = new Date(item.uploaded).getTime();
+			return currDate >= startDate && currDate <= endDate;
+		});
 
+		if (this.recentTransactionsDataSource.paginator) {
+			this.recentTransactionsDataSource.paginator.firstPage();
+		}
+	}
 	// -----------------------------------------------------------------------------------------------------
 	// @ Private methods
 	// -----------------------------------------------------------------------------------------------------
@@ -160,6 +193,7 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 	applyFilter(event: Event) {
 		const filterValue = (event.target as HTMLInputElement).value;
 		this.recentTransactionsDataSource.filter = filterValue.trim().toLowerCase();
+		// this.selection.clear();
 		if (this.recentTransactionsDataSource.paginator) {
 			this.recentTransactionsDataSource.paginator.firstPage();
 		}
@@ -168,66 +202,7 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 		return this._utilsService.splitByCapitalLetters(str);
 	}
 
-	// transfer guid
-	rejectRow(row: FirmaDiscount, isSecondary: boolean = false) {
-		this.sendRequestToServer(row.id, isSecondary);
-	}
-	approveRow(row: FirmaDiscount, isSecondary: boolean = false) {
-		this.sendRequestToServer(row.id, isSecondary);
-	}
-
-	sendRequestToServer(firmaId: string, isSecondary: boolean) {
-		// Hide the alert
-		this.showAlert = false;
-		this.disabled = true;
-		this._utilsService.logger('firmaId', firmaId);
-		this._masterFunctDataService
-			.updateFirmaStatus(firmaId, isSecondary)
-			.subscribe({
-				next: (data) => {
-					this._utilsService.logger('updateFirmaStatus', data);
-					this.alert = {
-						type: 'success',
-						message: 'Statusul firmei a fost modificat cu succes',
-					};
-					this.showAlert = true;
-				},
-				error: (err) => {
-					this._utilsService.logger('updateFirmaStatus', err);
-					this.alert = {
-						type: 'error',
-						message: 'A intervenit o eroare la modificarea statusului firmei',
-					};
-					this.showAlert = true;
-				},
-			})
-			.add(() => {
-				this._masterFunctDataService
-					.getAllFirme()
-					.subscribe()
-					.add(() => {
-						this.disabled = false;
-						if (this.dialogRow) {
-							this.dialogRow = null;
-							this.closeDialog();
-						}
-						this._cdr.markForCheck();
-					});
-			});
-	}
-	closeDialog() {
-		this._dialog.closeAll();
-	}
-	openDialog(row?: FirmaDiscount, isSecondary: boolean = false) {
-		this.dialogRow = row;
-		this.isSecondary = isSecondary;
-		this._dialog.open(this.confirmDialogView, {
-			disableClose: true,
-		});
-	}
-	dialogRow: FirmaDiscount;
-	isSecondary: boolean = false;
-	confirmDialog() {
-		this.rejectRow(this.dialogRow, this.isSecondary);
+	getDetaliiBusiness(data: any): string {
+		return this._utilsService.getDetaliiBusiness(data);
 	}
 }

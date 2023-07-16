@@ -74,13 +74,13 @@ export class FuseUtilsService {
 	}
 
 	getCurrentMonth() {
-		return new Date().toLocaleString('default', { month: 'long' });
+		return new Date().toLocaleString('ro', { month: 'long' });
 	}
 
 	getLastMonth() {
 		return new Date(
 			new Date().setMonth(new Date().getMonth() - 1)
-		).toLocaleString('default', { month: 'long' });
+		).toLocaleString('ro', { month: 'long' });
 	}
 	parseDate(date: string) {
 		return new Date(date).toLocaleDateString('ro');
