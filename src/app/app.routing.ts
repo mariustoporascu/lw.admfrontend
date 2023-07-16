@@ -74,6 +74,13 @@ export const appRoutes: Route[] = [
 						(m) => m.UserOperationsModule
 					),
 			},
+			{
+				path: 'all-documents',
+				loadChildren: () =>
+					import('app/modules/user/user-documents/user-documents.module').then(
+						(m) => m.UserAllDocumentsModule
+					),
+			},
 		],
 	},
 	// Firma routes
@@ -176,6 +183,13 @@ export const appRoutes: Route[] = [
 				loadChildren: () =>
 					import('app/modules/user/user-operations/user-operations.module').then(
 						(m) => m.UserOperationsModule
+					),
+			},
+			{
+				path: 'all-documents',
+				loadChildren: () =>
+					import('app/modules/user/user-documents/user-documents.module').then(
+						(m) => m.UserAllDocumentsModule
 					),
 			},
 		],

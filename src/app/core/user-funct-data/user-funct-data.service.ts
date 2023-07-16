@@ -15,9 +15,8 @@ export class UserFunctDataService {
 		new BehaviorSubject(null);
 	private _withdrawData: BehaviorSubject<Tranzactii[] | null> =
 		new BehaviorSubject(null);
-	private _favoritesData: BehaviorSubject<any[] | null> = new BehaviorSubject(
-		null
-	);
+	private _documentsData: BehaviorSubject<Documente[] | null> =
+		new BehaviorSubject(null);
 	private _backEndUrl: string = backendUrl;
 	/**
 	 * Constructor
@@ -41,7 +40,12 @@ export class UserFunctDataService {
 	get operatiuniData$(): Observable<any> {
 		return this._operatiuniData.asObservable();
 	}
-
+	/**
+	 * Getter for approvedData
+	 */
+	get documentsData$(): Observable<any> {
+		return this._documentsData.asObservable();
+	}
 	/**
 	 * Getter for transfer
 	 */
@@ -85,7 +89,18 @@ export class UserFunctDataService {
 				})
 			);
 	}
-
+	/**
+	 * Get approved
+	 */
+	getAllDocuments(): Observable<Documente[]> {
+		return this._httpClient
+			.get<Documente[]>(`${this._backEndUrl}/regularuser/getAllDocumente`)
+			.pipe(
+				tap((response: any) => {
+					this._documentsData.next(response ?? []);
+				})
+			);
+	}
 	/**
 	 * Get transfer
 	 */

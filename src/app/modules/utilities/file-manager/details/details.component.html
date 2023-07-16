@@ -62,7 +62,9 @@
 		*ngIf="item.type !== 'folder'"
 	>
 		<div class="flex items-center justify-between py-3">
-			<div class="text-secondary">Nr Document</div>
+			<div class="text-secondary">
+				{{ document?.isInvoice ? "Nr Document" : "Nr QR/Cod de bare" }}
+			</div>
 			<div *ngIf="!item.fileInfo.ocrData?.docNumber?.hasErrors">
 				{{ item.fileInfo.ocrData?.docNumber?.value }}
 			</div>
