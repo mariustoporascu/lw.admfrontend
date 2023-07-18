@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { Documente, Hybrid, Tranzactii } from '../bkendmodels/models.types';
+import {
+	Documente,
+	Hybrid,
+	StatusEnumRO,
+	Tranzactii,
+} from '../bkendmodels/models.types';
 import { backendUrl } from '../config/app.config';
 
 @Injectable({
@@ -55,6 +60,10 @@ export class FirmaFunctDataService {
 			.get(`${this._backEndUrl}/FirmaDiscount/getDashboardData`)
 			.pipe(
 				tap((response: any) => {
+					response &&
+						response.latestDocs.forEach((element: Documente) => {
+							element.statusName = StatusEnumRO[element.status];
+						});
 					this._dashboardData.next(response);
 				})
 			);
@@ -70,6 +79,10 @@ export class FirmaFunctDataService {
 			)
 			.pipe(
 				tap((response: any) => {
+					response &&
+						response.forEach((element: Documente) => {
+							element.statusName = StatusEnumRO[element.status];
+						});
 					this._docsData.next(response ?? []);
 				})
 			);
@@ -82,6 +95,10 @@ export class FirmaFunctDataService {
 			.get<Documente[]>(`${this._backEndUrl}/FirmaDiscount/getAllDocuments`)
 			.pipe(
 				tap((response: any) => {
+					response &&
+						response.forEach((element: Documente) => {
+							element.statusName = StatusEnumRO[element.status];
+						});
 					this._docsData.next(response ?? []);
 				})
 			);

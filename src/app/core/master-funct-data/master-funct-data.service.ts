@@ -5,6 +5,7 @@ import {
 	Documente,
 	FirmaAnafDetails,
 	FirmaDiscount,
+	StatusEnumRO,
 	Tranzactii,
 } from '../bkendmodels/models.types';
 import { backendUrl } from '../config/app.config';
@@ -90,6 +91,10 @@ export class MasterFunctDataService {
 			.get<Documente[]>(`${this._backEndUrl}/masteradmin/getDocumente`)
 			.pipe(
 				tap((response: any) => {
+					response &&
+						response.forEach((element: Documente) => {
+							element.statusName = StatusEnumRO[element.status];
+						});
 					this._documenteData.next(response ?? []);
 				})
 			);
@@ -102,6 +107,10 @@ export class MasterFunctDataService {
 			.get<Documente[]>(`${this._backEndUrl}/masteradmin/getDocumentePreApproval`)
 			.pipe(
 				tap((response: any) => {
+					response &&
+						response.forEach((element: Documente) => {
+							element.statusName = StatusEnumRO[element.status];
+						});
 					this._preApprovalDocsData.next(response ?? []);
 				})
 			);
