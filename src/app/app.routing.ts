@@ -230,6 +230,13 @@ export const appRoutes: Route[] = [
 					),
 			},
 			{
+				path: 'edit-firma',
+				loadChildren: () =>
+					import(
+						'app/modules/admin/master/master-firma-form/master-firma-form.module'
+					).then((m) => m.MasterFirmaFormModule),
+			},
+			{
 				path: 'settings',
 				loadChildren: () =>
 					import('app/modules/admin/admin-settings/settings.module').then(

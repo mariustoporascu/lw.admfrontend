@@ -3,7 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import {
 	Documente,
+	FirmaAnafDetails,
 	FirmaDiscount,
+	StatusEnumRO,
 	Tranzactii,
 } from '../bkendmodels/models.types';
 import { backendUrl } from '../config/app.config';
@@ -89,6 +91,10 @@ export class MasterFunctDataService {
 			.get<Documente[]>(`${this._backEndUrl}/masteradmin/getDocumente`)
 			.pipe(
 				tap((response: any) => {
+					response &&
+						response.forEach((element: Documente) => {
+							element.statusName = StatusEnumRO[element.status];
+						});
 					this._documenteData.next(response ?? []);
 				})
 			);
@@ -101,6 +107,10 @@ export class MasterFunctDataService {
 			.get<Documente[]>(`${this._backEndUrl}/masteradmin/getDocumentePreApproval`)
 			.pipe(
 				tap((response: any) => {
+					response &&
+						response.forEach((element: Documente) => {
+							element.statusName = StatusEnumRO[element.status];
+						});
 					this._preApprovalDocsData.next(response ?? []);
 				})
 			);
@@ -130,6 +140,11 @@ export class MasterFunctDataService {
 					this._firmaExtendedData.next(response ?? []);
 				})
 			);
+	}
+	getFirmaAnafDetails(query: string): Observable<FirmaAnafDetails> {
+		return this._httpClient.get<FirmaAnafDetails>(
+			`${this._backEndUrl}/masteradmin/get-details-anaf?query=${query}`
+		);
 	}
 	/**
 	 * Make Tranzaction
@@ -164,6 +179,12 @@ export class MasterFunctDataService {
 	queryUsers(query: string): Observable<any> {
 		return this._httpClient.get(
 			`${this._backEndUrl}/masteradmin/query-users?query=${query}`
+		);
+	}
+	createOrUpdateFirma(firma: {}, isUpdate: boolean = false): Observable<any> {
+		return this._httpClient.post(
+			`${this._backEndUrl}/masteradmin/${!isUpdate ? 'addFirma' : 'updateFirma'}`,
+			firma
 		);
 	}
 }

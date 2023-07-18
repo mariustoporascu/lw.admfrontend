@@ -21,6 +21,7 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MasterFirmaFormComponent } from './master-firma-form.component';
 import { masterFirmaFormRoutes } from './master-firma-form.routing';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
 	declarations: [MasterFirmaFormComponent],
@@ -40,6 +41,7 @@ import { masterFirmaFormRoutes } from './master-firma-form.routing';
 		MatTableModule,
 		MatPaginatorModule,
 		MatSidenavModule,
+		MatSelectModule,
 		MatInputModule,
 		MatDatepickerModule,
 		NgxExtendedPdfViewerModule,

@@ -3,7 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Item, Items } from './file-manager.types';
 import { backendUrl, dataprocUrl } from '../config/app.config';
-import { Documente, FirmaDiscount } from '../bkendmodels/models.types';
+import {
+	Documente,
+	FirmaDiscount,
+	StatusEnumRO,
+} from '../bkendmodels/models.types';
 
 @Injectable({
 	providedIn: 'root',
@@ -122,50 +126,6 @@ export class FileManagerService {
 	/**
 	 * Get folders and items
 	 */
-	public getFoldersHybrid(): Observable<FirmaDiscount[]> {
-		return this._httpClient
-			.get<FirmaDiscount[]>(`${this._backEndUrl}/hybrid/getallfolders`)
-			.pipe(
-				tap((data) => {
-					let folders = data
-						? data.map((item) => {
-								let folder = {
-									id: item.id,
-									folderId: null,
-									folderInfo: item,
-									type: 'folder',
-								} as Item;
-								return folder;
-						  })
-						: [];
-					this._folders.next(folders);
-				})
-			);
-	}
-	public getFilesHybrid(): Observable<Documente[]> {
-		return this._httpClient
-			.get<Documente[]>(`${this._backEndUrl}/hybrid/getAllDocumenteFileManager`)
-			.pipe(
-				tap((data) => {
-					let files = data
-						? data.map((item) => {
-								item.uploaded = new Date(item.uploaded);
-								let file = {
-									id: item.id,
-									folderId: item.firmaDiscountId,
-									fileInfo: item,
-									type: item.fisiereDocumente.fileExtension,
-								} as Item;
-								return file;
-						  })
-						: [];
-					this._files.next(files);
-				})
-			);
-	}
-	/**
-	 * Get folders and items
-	 */
 	public getFolders(): Observable<FirmaDiscount[]> {
 		return this._httpClient
 			.get<FirmaDiscount[]>(`${this._backEndUrl}/regularuser/getallfolders`)
@@ -195,6 +155,7 @@ export class FileManagerService {
 				tap((data) => {
 					let files = data
 						? data.map((item) => {
+								item.statusName = StatusEnumRO[item.status];
 								item.uploaded = new Date(item.uploaded);
 								let file = {
 									id: item.id,

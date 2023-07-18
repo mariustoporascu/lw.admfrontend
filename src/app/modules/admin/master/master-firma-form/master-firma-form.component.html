@@ -1,16 +1,5 @@
 <div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden">
 	<mat-drawer-container class="flex-auto h-full bg-card dark:bg-transparent">
-		<!-- Drawer -->
-		<mat-drawer
-			class="w-full sm:w-200 dark:bg-gray-900"
-			[mode]="drawerMode"
-			[opened]="false"
-			[position]="'end'"
-			[disableClose]="true"
-			#matDrawer
-		>
-			<router-outlet></router-outlet>
-		</mat-drawer>
 		<mat-drawer-content class="flex flex-col bg-gray-100 dark:bg-transparent">
 			<div class="flex flex-col flex-auto w-full">
 				<div class="flex flex-wrap w-full max-w-screen-xl mx-auto p-6 md:p-8">
@@ -18,12 +7,20 @@
 					<div class="flex items-center justify-between w-full">
 						<div>
 							<h2 class="text-3xl font-semibold tracking-tight leading-8">
-								Aproba documente incarcate
+								Completeaza detaliile firmei
 							</h2>
-							<div class="font-medium tracking-tight text-secondary">
-								Situatia contului tau la {{ getCurrentDate() }}
-							</div>
 						</div>
+						<a
+							mat-icon-button
+							[class.bg-blue-300]="true"
+							title="Inapoi la lista de firme"
+							[routerLink]="'/master-admin/firme-platforma'"
+						>
+							<mat-icon
+								[svgIcon]="'heroicons_outline:backward'"
+								[class.text-black]="true"
+							></mat-icon
+						></a>
 					</div>
 
 					<div class="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full mt-8">
@@ -31,283 +28,280 @@
 						<div
 							class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden"
 						>
-							<mat-form-field class="ml-10 mr-10 mt-5">
-								<mat-label>Filtrare</mat-label>
-								<input
-									matInput
-									(keyup)="applyFilter($event)"
-									placeholder="Filtrare dupa toate coloanele..."
-									#input
-								/>
-							</mat-form-field>
 							<div class="overflow-x-auto mx-6">
-								<table
-									class="w-full bg-transparent"
-									mat-table
-									matSort
-									[dataSource]="recentTransactionsDataSource"
-									[trackBy]="trackByFn"
-									#recentTransactionsTable
+								<form
+									[formGroup]="firmaFormGroup"
+									#firmaNgForm="ngForm"
+									class="flex flex-col mt-4 px-8 pt-10 bg-card shadow rounded overflow-hidden"
 								>
-									<!-- Checkbox Column -->
-									<ng-container matColumnDef="select">
-										<th mat-header-cell *matHeaderCellDef>
-											<mat-checkbox
-												(change)="$event ? toggleAllRows() : null"
-												[checked]="selection.hasValue() && isAllSelected()"
-												[indeterminate]="selection.hasValue() && !isAllSelected()"
-												[aria-label]="checkboxLabel()"
+									<p class="text-lg font-medium mb-4">Detalii despre firma</p>
+
+									<div class="flex flex-col gt-xs:flex-row">
+										<mat-form-field class="flex-auto gt-xs:pr-3">
+											<mat-label>Nume afisat</mat-label>
+											<input
+												matInput
+												[placeholder]="'Nume afisat'"
+												[formControlName]="'name'"
+											/>
+											<mat-icon
+												class="icon-size-5"
+												matPrefix
+												[svgIcon]="'heroicons_solid:building-library'"
+											></mat-icon>
+											<mat-error *ngIf="firmaFormGroup.get('name').hasError('required')">
+												Numele afisat utilizatorilor este necesar
+											</mat-error>
+										</mat-form-field>
+										<mat-form-field class="flex-auto gt-xs:pr-3">
+											<mat-label>CUI</mat-label>
+											<input
+												matInput
+												[placeholder]="'CUI'"
+												[formControlName]="'cuiNumber'"
+											/>
+											<button
+												mat-icon-button
+												type="button"
+												title="Cauta datele firmei pe baza CUI-ului"
+												(click)="getAnafDetails()"
+												matSuffix
 											>
-											</mat-checkbox>
-										</th>
-										<td mat-cell *matCellDef="let row">
-											<mat-checkbox
-												(click)="$event.stopPropagation()"
-												(change)="$event ? selection.toggle(row) : null"
-												[checked]="selection.isSelected(row)"
-												[aria-label]="checkboxLabel(row)"
-											>
-											</mat-checkbox>
-										</td>
-									</ng-container>
-									<!-- Transaction ID -->
-									<ng-container matColumnDef="docNumber">
-										<th mat-header-cell mat-sort-header *matHeaderCellDef>
-											Numar document
-										</th>
-										<td mat-cell *matCellDef="let transaction">
-											<div
-												class="w-30 truncate"
-												[matTooltip]="transaction.ocrData?.docNumber?.value"
-											>
-												{{ transaction.ocrData?.docNumber?.value }}
-											</div>
-										</td>
-									</ng-container>
-
-									<!-- Bussines Details -->
-									<ng-container matColumnDef="extractedBusinessData">
-										<th mat-header-cell mat-sort-header *matHeaderCellDef>
-											Punct de lucru
-										</th>
-										<td mat-cell *matCellDef="let transaction">
-											<div
-												class="w-50 truncate"
-												[matTooltip]="transaction.ocrData?.adresaFirma?.value"
-											>
-												{{ transaction.ocrData?.adresaFirma?.value }}
-											</div>
-										</td>
-									</ng-container>
-
-									<!-- Date -->
-									<ng-container matColumnDef="uploaded">
-										<th mat-header-cell *matHeaderCellDef>
-											<div class="flex flex-row">
-												<div mat-sort-header class="flex">Data</div>
-												<mat-datepicker-toggle
-													matIconSuffix
-													[for]="picker"
-												></mat-datepicker-toggle>
-												<mat-date-range-picker #picker></mat-date-range-picker>
-												<mat-date-range-input [rangePicker]="picker" class="hidden">
-													<input matStartDate placeholder="Start date" #dateStart />
-													<input
-														matEndDate
-														placeholder="End date"
-														#dateEnd
-														(dateChange)="datePicked(dateStart, dateEnd)"
-													/>
-												</mat-date-range-input>
-											</div>
-										</th>
-										<td mat-cell *matCellDef="let transaction">
-											<span class="pr-6 whitespace-nowrap">
-												{{ transaction.uploaded | date : "dd MMM y" : "" : "ro" }}
-											</span>
-										</td>
-									</ng-container>
-
-									<!-- Amount -->
-									<ng-container matColumnDef="total">
-										<th mat-header-cell mat-sort-header *matHeaderCellDef>Total</th>
-										<td mat-cell *matCellDef="let transaction">
-											<span class="pr-6 font-medium whitespace-nowrap">
-												{{ transaction.ocrData?.total?.value | currency : "RON " }}
-											</span>
-										</td>
-									</ng-container>
-
-									<!-- Discount Amount -->
-									<ng-container matColumnDef="discountValue">
-										<th mat-header-cell mat-sort-header *matHeaderCellDef>
-											Valoare discount
-										</th>
-										<td mat-cell *matCellDef="let transaction">
-											<span class="pr-6 font-medium whitespace-nowrap">
-												{{ transaction.discountValue | currency : "LWP " }}
-											</span>
-										</td>
-									</ng-container>
-
-									<!-- User Details -->
-									<ng-container matColumnDef="userEmail">
-										<th mat-header-cell mat-sort-header *matHeaderCellDef>
-											Detalii user
-										</th>
-										<td mat-cell *matCellDef="let transaction">
-											<span class="pr-6 whitespace-wrap">
-												{{ transaction.conexiuniConturi?.profilCont?.email ?? "N/A" }}
-											</span>
-										</td>
-									</ng-container>
-									<!-- Status -->
-									<ng-container matColumnDef="actions">
-										<th mat-header-cell *matHeaderCellDef>
-											<div class="flex flex-row justify-center">
 												<mat-icon
-													[svgIcon]="'heroicons_outline:ellipsis-horizontal'"
+													class="icon-size-5"
+													[svgIcon]="'heroicons_solid:magnifying-glass'"
 												></mat-icon>
-											</div>
-										</th>
-										<td mat-cell *matCellDef="let transaction">
-											<div class="flex flex-row justify-center">
-												<!-- Accept -->
-												<button
-													mat-icon-button
-													[class.bg-green-300]="true"
-													[class.scale-75]="true"
-													(click)="approveRow(transaction)"
-													title="Aproba"
-												>
-													<mat-icon
-														[svgIcon]="'heroicons_outline:check-circle'"
-														[class.text-black]="true"
-													></mat-icon>
-												</button>
-												<!-- Reject button -->
-												<button
-													mat-icon-button
-													[class.bg-red-300]="true"
-													[class.scale-75]="true"
-													(click)="openDialog(transaction)"
-													title="Respinge"
-												>
-													<mat-icon
-														[svgIcon]="'heroicons_outline:x-circle'"
-														[class.text-black]="true"
-													></mat-icon>
-												</button>
-												<a
-													mat-icon-button
-													[class.bg-purple-300]="true"
-													title="Vezi documentul"
-													[routerLink]="[
-														'./view-document/',
-														transaction.fisiereDocumente?.identifier
-													]"
-													[class.scale-75]="true"
-												>
-													<mat-icon
-														[svgIcon]="'heroicons_outline:eye'"
-														[class.text-black]="true"
-													></mat-icon>
-												</a>
-											</div>
-										</td>
-									</ng-container>
-
-									<tr
-										mat-header-row
-										*matHeaderRowDef="recentTransactionsTableColumns"
-									></tr>
-									<tr
-										mat-row
-										*matRowDef="let row; columns: recentTransactionsTableColumns"
-									></tr>
-									<tr class="mat-row" *matNoDataRow>
-										<td class="mat-cell" colspan="4">
-											Nu am gasit date din filtrarea dupa "{{ input.value }}"
-										</td>
-									</tr>
-								</table>
-								<div class="flex flex-row justify-between items-center">
-									<mat-paginator
-										#recentTransactionsTablePagination
-										[pageSizeOptions]="[5, 10, 25, 100]"
-										aria-label="Select page"
-									></mat-paginator>
-									<div
-										class="flex flex-row justify-end items-center mr-5"
-										*ngIf="countSelected() > 0"
-									>
-										<button
-											mat-icon-button
-											[class.bg-green-300]="true"
-											[class.scale-75]="true"
-											title="Aproba"
-											(click)="approveSelected()"
-										>
+											</button>
+											<mat-error
+												*ngIf="firmaFormGroup.get('cuiNumber').hasError('required')"
+											>
+												CUI-ul este necesar
+											</mat-error>
+											<mat-error
+												*ngIf="
+													firmaFormGroup.get('cuiNumber').hasError('invalidAnafResponse')
+												"
+											>
+												Cautarea nu a returnat niciun rezultat
+											</mat-error>
+										</mat-form-field>
+										<mat-form-field class="flex-auto gt-xs:pr-3">
+											<mat-label>Nr Reg Com</mat-label>
+											<input
+												matInput
+												[placeholder]="'Nr Reg Com'"
+												[formControlName]="'nrRegCom'"
+											/>
 											<mat-icon
-												[svgIcon]="'heroicons_outline:check-circle'"
-												[class.text-black]="true"
+												class="icon-size-5"
+												matPrefix
+												[svgIcon]="'heroicons_solid:information-circle'"
 											></mat-icon>
-										</button>
-										<button
-											mat-icon-button
-											[class.bg-red-300]="true"
-											[class.scale-75]="true"
-											title="Respinge"
-											(click)="openDialog()"
-										>
+											<mat-error
+												*ngIf="firmaFormGroup.get('nrRegCom').hasError('required')"
+											>
+												Nr Reg Com este necesar
+											</mat-error>
+										</mat-form-field>
+										<mat-form-field class="flex-auto gt-xs:pr-3">
+											<mat-label>Adresa</mat-label>
+											<input
+												matInput
+												[placeholder]="'Adresa'"
+												[formControlName]="'address'"
+											/>
 											<mat-icon
-												[svgIcon]="'heroicons_outline:x-circle'"
-												[class.text-black]="true"
+												class="icon-size-5"
+												matPrefix
+												[svgIcon]="'heroicons_solid:globe-alt'"
 											></mat-icon>
-										</button>
-										<div
-											class="ml-5 mr-5 mt-2 mb-2 p-2 bg-green-100 border-2 border-dashed border-green-400 rounded-2xl max-w-fit"
-										>
-											<h6>{{ countTotal() }} discount total</h6>
-										</div>
-										<div
-											class="mr-5 mt-2 mb-2 p-2 bg-yellow-100 border-2 border-dashed border-yellow-400 rounded-2xl max-w-fit"
-										>
-											<h6>{{ countSelected() }} randuri selectate</h6>
-										</div>
+											<mat-error
+												*ngIf="firmaFormGroup.get('address').hasError('required')"
+											>
+												Adresa este necesara
+											</mat-error>
+										</mat-form-field>
+										<mat-form-field class="flex-auto gt-xs:pr-3">
+											<mat-label>Procentaj de discount</mat-label>
+											<input
+												matInput
+												min="1"
+												max="100"
+												type="number"
+												[placeholder]="'Procentaj de discount'"
+												[formControlName]="'discountPercent'"
+											/>
+											<mat-icon
+												class="icon-size-5"
+												matPrefix
+												[svgIcon]="'heroicons_solid:receipt-percent'"
+											></mat-icon>
+											<mat-error
+												*ngIf="firmaFormGroup.get('discountPercent').hasError('required')"
+											>
+												Procentajul de discount este necesar
+											</mat-error>
+											<mat-error
+												*ngIf="
+													firmaFormGroup.get('discountPercent').hasError('min') ||
+													firmaFormGroup.get('discountPercent').hasError('max')
+												"
+											>
+												Procentajul de discount trebuie sa fie intre 1 si 100
+											</mat-error>
+										</mat-form-field>
 									</div>
-								</div>
+
+									<mat-divider class="mt-6 mb-10"></mat-divider>
+
+									<p class="text-lg font-medium mb-4">Detalii persoana de contact</p>
+
+									<div class="flex flex-col gt-xs:flex-row">
+										<mat-form-field class="flex-auto gt-xs:pr-3">
+											<mat-label>Nume complet</mat-label>
+											<input
+												matInput
+												[placeholder]="'Nume complet'"
+												[formControlName]="'mainContactName'"
+											/>
+											<mat-icon
+												class="icon-size-5"
+												matPrefix
+												[svgIcon]="'heroicons_solid:user-circle'"
+											></mat-icon>
+											<mat-error
+												*ngIf="firmaFormGroup.get('mainContactName').hasError('required')"
+											>
+												Numele complet al persoanei de contact este necesar
+											</mat-error>
+										</mat-form-field>
+										<mat-form-field class="flex-auto gt-xs:pl-3">
+											<mat-label>Adresa de email</mat-label>
+											<input
+												matInput
+												[placeholder]="'Adresa de email'"
+												[formControlName]="'mainContactEmail'"
+											/>
+											<mat-icon
+												class="icon-size-5"
+												matPrefix
+												[svgIcon]="'heroicons_solid:envelope'"
+											></mat-icon>
+											<mat-error
+												*ngIf="firmaFormGroup.get('mainContactEmail').hasError('required')"
+											>
+												Adresa de email a persoanei de contact este necesara
+											</mat-error>
+											<mat-error
+												*ngIf="firmaFormGroup.get('mainContactEmail').hasError('email')"
+											>
+												Adresa de email a persoanei de contact este invalida
+											</mat-error>
+										</mat-form-field>
+										<mat-form-field class="flex-auto gt-xs:pl-3">
+											<mat-label>Numar de telefon</mat-label>
+											<input
+												matInput
+												[placeholder]="'Numar de telefon'"
+												[formControlName]="'mainContactPhone'"
+											/>
+											<mat-icon
+												class="icon-size-5"
+												matPrefix
+												[svgIcon]="'heroicons_solid:phone'"
+											></mat-icon>
+											<mat-error
+												*ngIf="firmaFormGroup.get('mainContactPhone').hasError('required')"
+											>
+												Numarul de telefon al persoanei de contact este necesar
+											</mat-error>
+											<mat-error
+												*ngIf="
+													firmaFormGroup.get('mainContactPhone').hasError('minLength') ||
+													firmaFormGroup.get('mainContactPhone').hasError('pattern')
+												"
+											>
+												Formatul numarului de telefon este invalid
+											</mat-error>
+										</mat-form-field>
+									</div>
+
+									<mat-divider class="mt-6 mb-10"></mat-divider>
+
+									<p class="text-lg font-medium mb-4">Detalii bancare</p>
+
+									<div class="flex flex-col gt-xs:flex-row">
+										<mat-form-field class="flex-auto gt-xs:pr-3">
+											<mat-label>Nume institutie</mat-label>
+											<input
+												matInput
+												[placeholder]="'Nume institutie'"
+												[formControlName]="'bankName'"
+											/>
+											<mat-icon
+												class="icon-size-5"
+												matPrefix
+												[svgIcon]="'heroicons_solid:building-library'"
+											></mat-icon>
+											<mat-error
+												*ngIf="firmaFormGroup.get('bankName').hasError('required')"
+											>
+												Numele institutiei bancare este necesar
+											</mat-error>
+										</mat-form-field>
+										<mat-form-field class="flex-auto gt-xs:pl-3">
+											<mat-label>IBAN</mat-label>
+											<input
+												matInput
+												[placeholder]="'IBAN'"
+												[formControlName]="'bankAccount'"
+											/>
+											<mat-icon
+												class="icon-size-5"
+												matPrefix
+												[svgIcon]="'heroicons_solid:banknotes'"
+											></mat-icon>
+											<mat-error
+												*ngIf="firmaFormGroup.get('bankAccount').hasError('required')"
+											>
+												IBAN-ul este necesar
+											</mat-error>
+										</mat-form-field>
+									</div>
+
+									<div
+										class="flex items-center justify-between border-t -mx-8 mt-8 px-8 py-5 bg-gray-50 dark:bg-gray-700"
+									>
+										<div>
+											<a mat-button [routerLink]="'/master-admin/firme-platforma'"
+												>Anuleaza</a
+											>
+											<button
+												class="px-6 ml-3"
+												mat-flat-button
+												[color]="'primary'"
+												(click)="onSubmit()"
+											>
+												Salveaza
+											</button>
+										</div>
+										<!-- Alert -->
+										<fuse-alert
+											*ngIf="showAlert"
+											[appearance]="'outline'"
+											[showIcon]="false"
+											[type]="alert.type"
+											[dismissible]="true"
+										>
+											{{ alert.message }}
+										</fuse-alert>
+									</div>
+								</form>
 							</div>
 						</div>
 					</div>
-					<!-- Alert -->
-					<fuse-alert
-						class="ml-8 mt-8 mr-8"
-						*ngIf="showAlert"
-						[appearance]="'outline'"
-						[showIcon]="false"
-						[type]="alert.type"
-						[dismissible]="true"
-					>
-						{{ alert.message }}
-					</fuse-alert>
 				</div>
 			</div>
 		</mat-drawer-content>
 	</mat-drawer-container>
 </div>
-<ng-template #confirmDialogView>
-	<mat-dialog-content>
-		<h3 class="text-black text-lg">
-			Esti sigur ca vrei sa respingi documentele?
-		</h3>
-	</mat-dialog-content>
-	<mat-dialog-actions class="flex flex-auto justify-end">
-		<button mat-icon-button (click)="confirmDialog()" [class.bg-red-400]="true">
-			<span class="text-md">Da</span>
-		</button>
-		<button mat-icon-button (click)="closeDialog()" [class.bg-green-400]="true">
-			<span class="text-md">Nu</span>
-		</button>
-	</mat-dialog-actions>
-</ng-template>

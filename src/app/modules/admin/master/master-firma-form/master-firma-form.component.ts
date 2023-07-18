@@ -13,7 +13,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Subject, catchError, of, switchMap, takeUntil } from 'rxjs';
 import { MatPaginator } from '@angular/material/paginator';
 import { FuseUtilsService } from '@fuse/services/utils';
-import { Documente } from 'app/core/bkendmodels/models.types';
+import { Documente, FirmaDiscount } from 'app/core/bkendmodels/models.types';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FuseAlertType } from '@fuse/components/alert';
 import { MatDrawer } from '@angular/material/sidenav';
@@ -21,6 +21,14 @@ import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MasterFunctDataService } from 'app/core/master-funct-data/master-funct-data.service';
+import {
+	FormBuilder,
+	NgForm,
+	UntypedFormBuilder,
+	UntypedFormGroup,
+	Validators,
+} from '@angular/forms';
+import { FuseValidators } from '@fuse/validators';
 
 @Component({
 	selector: 'master-firma-form',
@@ -31,36 +39,24 @@ import { MasterFunctDataService } from 'app/core/master-funct-data/master-funct-
 export class MasterFirmaFormComponent
 	implements OnInit, AfterViewInit, OnDestroy
 {
-	@ViewChild('recentTransactionsTable', { read: MatSort })
-	recentTransactionsTableMatSort: MatSort;
-	@ViewChild('recentTransactionsTablePagination')
-	recentTransactionsTablePagination: MatPaginator;
-	@ViewChild('confirmDialogView', { static: true }) confirmDialogView: any;
-
-	items: Documente[];
-	recentTransactionsDataSource: MatTableDataSource<any> =
-		new MatTableDataSource();
 	recentTransactionsTableColumns: string[] = [
-		'select',
 		'docNumber',
 		'extractedBusinessData',
 		'uploaded',
 		'total',
 		'discountValue',
 		'userEmail',
-		'actions',
 	];
-	selection = new SelectionModel<Documente>(true, []);
+	firmaId: string;
+	firmaDetails: FirmaDiscount;
+	firmaFormGroup: UntypedFormGroup;
 
 	alert: { type: FuseAlertType; message: string } = {
 		type: 'success',
 		message: '',
 	};
 	showAlert: boolean = false;
-	transferIds: string[] = [];
-
-	@ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
-	drawerMode: 'side' | 'over';
+	@ViewChild('firmaNgForm') firmaNgForm: NgForm;
 
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -72,9 +68,8 @@ export class MasterFirmaFormComponent
 		private _utilsService: FuseUtilsService,
 		private _masterFunctDataService: MasterFunctDataService,
 		private _cdr: ChangeDetectorRef,
-		private _router: Router,
-		private _dialog: MatDialog,
-		private _fuseMediaWatcherService: FuseMediaWatcherService
+		private _formBuilder: UntypedFormBuilder,
+		private _router: Router
 	) {}
 
 	// -----------------------------------------------------------------------------------------------------
@@ -85,43 +80,78 @@ export class MasterFirmaFormComponent
 	 * On init
 	 */
 	ngOnInit(): void {
-		this.recentTransactionsDataSource.filterPredicate = (
-			data: Documente,
-			filter: string
-		) => {
-			let dataStr = JSON.stringify(data).toLowerCase();
-			return dataStr.includes(filter);
-		};
-		// Get the data
-		this._masterFunctDataService.firmaExtendedData$
-			.pipe(takeUntil(this._unsubscribeAll))
-			.subscribe((data) => {
-				// Store the table data
-				this.recentTransactionsDataSource.data = data;
-				this.items = data;
-			});
-		// Subscribe to media query change
-		this._fuseMediaWatcherService
-			.onMediaQueryChange$('(min-width: 1440px)')
-			.pipe(takeUntil(this._unsubscribeAll))
-			.subscribe((state) => {
-				// Calculate the drawer mode
-				this.drawerMode = state.matches ? 'side' : 'over';
-
-				// Mark for check
-				this._cdr.markForCheck();
-			});
+		this._activatedRoute.paramMap.subscribe((params) => {
+			this._utilsService.logger('params', params);
+			this.firmaId = params.get('id');
+			this._utilsService.logger('firmaId', this.firmaId);
+			if (this.firmaId) {
+				this._masterFunctDataService.firmaExtendedData$
+					.pipe(takeUntil(this._unsubscribeAll))
+					.subscribe((data) => {
+						this.firmaDetails = data;
+						this.firmaFormGroup = this._formBuilder.group({
+							id: [this.firmaDetails.id, Validators.required],
+							name: [this.firmaDetails.name, Validators.required],
+							cuiNumber: [this.firmaDetails.cuiNumber, Validators.required],
+							nrRegCom: [this.firmaDetails.nrRegCom, Validators.required],
+							address: [this.firmaDetails.address, Validators.required],
+							bankName: [this.firmaDetails.bankName, Validators.required],
+							bankAccount: [this.firmaDetails.bankAccount, Validators.required],
+							mainContactName: [
+								this.firmaDetails.mainContactName,
+								Validators.required,
+							],
+							mainContactEmail: [
+								this.firmaDetails.mainContactEmail,
+								[Validators.required, Validators.email],
+							],
+							mainContactPhone: [
+								this.firmaDetails.mainContactPhone,
+								[
+									Validators.required,
+									Validators.minLength(10),
+									Validators.pattern('^[0-9]*$'),
+								],
+							],
+							discountPercent: [
+								this.firmaDetails.discountPercent,
+								[Validators.required, Validators.min(1), Validators.max(100)],
+							],
+						});
+						this._cdr.markForCheck();
+					});
+			} else {
+				this.firmaFormGroup = this._formBuilder.group({
+					name: ['', Validators.required],
+					cuiNumber: ['', Validators.required],
+					nrRegCom: ['', Validators.required],
+					address: ['', Validators.required],
+					bankName: ['', Validators.required],
+					bankAccount: ['', Validators.required],
+					mainContactName: ['', Validators.required],
+					mainContactEmail: ['', [Validators.required, Validators.email]],
+					mainContactPhone: [
+						'',
+						[
+							Validators.required,
+							Validators.minLength(10),
+							Validators.pattern('^[0-9]*$'),
+						],
+					],
+					discountPercent: [
+						0,
+						[Validators.required, Validators.min(1), Validators.max(100)],
+					],
+				});
+			}
+			this._cdr.markForCheck();
+		});
 	}
 
 	/**
 	 * After view init
 	 */
-	ngAfterViewInit(): void {
-		// Make the data source sortable
-		this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
-		this.recentTransactionsDataSource.paginator =
-			this.recentTransactionsTablePagination;
-	}
+	ngAfterViewInit(): void {}
 
 	/**
 	 * On destroy
@@ -149,117 +179,77 @@ export class MasterFirmaFormComponent
 	// -----------------------------------------------------------------------------------------------------
 	// @ Private methods
 	// -----------------------------------------------------------------------------------------------------
-
-	getCurrentDate() {
-		return this._utilsService.getCurrentDate();
-	}
-
-	getCurrentMonth() {
-		return this._utilsService.getCurrentMonth();
-	}
-
-	getLastMonth() {
-		return this._utilsService.getLastMonth();
-	}
-	applyFilter(event: Event) {
-		const filterValue = (event.target as HTMLInputElement).value;
-		this.recentTransactionsDataSource.filter = filterValue.trim().toLowerCase();
-		this.selection.clear();
-		if (this.recentTransactionsDataSource.paginator) {
-			this.recentTransactionsDataSource.paginator.firstPage();
+	getAnafDetails(): void {
+		const cuiNumber = this.firmaFormGroup.get('cuiNumber').value;
+		if (!cuiNumber) {
+			this.firmaFormGroup
+				.get('cuiNumber')
+				.setErrors({ invalidAnafResponse: true });
+			this.firmaFormGroup.get('cuiNumber').markAsTouched();
+			return;
 		}
+		this._masterFunctDataService
+			.getFirmaAnafDetails(cuiNumber)
+			.subscribe((data) => {
+				this._utilsService.logger('data', data);
+				if (!data || data.denumire === '') {
+					this.firmaFormGroup
+						.get('cuiNumber')
+						.setErrors({ invalidAnafResponse: true });
+					this.firmaFormGroup.get('cuiNumber').markAsTouched();
+				} else {
+					this.firmaFormGroup.get('name').setValue(data.denumire);
+					this.firmaFormGroup.get('address').setValue(data.adresa);
+					this.firmaFormGroup.get('nrRegCom').setValue(data.nrRegCom);
+					const scopTva = data.scpTVA;
+					this.firmaFormGroup
+						.get('cuiNumber')
+						.setValue(scopTva ? `RO${data.cui}` : data.cui);
+				}
+				this.firmaFormGroup.markAllAsTouched();
+				this._cdr.markForCheck();
+			});
 	}
-	splitByCapitalLetters(str: string): string {
-		return this._utilsService.splitByCapitalLetters(str);
-	}
-	/** Whether the number of selected elements matches the total number of rows. */
-	isAllSelected() {
-		const numSelected = this.selection.selected.length;
-		const numRows = this.recentTransactionsDataSource.data.length;
-		return numSelected === numRows;
-	}
-
-	/** Selects all rows if they are not all selected; otherwise clear selection. */
-	toggleAllRows() {
-		if (this.isAllSelected()) {
-			this.selection.clear();
+	onSubmit(): void {
+		this._utilsService.logger('firmaFormGroup', this.firmaFormGroup);
+		// Do nothing if the form is invalid
+		if (this.firmaFormGroup.invalid) {
 			return;
 		}
 
-		this.selection.select(...this.recentTransactionsDataSource.filteredData);
-	}
+		// Disable the form
+		this.firmaFormGroup.disable();
 
-	/** The label for the checkbox on the passed row */
-	checkboxLabel(row?: Documente): string {
-		if (!row) {
-			return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
-		}
-		return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${
-			this.recentTransactionsDataSource.data.indexOf(row) + 1
-		}`;
-	}
-	countSelected() {
-		return this.selection.selected.length;
-	}
-
-	rejectSelected() {
-		this.sendRequestToServer(
-			[...this.selection.selected.map((item) => item.id)],
-			2
-		);
-	}
-	approveSelected() {
-		this.sendRequestToServer(
-			[...this.selection.selected.map((item) => item.id)],
-			1
-		);
-	}
-	// transfer guid
-	rejectRow(row: Documente) {
-		this.sendRequestToServer([row.id], 2);
-	}
-	approveRow(row: Documente) {
-		this.sendRequestToServer([row.id], 1);
-	}
-	countTotal() {
-		let total = 0;
-		this.selection.selected.forEach((item: any) => {
-			total += item.discountValue;
-		});
-		return total.toFixed(2);
-	}
-	datePicked(dateRangeStart: HTMLInputElement, dateRangeEnd: HTMLInputElement) {
-		let startDate = new Date(dateRangeStart.value).getTime();
-		let tempEndDate = new Date(dateRangeEnd.value);
-		tempEndDate.setHours(23, 59, 59, 999);
-		let endDate = tempEndDate.getTime();
-		this.recentTransactionsDataSource.data = this.items.filter((item) => {
-			var currDate = new Date(item.uploaded).getTime();
-			return currDate >= startDate && currDate <= endDate;
-		});
-		this.selection.clear();
-		if (this.recentTransactionsDataSource.paginator) {
-			this.recentTransactionsDataSource.paginator.firstPage();
-		}
-	}
-	sendRequestToServer(documenteIds: string[], status: number) {
 		// Hide the alert
 		this.showAlert = false;
-	}
-	closeDialog() {
-		this._dialog.closeAll();
-	}
-	openDialog(row?: Documente) {
-		this.dialogRow = row;
-		this._dialog.open(this.confirmDialogView);
-	}
-	dialogRow: Documente;
-	confirmDialog() {
-		if (this.dialogRow) {
-			this.rejectRow(this.dialogRow);
-		} else {
-			this.rejectSelected();
-		}
-		this._dialog.closeAll();
+		// Send to server
+		this._masterFunctDataService
+			.createOrUpdateFirma(this.firmaFormGroup.value, this.firmaId ? true : false)
+			.subscribe({
+				next: (response) => {
+					this._router.navigateByUrl('/master-admin/firme-platforma');
+				},
+				error: (error) => {
+					this.firmaFormGroup.enable();
+
+					// Reset the form
+					this.firmaNgForm.form.markAsPristine();
+					this.firmaNgForm.form.markAsUntouched();
+					if (error.error) {
+						// Set the alert
+						this.alert = {
+							type: 'error',
+							message: error.message,
+						};
+					} else {
+						this.alert = {
+							type: 'warning',
+							message: 'Eroare pe server, echipa tehnică a fost notificată.',
+						};
+					}
+					// Show the alert
+					this.showAlert = true;
+				},
+			});
 	}
 }

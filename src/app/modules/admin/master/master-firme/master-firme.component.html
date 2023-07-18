@@ -24,6 +24,17 @@
 								Situatia contului tau la {{ getCurrentDate() }}
 							</div>
 						</div>
+						<a
+							mat-icon-button
+							[class.bg-blue-300]="true"
+							title="Adauga firma noua"
+							[routerLink]="'/master-admin/edit-firma'"
+						>
+							<mat-icon
+								[svgIcon]="'heroicons_outline:squares-plus'"
+								[class.text-black]="true"
+							></mat-icon
+						></a>
 					</div>
 
 					<div class="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full mt-8">
