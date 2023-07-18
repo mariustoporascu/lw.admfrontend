@@ -29,6 +29,9 @@ export class ViewDetailsComponent implements OnInit, OnDestroy {
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
 	documentId: string;
 	document: FirmaDiscount;
+	disabled: boolean = false;
+	acceptedFileTypes: string[] = ['.jpg', '.jpeg', '.png'];
+
 	/**
 	 * Constructor
 	 */
@@ -77,5 +80,13 @@ export class ViewDetailsComponent implements OnInit, OnDestroy {
 	 */
 	closeDrawer(): Promise<MatDrawerToggleResult> {
 		return this._masterFirmeComponent.matDrawer.close();
+	}
+	addPhoto(event: Event): void {
+		this._utilsService.logger('addPhoto', event);
+		const files = (event.target as HTMLInputElement).files;
+		this._utilsService.logger('files', files);
+	}
+	addUserForEmailContact(): void {
+		this._utilsService.logger('addUserForEmailContact');
 	}
 }

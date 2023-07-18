@@ -88,3 +88,10 @@ export interface Tranzactii {
 	conexId?: string;
 	documente?: Documente;
 }
+export interface FirmaAnafDetails {
+	adresa?: string;
+	cui?: string;
+	scpTVA?: boolean;
+	nrRegCom?: string;
+	denumire?: string;
+}

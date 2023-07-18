@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import {
 	Documente,
+	FirmaAnafDetails,
 	FirmaDiscount,
 	Tranzactii,
 } from '../bkendmodels/models.types';
@@ -131,6 +132,11 @@ export class MasterFunctDataService {
 				})
 			);
 	}
+	getFirmaAnafDetails(query: string): Observable<FirmaAnafDetails> {
+		return this._httpClient.get<FirmaAnafDetails>(
+			`${this._backEndUrl}/masteradmin/get-details-anaf?query=${query}`
+		);
+	}
 	/**
 	 * Make Tranzaction
 	 */
@@ -164,6 +170,12 @@ export class MasterFunctDataService {
 	queryUsers(query: string): Observable<any> {
 		return this._httpClient.get(
 			`${this._backEndUrl}/masteradmin/query-users?query=${query}`
+		);
+	}
+	createOrUpdateFirma(firma: {}, isUpdate: boolean = false): Observable<any> {
+		return this._httpClient.post(
+			`${this._backEndUrl}/masteradmin/${!isUpdate ? 'addFirma' : 'updateFirma'}`,
+			firma
 		);
 	}
 }

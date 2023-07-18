@@ -224,6 +224,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
 				icon: 'heroicons_outline:presentation-chart-bar',
 				link: '/master-admin/dashboard',
 			},
+			{
+				id: 'dashboard.documentePlatforma',
+				title: 'Toate documentele',
+				type: 'basic',
+				icon: 'heroicons_outline:document-duplicate',
+				link: '/master-admin/documente-platforma',
+			},
 		],
 	},
 	{
@@ -234,13 +241,6 @@ export const defaultNavigation: FuseNavigationItem[] = [
 		userType: 'master-admin',
 		icon: 'heroicons_outline:home',
 		children: [
-			{
-				id: 'administrative.documentePlatforma',
-				title: 'Documente platforma',
-				type: 'basic',
-				icon: 'heroicons_outline:document-duplicate',
-				link: '/master-admin/documente-platforma',
-			},
 			{
 				id: 'administrative.documentePreApproval',
 				title: 'Documente la Pre Aprobari',
