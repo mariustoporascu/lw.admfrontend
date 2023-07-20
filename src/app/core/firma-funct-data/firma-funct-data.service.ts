@@ -1,13 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import {
-	Documente,
-	Hybrid,
-	StatusEnumRO,
-	Tranzactii,
-} from '../bkendmodels/models.types';
+import { Documente, Hybrid, Tranzactii } from '../bkendmodels/models.types';
 import { backendUrl } from '../config/app.config';
+import { StatusEnumRO } from '../bkendmodels/enums.types';
 
 @Injectable({
 	providedIn: 'root',
@@ -97,6 +93,9 @@ export class FirmaFunctDataService {
 				tap((response: any) => {
 					response &&
 						response.forEach((element: Documente) => {
+							if (element.nextConexiuniConturi) {
+								element.conexiuniConturi = element.nextConexiuniConturi;
+							}
 							element.statusName = StatusEnumRO[element.status];
 						});
 					this._docsData.next(response ?? []);

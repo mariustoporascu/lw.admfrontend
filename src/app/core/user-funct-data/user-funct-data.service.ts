@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import {
-	Documente,
-	StatusEnumRO,
-	Tranzactii,
-} from '../bkendmodels/models.types';
+import { Documente, Tranzactii } from '../bkendmodels/models.types';
 import { backendUrl } from '../config/app.config';
+import {
+	StatusEnumRO,
+	TranzactionStatusEnumRO,
+} from '../bkendmodels/enums.types';
 
 @Injectable({
 	providedIn: 'root',
@@ -125,6 +125,11 @@ export class UserFunctDataService {
 			.get<Documente[]>(`${this._backEndUrl}/regularuser/getAllTransfers`)
 			.pipe(
 				tap((response: any) => {
+					response &&
+						response.forEach((element: Tranzactii) => {
+							element.statusName = TranzactionStatusEnumRO[element.status];
+						});
+
 					this._transferData.next(response ?? []);
 				})
 			);
@@ -138,6 +143,10 @@ export class UserFunctDataService {
 			.get<Documente[]>(`${this._backEndUrl}/regularuser/getAllWithdrawals`)
 			.pipe(
 				tap((response: any) => {
+					response &&
+						response.forEach((element: Tranzactii) => {
+							element.statusName = TranzactionStatusEnumRO[element.status];
+						});
 					this._withdrawData.next(response ?? []);
 				})
 			);

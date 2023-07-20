@@ -3,11 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Item, Items } from './file-manager.types';
 import { backendUrl, dataprocUrl } from '../config/app.config';
-import {
-	Documente,
-	FirmaDiscount,
-	StatusEnumRO,
-} from '../bkendmodels/models.types';
+import { Documente, FirmaDiscount } from '../bkendmodels/models.types';
+import { StatusEnumRO } from '../bkendmodels/enums.types';
 
 @Injectable({
 	providedIn: 'root',

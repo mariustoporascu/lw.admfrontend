@@ -92,6 +92,7 @@ export class MasterFirmaFormComponent
 						this.firmaFormGroup = this._formBuilder.group({
 							id: [this.firmaDetails.id, Validators.required],
 							name: [this.firmaDetails.name, Validators.required],
+							nameAnaf: [this.firmaDetails.nameAnaf, Validators.required],
 							cuiNumber: [this.firmaDetails.cuiNumber, Validators.required],
 							nrRegCom: [this.firmaDetails.nrRegCom, Validators.required],
 							address: [this.firmaDetails.address, Validators.required],
@@ -123,6 +124,7 @@ export class MasterFirmaFormComponent
 			} else {
 				this.firmaFormGroup = this._formBuilder.group({
 					name: ['', Validators.required],
+					nameAnaf: ['', Validators.required],
 					cuiNumber: ['', Validators.required],
 					nrRegCom: ['', Validators.required],
 					address: ['', Validators.required],
@@ -198,7 +200,7 @@ export class MasterFirmaFormComponent
 						.setErrors({ invalidAnafResponse: true });
 					this.firmaFormGroup.get('cuiNumber').markAsTouched();
 				} else {
-					this.firmaFormGroup.get('name').setValue(data.denumire);
+					this.firmaFormGroup.get('nameAnaf').setValue(data.denumire);
 					this.firmaFormGroup.get('address').setValue(data.adresa);
 					this.firmaFormGroup.get('nrRegCom').setValue(data.nrRegCom);
 					const scopTva = data.scpTVA;
