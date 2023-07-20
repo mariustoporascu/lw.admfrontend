@@ -61,7 +61,7 @@
 									#recentTransactionsTable
 								>
 									<ng-container matColumnDef="name">
-										<th mat-header-cell mat-sort-header *matHeaderCellDef>Nume firma</th>
+										<th mat-header-cell mat-sort-header *matHeaderCellDef>Nume afisat</th>
 										<td mat-cell *matCellDef="let transaction">
 											<div class="w-30 truncate" [matTooltip]="transaction.name">
 												{{ transaction.name }}
@@ -279,7 +279,7 @@
 <ng-template #confirmDialogView>
 	<mat-dialog-content>
 		<h3 class="text-black text-lg">
-			Esti sigur ca vrei sa dezactivezi contractul firmei?
+			{{ textQuestion }}
 		</h3>
 	</mat-dialog-content>
 	<mat-dialog-actions class="flex flex-auto justify-end">

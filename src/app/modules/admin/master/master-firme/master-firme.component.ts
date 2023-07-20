@@ -57,7 +57,7 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 	disabled: boolean = false;
 	@ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
 	drawerMode: 'side' | 'over';
-
+	textQuestion: string = 'Esti sigur ca vrei sa dezactivezi contractul firmei?';
 	private _unsubscribeAll: Subject<any> = new Subject<any>();
 
 	/**
@@ -221,6 +221,11 @@ export class MasterFirmeComponent implements OnInit, AfterViewInit, OnDestroy {
 	openDialog(row?: FirmaDiscount, isSecondary: boolean = false) {
 		this.dialogRow = row;
 		this.isSecondary = isSecondary;
+		if (this.isSecondary) {
+			this.textQuestion = 'Esti sigur ca vrei sa dezactivezi pentru useri?';
+		} else {
+			this.textQuestion = 'Esti sigur ca vrei sa dezactivezi contractul firmei?';
+		}
 		this._dialog.open(this.confirmDialogView, {
 			disableClose: true,
 		});

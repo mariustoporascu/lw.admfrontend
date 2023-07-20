@@ -44,6 +44,7 @@ export class FirmaAllDocsComponent implements OnInit, AfterViewInit, OnDestroy {
 		'total',
 		'discountValue',
 		'userEmail',
+		'status',
 		'actions',
 	];
 	userCheckboxChecked: boolean = false;

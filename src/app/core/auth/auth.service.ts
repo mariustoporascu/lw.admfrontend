@@ -191,7 +191,7 @@ export class AuthService {
 					{},
 					{
 						params: {
-							refreshTokenId: this.refreshToken,
+							refreshTokenId: this.refreshTokenId,
 						},
 					}
 				)

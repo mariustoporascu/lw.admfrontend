@@ -141,4 +141,7 @@ export class UserWithdHistoryComponent
 			this.recentTransactionsDataSource.paginator.firstPage();
 		}
 	}
+	splitByCapitalLetters(str: string): string {
+		return this._utilsService.splitByCapitalLetters(str);
+	}
 }

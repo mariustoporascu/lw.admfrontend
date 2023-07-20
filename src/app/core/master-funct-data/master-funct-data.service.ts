@@ -5,10 +5,10 @@ import {
 	Documente,
 	FirmaAnafDetails,
 	FirmaDiscount,
-	StatusEnumRO,
 	Tranzactii,
 } from '../bkendmodels/models.types';
 import { backendUrl } from '../config/app.config';
+import { StatusEnumRO } from '../bkendmodels/enums.types';
 
 @Injectable({
 	providedIn: 'root',
@@ -93,6 +93,9 @@ export class MasterFunctDataService {
 				tap((response: any) => {
 					response &&
 						response.forEach((element: Documente) => {
+							if (element.nextConexiuniConturi) {
+								element.conexiuniConturi = element.nextConexiuniConturi;
+							}
 							element.statusName = StatusEnumRO[element.status];
 						});
 					this._documenteData.next(response ?? []);

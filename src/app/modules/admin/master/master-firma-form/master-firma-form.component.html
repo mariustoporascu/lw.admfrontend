@@ -53,6 +53,7 @@
 												Numele afisat utilizatorilor este necesar
 											</mat-error>
 										</mat-form-field>
+
 										<mat-form-field class="flex-auto gt-xs:pr-3">
 											<mat-label>CUI</mat-label>
 											<input
@@ -83,6 +84,26 @@
 												"
 											>
 												Cautarea nu a returnat niciun rezultat
+											</mat-error>
+										</mat-form-field>
+										<mat-form-field class="flex-auto gt-xs:pr-3">
+											<mat-label>Nume real</mat-label>
+											<input
+												disabled="true"
+												readonly="true"
+												matInput
+												[placeholder]="'Nume real'"
+												[formControlName]="'nameAnaf'"
+											/>
+											<mat-icon
+												class="icon-size-5"
+												matPrefix
+												[svgIcon]="'heroicons_solid:information-circle'"
+											></mat-icon>
+											<mat-error
+												*ngIf="firmaFormGroup.get('nameAnaf').hasError('required')"
+											>
+												Numele real al firmei este necesar
 											</mat-error>
 										</mat-form-field>
 										<mat-form-field class="flex-auto gt-xs:pr-3">
