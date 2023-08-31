@@ -1,0 +1,7 @@
+app/.gitignore
+app/.gitattributes
+app/LICENSE
+app/README.md
+app/node_modules
+app/.angular
+.vscode
